@@ -12,7 +12,8 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; padding-bottom: 60px; }
+        /* CSS SAMA SEPERTI SEBELUMNYA */
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; padding-bottom: 60px; }
         .hero-header { position: relative; background: url('https://images.unsplash.com/photo-1511497584788-876760111969') center/cover; height: 300px; display: flex; align-items: center; justify-content: center; color: white; margin-bottom: 30px; border-bottom: 5px solid #2c7a3f; }
         .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); }
         .hero-content { position: relative; z-index: 2; text-align: center; }
@@ -74,9 +75,8 @@
 
         <h4 class="section-title">Detail Data & Monitoring Satwa</h4>
 
-        <!-- 3. FLORA STATS (GRAFIK HIJAU) & INDEKS BURUNG -->
+        <!-- 3. FLORA STATS & INDEKS BURUNG -->
         <div class="row">
-            <!-- KIRI: FLORA DETAIL + GRAFIK -->
             <div class="col-lg-6 mb-4">
                 <div class="card card-custom">
                     <div class="card-header-custom"><i class="fas fa-leaf text-success me-2"></i> Inventarisasi Flora (2025)</div>
@@ -91,7 +91,6 @@
                 </div>
             </div>
 
-            <!-- KANAN: INDEKS BURUNG -->
             <div class="col-lg-6 mb-4">
                 <div class="card card-custom">
                     <div class="card-header-custom"><i class="fas fa-dove text-primary me-2"></i> Indeks Kehati - Burung (Avifauna)</div>
@@ -108,7 +107,6 @@
 
         <!-- 4. INFO BURUNG & KUPU-KUPU -->
         <div class="row">
-            <!-- KIRI: STATISTIK BURUNG -->
             <div class="col-lg-6 mb-4">
                 <div class="card card-custom h-100">
                     <div class="card-header-custom"><i class="fas fa-binoculars text-info me-2"></i> Statistik Avifauna</div>
@@ -124,8 +122,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- KANAN: KUPU-KUPU -->
             <div class="col-lg-6 mb-4" id="troidesSection">
                 <div class="card card-custom troides-box h-100">
                     <div class="card-body">
@@ -136,7 +132,7 @@
                                 <h4 class="fw-bold" style="color:#d32f2f;">Kupu-kupu Raja</h4>
                                 <em class="text-muted d-block mb-2">Genus Troides</em>
                                 <span class="badge bg-danger mb-2">DILINDUNGI</span>
-                                <p class="small text-muted mb-0" style="line-height:1.4;">Teridentifikasi kembali di <b>Taman Kehati 3</b> (2025). Indikator kualitas lingkungan baik.</p>
+                                <p class="small text-muted mb-0" style="line-height:1.4;">Teridentifikasi kembali di <b>Taman Kehati 3</b> (2025).</p>
                             </div>
                         </div>
                     </div>
@@ -168,20 +164,15 @@
             document.getElementById('valE').innerText = data.indices?.E || '-';
             document.getElementById('valR').innerText = data.indices?.R || '-';
 
-            // Indeks Burung
             if(data.birdIndices) {
                 document.getElementById('birdH').innerText = data.birdIndices.H;
                 document.getElementById('birdE').innerText = data.birdIndices.E;
                 document.getElementById('birdR').innerText = data.birdIndices.R;
             }
-
-            // Stats Flora
             if(data.floraStats) {
                 document.getElementById('floraTotal').innerText = data.floraStats.total;
                 document.getElementById('floraFam').innerText = data.floraStats.famili;
             }
-
-            // Stats Burung
             if(data.birdStats) {
                 document.getElementById('birdSpecies').innerText = data.birdStats.species;
                 document.getElementById('birdFamily').innerText = data.birdStats.family;
@@ -189,25 +180,31 @@
                 document.getElementById('birdKey').innerText = data.birdStats.key;
             }
 
-            // Red List
             const listContainer = document.getElementById('protectedList');
             if(data.protectedList && data.protectedList.length > 0) {
                 data.protectedList.forEach(item => {
-                    let icon = item.type === 'Flora' ? '<i class="fas fa-tree text-success me-2"></i>' : '<i class="fas fa-paw text-warning me-2"></i>';
                     let badge = item.status.includes('Dilindungi') ? 'bg-danger' : 'bg-warning text-dark';
-                    listContainer.innerHTML += `<div class="col-md-6 protected-item"><div class="d-flex align-items-center">${icon} <strong>${item.name}</strong></div><span class="badge ${badge}">${item.status}</span></div>`;
+                    listContainer.innerHTML += `<div class="col-md-6 protected-item"><div class="d-flex align-items-center"><strong>${item.name}</strong></div><span class="badge ${badge}">${item.status}</span></div>`;
                 });
             } else { listContainer.innerHTML = '<p class="text-muted w-100 text-center">Tidak ada catatan.</p>'; }
 
-            // Kupu-kupu
             if(!data.hasTroides) document.getElementById('troidesSection').innerHTML = `<div class="card card-custom h-100 d-flex align-items-center justify-content-center p-4"><p class="text-muted">Tidak ada data spesies prioritas Kupu-kupu.</p></div>`;
 
-            // PETA
+            // MAP - Menampilkan Polygon yang sama dengan Dashboard
             const map = L.map('miniMap', { zoomControl: false }).setView([data.lat, data.lng], 15);
             L.tileLayer('http://mt0.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', { maxZoom: 20 }).addTo(map);
-            if(data.detailPolygon) {
-                const poly = L.polygon(data.detailPolygon, { color: '#ffd700', fillColor: '#ffd700', fillOpacity: 0.2, weight: 2 }).addTo(map);
-                setTimeout(() => { map.fitBounds(poly.getBounds()); }, 500);
+            
+            // Fiter Polygon dari database.js agar hanya menampilkan lokasi yang sedang dibuka (jika ada)
+            if(db_kehati.polygons) {
+                const geoLayer = L.geoJSON(db_kehati.polygons, {
+                    filter: function(feature) {
+                        return feature.properties.id_lokasi === id; 
+                    },
+                    style: function(f) { return { color: f.properties.color, fillColor: f.properties.color, fillOpacity: 0.4, weight: 2 }; }
+                }).addTo(map);
+                
+                // Zoom ke area poligon
+                setTimeout(() => { if(geoLayer.getLayers().length > 0) map.fitBounds(geoLayer.getBounds()); }, 500);
             } else { L.marker([data.lat, data.lng]).addTo(map); }
 
             // GRAFIK POHON H'
@@ -218,15 +215,13 @@
                     options: { maintainAspectRatio: false, plugins: { legend: {display:false}, datalabels: { anchor:'end', align:'top', font:{weight:'bold'} } }, scales: { y: {beginAtZero: false, min: 2} } }
                 });
             }
-
-            // GRAFIK FLORA SPECIES (HIJAU CERAH)
-            if(data.floraStats && data.floraStats.values) {
-                new Chart(document.getElementById('floraSpeciesChart'), {
-                    type: 'bar',
-                    data: { labels: data.floraStats.years, datasets: [{ data: data.floraStats.values, backgroundColor: '#42f557' }] },
-                    options: { maintainAspectRatio: false, plugins: { legend:{display:false}, datalabels:{anchor:'end', align:'top', font:{weight:'bold'}} } }
-                });
-            }
+            
+            // GRAFIK FLORA HIJAU
+            new Chart(document.getElementById('floraSpeciesChart'), {
+                type: 'bar',
+                data: { labels: ['2020','2021','2022','2023','2024','2025'], datasets: [{ data: [136,156,172,201,223,203], backgroundColor: '#42f557' }] },
+                options: { maintainAspectRatio: false, plugins: { legend:{display:false}, datalabels:{anchor:'end', align:'top'} } }
+            });
         }
     </script>
 </body>
