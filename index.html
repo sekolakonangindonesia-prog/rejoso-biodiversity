@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Monitoring - SIS KEHATI</title>
+    <!-- Library -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        :root { --primary: #1b5e20; --bg: #f8f9fa; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); padding-bottom: 50px; }
+        .navbar-custom { background: linear-gradient(to right, #1b5e20, #2e7d32); padding: 15px 0; }
+        .card-custom { border: none; border-radius: 10px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .card-header-custom { background: white; padding: 15px 20px; border-bottom: 1px solid #eee; font-weight: 700; color: #1b5e20; }
+        #map { height: 450px; width: 100%; z-index: 1; background-color: #e0e0e0; }
+        .table-hover tbody tr:hover { background-color: #e8f5e9; cursor: pointer; }
+        .badge-status { padding: 6px 12px; border-radius: 20px; font-weight: 600; font-size: 0.75rem; }
+        .bg-excellent { background-color: #e8f5e9; color: #2e7d32; border: 1px solid #2e7d32; }
+        .bg-good { background-color: #e3f2fd; color: #1565c0; border: 1px solid #1565c0; }
+        .bg-warning-custom { background-color: #fff3e0; color: #ef6c00; border: 1px solid #ef6c00; }
+        .btn-update { background-color: var(--primary); color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-custom sticky-top">
+        <div class="container-fluid px-4">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-leaf fa-lg text-white me-3"></i>
+                <span class="text-white fw-bold fs-4">SIS-KEHATI REJOSO</span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid px-4 mt-4">
+        <!-- ROW 1: PETA -->
+        <div class="row mb-3">
+            <div class="col-12">
+                <div class="card card-custom">
+                    <div class="card-header-custom d-flex justify-content-between align-items-center">
+                        <span><i class="fas fa-map-marked-alt text-success me-2"></i> Peta Sebaran</span>
+                        <span class="badge bg-secondary">Google Hybrid</span>
+                    </div>
+                    <div class="card-body p-0">
+                        <div id="map"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ROW 2: TABEL & INPUT -->
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card card-custom">
+                    <div class="card-header-custom"><i class="fas fa-table text-primary me-2"></i> Log Data Monitoring</div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="ps-4">Lokasi Pantau</th>
+                                    <th>Tahun</th>
+                                    <th>Indeks (H')</th>
+                                    <th>Status</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card card-custom">
+                    <div class="card-header-custom bg-light"><i class="fas fa-edit text-dark me-2"></i> Input / Update</div>
+                    <div class="card-body">
+                        <form>
+                            <div class="mb-3">
+                                <label class="fw-bold mb-1">Pilih Zona Lokasi</label>
+                                <select class="form-select" id="zonaSelect"></select>
+                            </div>
+                            <button type="button" class="btn-update mb-2" onclick="alert('Fitur Input Data Baru')"><i class="fas fa-plus-circle me-2"></i> Input Data Baru</button>
+                            <button type="button" class="btn btn-outline-secondary w-100" onclick="alert('Fitur Update Data Lama')"><i class="fas fa-sync-alt me-2"></i> Update Data Lama</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOAD DATABASE & LEAFLET -->
+    <script src="database.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Init Map
+        var map = L.map('map', {zoomControl: false}).setView([-7.723, 112.932], 14);
+        L.control.zoom({ position: 'topright' }).addTo(map);
+        L.tileLayer('https://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}', { maxZoom: 20 }).addTo(map);
+
+        // Render Polygons
+        L.geoJSON(db_kehati.polygons, {
+            style: function(f) { return { color: f.properties.color||'#ffd700', fillColor: f.properties.color||'#ffd700', fillOpacity: 0.3, weight: 2 }; },
+            onEachFeature: function(f, l) { l.bindPopup(`<b>${f.properties.name}</b>`); }
+        }).addTo(map);
+
+        // Render Table & Dropdown
+        const tableBody = document.getElementById('tableBody');
+        const zonaSelect = document.getElementById('zonaSelect');
+        const locs = db_kehati.locations; // Ambil dari database.js
+
+        for (const [key, loc] of Object.entries(locs)) {
+            // Isi Dropdown
+            let option = document.createElement("option");
+            option.value = key;
+            option.text = loc.name;
+            zonaSelect.add(option);
+
+            // Isi Tabel & Marker
+            let badgeClass = loc.indices?.H > 3 ? 'bg-excellent' : 'bg-good';
+            let markerColor = loc.indices?.H > 3 ? 'green' : 'orange';
+
+            if (!loc.hasPolygon) {
+                let circle = L.circleMarker([loc.lat, loc.lng], { color: markerColor, fillColor: markerColor, fillOpacity: 0.9, radius: 7 }).addTo(map);
+                circle.bindPopup(`<b>${loc.name}</b><br>H': ${loc.indices?.H}`);
+            }
+
+            let row = `
+                <tr onclick="window.location.href='detail.html?id=${key}'">
+                    <td class="ps-4 fw-bold text-dark">${loc.name}</td>
+                    <td>${loc.year}</td>
+                    <td><strong>${loc.indices?.H || '-'}</strong></td>
+                    <td><span class="badge-status ${badgeClass}">${loc.status}</span></td>
+                    <td><button class="btn btn-sm btn-outline-secondary py-0">Detail</button></td>
+                </tr>`;
+            tableBody.innerHTML += row;
+        }
+    </script>
+</body>
+</html>
