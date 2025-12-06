@@ -4,16 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Monitoring - SIS KEHATI</title>
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
     <style>
         :root { --primary: #1b5e20; --secondary: #4caf50; --bg: #f8f9fa; }
-        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); padding-bottom: 50px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); padding-bottom: 50px; }
         .navbar-custom { background: linear-gradient(to right, #1b5e20, #2e7d32); padding: 15px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
         .card-custom { border: none; border-radius: 10px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px; }
         .card-header-custom { background: white; padding: 15px 20px; border-bottom: 1px solid #eee; font-weight: 700; color: #1b5e20; }
-        #map { height: 450px; width: 100%; z-index: 1; background-color: #e0e0e0; }
+        #map { height: 500px; width: 100%; z-index: 1; background-color: #e0e0e0; }
         .table-hover tbody tr:hover { background-color: #e8f5e9; cursor: pointer; }
         .badge-status { padding: 6px 12px; border-radius: 20px; font-weight: 600; font-size: 0.75rem; }
         .bg-excellent { background-color: #e8f5e9; color: #2e7d32; border: 1px solid #2e7d32; }
@@ -33,7 +35,8 @@
     <nav class="navbar navbar-custom sticky-top">
         <div class="container-fluid px-4">
             <div class="d-flex align-items-center">
-                <i class="fas fa-leaf fa-lg text-white me-3"></i><span class="text-white fw-bold fs-4">SIS-KEHATI REJOSO</span>
+                <i class="fas fa-leaf fa-lg text-white me-3"></i>
+                <span class="text-white fw-bold fs-4">SIS-KEHATI REJOSO</span>
             </div>
             <div class="text-white small"><i class="fas fa-circle text-success me-1"></i> Admin Online</div>
         </div>
@@ -67,7 +70,7 @@
             </div>
             <div class="col-lg-4">
                 <div class="card card-custom">
-                    <div class="card-header-custom bg-light"><i class="fas fa-edit text-dark me-2"></i> Form Input Data</div>
+                    <div class="card-header-custom bg-light"><i class="fas fa-edit text-dark me-2"></i> Input / Update</div>
                     <div class="card-body">
                         <div class="row mb-3">
                             <div class="col-6"><button class="btn btn-action btn-new" id="btnNew" onclick="switchMode('new')"><i class="fas fa-plus-circle"></i> Lokasi Baru</button></div>
@@ -97,16 +100,31 @@
     <script src="database.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        var map = L.map('map', {zoomControl: false}).setView([-7.723, 112.932], 14);
+        var map = L.map('map', {zoomControl: false}).setView([-7.723, 112.932], 13);
         L.control.zoom({ position: 'topright' }).addTo(map);
         L.tileLayer('https://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}', { maxZoom: 20 }).addTo(map);
 
-        // Render Polygons from Database
-        L.geoJSON(db_kehati.polygons, {
-            style: function(f) { return { color: f.properties.color, fillColor: f.properties.color, fillOpacity: 0.4, weight: 2 }; },
-            onEachFeature: function(f, l) { l.bindPopup(`<b>${f.properties.name}</b><br><a href="detail.html?id=${f.properties.id_lokasi}">Lihat Detail</a>`); }
+        // 1. RENDER POLYGON (Lebih Tebal & Jelas)
+        var geoLayer = L.geoJSON(db_kehati.polygons, {
+            style: function(f) { 
+                return { 
+                    color: f.properties.color || '#ffd700', 
+                    fillColor: f.properties.color || '#ffd700', 
+                    fillOpacity: 0.5,  // Lebih pekat biar kelihatan
+                    weight: 3          // Garis lebih tebal
+                }; 
+            },
+            onEachFeature: function(f, l) { 
+                l.bindPopup(`<b>${f.properties.name}</b>`); 
+            }
         }).addTo(map);
 
+        // Fit Bounds agar semua polygon terlihat
+        if(geoLayer.getLayers().length > 0) {
+            map.fitBounds(geoLayer.getBounds());
+        }
+
+        // 2. RENDER TABLE & MARKER
         const tableBody = document.getElementById('tableBody');
         const zonaSelect = document.getElementById('zonaSelect');
         const locs = db_kehati.locations;
@@ -114,21 +132,35 @@
         zonaSelect.innerHTML = '<option value="" disabled selected>-- Pilih Lokasi --</option>';
 
         for (const [key, loc] of Object.entries(locs)) {
-            // Dropdown option
+            // Isi Dropdown
             let option = document.createElement("option");
             option.value = key;
             option.text = loc.name;
             zonaSelect.add(option);
 
-            // Table & Marker
+            // LOGIKA MARKER: Selalu tampilkan Marker (Pin) untuk SEMUA lokasi
+            // Walaupun sudah ada poligon, Pin tetap muncul di tengah agar mudah dilihat
             let badgeClass = loc.indices?.H > 3 ? 'bg-excellent' : (loc.indices?.H > 1.5 ? 'bg-good' : 'bg-warning-custom');
             let markerColor = loc.indices?.H > 3 ? 'green' : (loc.indices?.H > 1.5 ? 'blue' : 'orange');
 
-            if (!loc.hasPolygon) {
-                let circle = L.circleMarker([loc.lat, loc.lng], { color: markerColor, fillColor: markerColor, fillOpacity: 0.9, radius: 7 }).addTo(map);
-                circle.bindPopup(`<b>${loc.name}</b><br><a href="detail.html?id=${key}">Lihat Detail</a>`);
-            }
+            // Custom Icon Bulat Berwarna
+            const circleIcon = L.divIcon({
+                className: 'custom-pin',
+                html: `<div style="background-color:${markerColor}; width:16px; height:16px; border:2px solid white; border-radius:50%; box-shadow:0 0 5px black;"></div>`,
+                iconSize: [16, 16]
+            });
 
+            // Tambahkan Marker ke Peta
+            L.marker([loc.lat, loc.lng], {icon: circleIcon}).addTo(map)
+                .bindPopup(`
+                    <div style="text-align:center">
+                        <b>${loc.name}</b><br>
+                        <small>Indeks H': ${loc.indices?.H}</small><br>
+                        <a href="detail.html?id=${key}" style="font-weight:bold; color:${markerColor}">Lihat Detail</a>
+                    </div>
+                `);
+
+            // Isi Tabel
             let row = `
                 <tr onclick="window.location.href='detail.html?id=${key}'">
                     <td class="ps-4 fw-bold text-dark">${loc.name}</td>
