@@ -1,26 +1,46 @@
-// --- DATABASE SIS-KEHATI REJOSO (FINAL UPDATE) ---
+// --- DATABASE SIS-KEHATI REJOSO (FINAL FIXED) ---
 
 const db_kehati = {
-    // 1. DATA PETA (POLYGON)
-    // Berisi area Taman Kehati (3 Zona) dan Tegal Andari (2 Zona)
+    // ============================================================
+    // 1. DATA PETA DASHBOARD (FORMAT GEOJSON: [LONGITUDE, LATITUDE])
+    // Angka depan 112..., Angka belakang -7...
+    // ============================================================
     polygons: {
         "type": "FeatureCollection",
         "features": [
-            // --- TAMAN KEHATI (KEBONCANDI) ---
+            // --- TAMAN KEHATI (3 ZONA) ---
             { 
                 "type": "Feature", "properties": { "name": "Taman 1 (Depan)", "id_lokasi": "kehati_aqua", "color": "#29b6f6" },
-                "geometry": { "type": "Polygon", "coordinates": [[ [112.933906, -7.722551], [112.934018, -7.722334], [112.934140, -7.722282], [112.934357, -7.722215], [112.933150, -7.721930], [112.933316, -7.722165], [112.933620, -7.722398], [112.933796, -7.722477], [112.933906, -7.722551] ]] }
+                "geometry": { "type": "Polygon", "coordinates": [[ 
+                    [112.933906, -7.722551], [112.934018, -7.722334], [112.934140, -7.722282], [112.934357, -7.722215], 
+                    [112.933150, -7.721930], [112.933316, -7.722165], [112.933620, -7.722398], [112.933796, -7.722477], 
+                    [112.933906, -7.722551] 
+                ]] }
             },
             { 
                 "type": "Feature", "properties": { "name": "Taman 2 (Tengah)", "id_lokasi": "kehati_aqua", "color": "#ef5350" },
-                "geometry": { "type": "Polygon", "coordinates": [[ [112.933616, -7.722396], [112.933524, -7.722723], [112.933468, -7.722814], [112.933484, -7.723156], [112.933396, -7.723345], [112.933275, -7.723355], [112.933090, -7.723316], [112.932930, -7.723645], [112.932800, -7.723931], [112.932646, -7.724057], [112.932507, -7.724196], [112.932690, -7.724261], [112.932885, -7.723813], [112.933068, -7.723393], [112.933325, -7.723403], [112.933605, -7.723467], [112.933629, -7.723380], [112.933606, -7.723257], [112.933615, -7.723015], [112.933578, -7.722897], [112.933611, -7.722807], [112.933753, -7.722717], [112.933822, -7.722606], [112.933905, -7.722555], [112.933616, -7.722396] ]] }
+                "geometry": { "type": "Polygon", "coordinates": [[ 
+                    [112.933616, -7.722396], [112.933524, -7.722723], [112.933468, -7.722814], [112.933484, -7.723156], 
+                    [112.933396, -7.723345], [112.933275, -7.723355], [112.933090, -7.723316], [112.932930, -7.723645], 
+                    [112.932800, -7.723931], [112.932646, -7.724057], [112.932507, -7.724196], [112.932690, -7.724261], 
+                    [112.932885, -7.723813], [112.933068, -7.723393], [112.933325, -7.723403], [112.933605, -7.723467], 
+                    [112.933629, -7.723380], [112.933606, -7.723257], [112.933615, -7.723015], [112.933578, -7.722897], 
+                    [112.933611, -7.722807], [112.933753, -7.722717], [112.933822, -7.722606], [112.933905, -7.722555], 
+                    [112.933616, -7.722396] 
+                ]] }
             },
             { 
                 "type": "Feature", "properties": { "name": "Taman 3 (Area Alami)", "id_lokasi": "kehati_aqua", "color": "#fbc02d" },
-                "geometry": { "type": "Polygon", "coordinates": [[ [112.929750, -7.723085], [112.929607, -7.723348], [112.929518, -7.723519], [112.932225, -7.724852], [112.932281, -7.724634], [112.932353, -7.724521], [112.932410, -7.724478], [112.932471, -7.724422], [112.932543, -7.724362], [112.932603, -7.724332], [112.932688, -7.724261], [112.932303, -7.724143], [112.931166, -7.723595], [112.930860, -7.723491], [112.930551, -7.723267], [112.930256, -7.723156], [112.929998, -7.723055], [112.929787, -7.722945], [112.929750, -7.723085] ]] }
+                "geometry": { "type": "Polygon", "coordinates": [[ 
+                    [112.929750, -7.723085], [112.929607, -7.723348], [112.929518, -7.723519], [112.932225, -7.724852], 
+                    [112.932281, -7.724634], [112.932353, -7.724521], [112.932410, -7.724478], [112.932471, -7.724422], 
+                    [112.932543, -7.724362], [112.932603, -7.724332], [112.932688, -7.724261], [112.932303, -7.724143], 
+                    [112.931166, -7.723595], [112.930860, -7.723491], [112.930551, -7.723267], [112.930256, -7.723156], 
+                    [112.929998, -7.723055], [112.929787, -7.722945], [112.929750, -7.723085] 
+                ]] }
             },
 
-            // --- TEGAL PAK ANDARI (BARU - DARI ANDA) ---
+            // --- TEGAL PAK ANDARI (2 ZONA) ---
             {
                 "type": "Feature", "properties": { "name": "Andari 01", "id_lokasi": "galih_andari", "color": "#8e44ad" },
                 "geometry": { "type": "Polygon", "coordinates": [[
@@ -50,92 +70,151 @@ const db_kehati = {
         ]
     },
 
-    // 2. DATA DETAIL STATISTIK
+    // ============================================================
+    // 2. DATA DETAIL LOKASI & GRAFIK
+    // ============================================================
     locations: {
         "kehati_aqua": {
             name: "Taman Kehati AQUA Keboncandi",
             desc: "Area konservasi ex-situ seluas 2,67 Ha. Terbagi menjadi Taman 1, 2, dan 3 (Area Alami).",
-            year: "2025", status: "Sangat Baik",
+            year: "2025",
+            status: "Sangat Baik",
             lat: -7.723, lng: 112.932,
             hasPolygon: true,
+
             indices: { H: 3.99, E: 0.87, R: 16.75, cat: "Sangat Tinggi" },
             birdIndices: { H: 2.91, E: 0.89, R: 4.81 },
+
             chartLabels: ['2020', '2021', '2022', '2023', '2024', '2025'],
             chartData: [3.41, 3.47, 3.65, 3.74, 3.79, 3.99],
-            floraStats: { total: 203, famili: 75, years: ['2020','2025'], values: [136, 203] },
-            birdStats: { species: 26, family: 17, dom: "Cipoh Kacat", key: "Cekakak Sungai" },
+
+            floraStats: { total: 203, famili: 75, years: ['2020', '2021', '2022', '2023', '2024', '2025'], values: [136, 156, 172, 201, 223, 203] },
+            birdStats: { species: 26, family: 17, dom: "Cipoh Kacat, Walet Linchi", key: "Cekakak Sungai" },
+
             protectedList: [
                 { name: "Cemara Norfolk", status: "VU (Rentan)", type: "Flora" },
                 { name: "Palem Kuning", status: "NT (Hampir Terancam)", type: "Flora" },
-                { name: "Bubut Jawa", status: "VU / Endemik", type: "Fauna" }
+                { name: "Cekakak Sungai", status: "Dilindungi UU", type: "Fauna" },
+                { name: "Bubut Jawa", status: "VU / Endemik Jawa", type: "Fauna" }
             ],
             hasTroides: true,
-            // DETAIL POLYGON (GABUNGAN TAMAN 1, 2, 3)
+
+            // DATA POLYGON KHUSUS HALAMAN DETAIL 
+            // (FORMAT LEAFLET POLYGON: [LATITUDE, LONGITUDE])
+            // -7 DULU BARU 112
             detailPolygon: [
-                [-7.724851, 112.932225], [-7.724684, 112.932261], [-7.724361, 112.932544], 
-                [-7.723390, 112.933068], [-7.723466, 112.933604], [-7.723016, 112.933615], 
-                [-7.722807, 112.933611], [-7.722214, 112.934357], [-7.721928, 112.933152], 
-                [-7.722398, 112.933616], [-7.722979, 112.933495], [-7.723517, 112.929516] 
+                // Taman 1 (Biru)
+                [
+                    [-7.722551, 112.933906], [-7.722334, 112.934018], [-7.722282, 112.934140], 
+                    [-7.722215, 112.934357], [-7.721930, 112.933150], [-7.722165, 112.933316], 
+                    [-7.722398, 112.933620], [-7.722477, 112.933796], [-7.722551, 112.933906]
+                ],
+                // Taman 2 (Merah)
+                [
+                    [-7.722396, 112.933616], [-7.722723, 112.933524], [-7.722814, 112.933468], 
+                    [-7.723156, 112.933484], [-7.723345, 112.933396], [-7.723355, 112.933275], 
+                    [-7.723316, 112.933090], [-7.723645, 112.932930], [-7.723931, 112.932800], 
+                    [-7.724057, 112.932646], [-7.724196, 112.932507], [-7.724261, 112.932690], 
+                    [-7.723813, 112.932885], [-7.723393, 112.933068], [-7.723403, 112.933325], 
+                    [-7.723467, 112.933605], [-7.723380, 112.933629], [-7.723257, 112.933606], 
+                    [-7.723015, 112.933615], [-7.722897, 112.933578], [-7.722807, 112.933611], 
+                    [-7.722717, 112.933753], [-7.722606, 112.933822], [-7.722555, 112.933905], 
+                    [-7.722396, 112.933616]
+                ],
+                // Taman 3 (Kuning)
+                [
+                    [-7.723085, 112.929750], [-7.723348, 112.929607], [-7.723519, 112.929518], 
+                    [-7.724852, 112.932225], [-7.724634, 112.932281], [-7.724521, 112.932353], 
+                    [-7.724478, 112.932410], [-7.724422, 112.932471], [-7.724362, 112.932543], 
+                    [-7.724332, 112.932603], [-7.724261, 112.932688], [-7.724143, 112.932303], 
+                    [-7.723595, 112.931166], [-7.723491, 112.930860], [-7.723267, 112.930551], 
+                    [-7.723156, 112.930256], [-7.723055, 112.929998], [-7.722945, 112.929787], 
+                    [-7.723085, 112.929750]
+                ]
             ]
+        },
+        
+        "galih_pecaton": {
+            name: "Desa Galih - Lahan Pecaton",
+            desc: "Area recharge mata air dengan vegetasi campuran.",
+            year: "2025", status: "Baik", lat: -7.705, lng: 112.920, hasPolygon: false,
+            indices: { H: 3.11, E: 0.79, R: 7.93, cat: "Tinggi" },
+            birdIndices: { H: 2.50, E: 0.70, R: 3.20 },
+            chartLabels: ['2024', '2025'], chartData: [2.60, 3.11],
+            floraStats: { total: 150, famili: 40, years: ['2024','2025'], values: [120, 150] },
+            birdStats: { species: 25, family: 19, dom: "Emprit, Tekukur", key: "Elang Bido" },
+            protectedList: [{ name: "Bubut Jawa", status: "Dilindungi / VU", type: "Fauna" }],
+            hasTroides: false,
+            detailPolygon: null 
+        },
+
+        "galih_karyono": {
+            name: "Desa Galih - Tegal Pak Karyono",
+            year: "2025", status: "Sedang", lat: -7.710, lng: 112.925, hasPolygon: false,
+            indices: { H: 2.74, E: 0.99, R: 4.03, cat: "Sedang" },
+            birdIndices: { H: 2.1, E: 0.6, R: 2.5 },
+            chartLabels: ['2025'], chartData: [2.74],
+            floraStats: { total: 80, famili: 20, years: ['2025'], values: [80] },
+            birdStats: { species: 15, family: 10, dom: "-", key: "-" },
+            protectedList: [], hasTroides: false, detailPolygon: null
         },
         
         "galih_andari": {
             name: "Desa Galih - Tegal Pak Andari",
             desc: "Lahan penyangga hutan lindung dengan dua area kelola utama.",
             year: "2025", status: "Sedang",
-            lat: -7.815, lng: 112.905, // Titik tengah Andari
-            hasPolygon: true, // SUDAH ADA POLYGON
+            lat: -7.815, lng: 112.905, 
+            hasPolygon: true, 
             indices: { H: 2.75, E: 0.99, R: 4.18, cat: "Sedang" },
             birdIndices: { H: 2.2, E: 0.65, R: 2.8 },
-            chartLabels: ['2024', '2025'],
-            chartData: [2.72, 2.75],
+            chartLabels: ['2024', '2025'], chartData: [2.72, 2.75],
             floraStats: { total: 85, famili: 22, years: ['2024', '2025'], values: [70, 85] },
             birdStats: { species: 16, family: 11, dom: "Maducita", key: "Elang Bido" },
             protectedList: [{ name: "Elang Ular Bido", status: "Dilindungi", type: "Fauna" }],
             hasTroides: false,
-            // DETAIL POLYGON (GABUNGAN ANDARI 1 & 2)
+            // DETAIL POLYGON ANDARI (FORMAT LAT, LONG) - SUDAH DIBALIK MANUAL
             detailPolygon: [
-                [-7.816181, 112.904767], [-7.815462, 112.904479], [-7.814927, 112.905144], 
-                [-7.815048, 112.905288], [-7.816111, 112.905305], // Area 1
-                [-7.805912, 112.899808], [-7.805205, 112.899694], [-7.805661, 112.899398], // Area 2
-                [-7.805893, 112.899431] 
+                [
+                    [-7.815048, 112.905288], [-7.814989, 112.905335], [-7.814978, 112.905334], [-7.814965, 112.905318], 
+                    [-7.814954, 112.905303], [-7.814951, 112.905283], [-7.814961, 112.905259], [-7.814953, 112.905225], 
+                    [-7.814945, 112.905206], [-7.814937, 112.905188], [-7.814931, 112.905167], [-7.814927, 112.905144], 
+                    [-7.814933, 112.905119], [-7.814932, 112.905104], [-7.814928, 112.905082], [-7.814940, 112.905058], 
+                    [-7.814922, 112.905042], [-7.814915, 112.905028], [-7.814930, 112.905022], [-7.814942, 112.905008], 
+                    [-7.814947, 112.904990], [-7.814936, 112.904955], [-7.815100, 112.904717], [-7.815462, 112.904479], 
+                    [-7.815972, 112.904588], [-7.816181, 112.904767], [-7.816111, 112.905305], [-7.815588, 112.905295], 
+                    [-7.815100, 112.905251], [-7.815111, 112.905280], [-7.815075, 112.905270], [-7.815048, 112.905288]
+                ],
+                [
+                    [-7.805912, 112.899808], [-7.805921, 112.899897], [-7.805968, 112.899836], [-7.805830, 112.900245], 
+                    [-7.805377, 112.900114], [-7.805130, 112.899952], [-7.805205, 112.899694], [-7.805404, 112.899499], 
+                    [-7.805661, 112.899398], [-7.805703, 112.899371], [-7.805741, 112.899384], [-7.805779, 112.899385], 
+                    [-7.805829, 112.899387], [-7.805858, 112.899393], [-7.805880, 112.899389], [-7.805893, 112.899431], 
+                    [-7.805882, 112.899477], [-7.805872, 112.899509], [-7.805876, 112.899534], [-7.805872, 112.899573], 
+                    [-7.805865, 112.899626], [-7.805868, 112.899666], [-7.805875, 112.899709], [-7.805884, 112.899724], 
+                    [-7.805886, 112.899734], [-7.805881, 112.899754], [-7.805890, 112.899779], [-7.805900, 112.899795], 
+                    [-7.805912, 112.899808]
+                ]
             ]
         },
 
-        // Lokasi Lain (Belum ada Polygon)
-        "galih_pecaton": {
-            name: "Desa Galih - Lahan Pecaton",
-            year: "2025", status: "Baik", lat: -7.705, lng: 112.920, hasPolygon: false,
-            indices: { H: 3.11, E: 0.79, R: 7.93 }, birdIndices: {H: 2.5, E: 0.7, R: 3.2},
-            chartLabels: ['2025'], chartData: [3.11],
-            floraStats: { total: 150, famili: 40, years:['2025'], values:[150] },
-            birdStats: { species: 25, family: 19, dom: "Emprit", key: "-" },
-            protectedList: [], hasTroides: false, detailPolygon: null
-        },
-        "galih_karyono": {
-            name: "Desa Galih - Tegal Pak Karyono",
-            year: "2025", status: "Sedang", lat: -7.710, lng: 112.925, hasPolygon: false,
-            indices: { H: 2.74, E: 0.99, R: 4.03 }, birdIndices: {H: 2.1, E: 0.6, R: 2.5},
-            chartLabels: ['2025'], chartData: [2.74],
-            floraStats: { total: 80, famili: 20, years:['2025'], values:[80] },
-            birdStats: { species: 15, family: 10, dom: "-", key: "-" },
-            protectedList: [], hasTroides: false, detailPolygon: null
-        },
         "umbulan": {
             name: "Kawasan Mata Air Umbulan",
             year: "2024", status: "Sangat Baik", lat: -7.730, lng: 112.950, hasPolygon: false,
-            indices: { H: 3.50, E: 0.85, R: 12.10 }, birdIndices: {H: 3.1, E: 0.8, R: 5.0},
+            indices: { H: 3.50, E: 0.85, R: 12.10, cat: "Sangat Tinggi" },
+            birdIndices: { H: 3.1, E: 0.8, R: 5.0 },
             chartLabels: ['2024'], chartData: [3.50],
-            floraStats: { total: 180, famili: 60, years:['2024'], values:[180] },
+            floraStats: { total: 180, famili: 60, years: ['2024'], values: [180] },
             birdStats: { species: 30, family: 15, dom: "-", key: "-" },
             protectedList: [], hasTroides: false, detailPolygon: null
         },
+
         "nguling": {
             name: "Kawasan Penyangga Nguling",
             year: "2024", status: "Sedang", lat: -7.680, lng: 113.050, hasPolygon: false,
-            indices: { H: 2.90, E: 0.70, R: 5.50 }, birdIndices: {H: 2.0, E: 0.5, R: 2.0},
+            indices: { H: 2.90, E: 0.70, R: 5.50, cat: "Sedang" },
+            birdIndices: { H: 2.0, E: 0.5, R: 2.0 },
             chartLabels: ['2024'], chartData: [2.90],
-            floraStats: { total: 90, famili: 25, years:['2024'], values:[90] },
+            floraStats: { total: 90, famili: 25, years: ['2024'], values: [90] },
             birdStats: { species: 10, family: 5, dom: "-", key: "-" },
             protectedList: [], hasTroides: false, detailPolygon: null
         }
