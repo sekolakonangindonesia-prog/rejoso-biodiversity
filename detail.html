@@ -26,22 +26,16 @@
         .card-custom { border: none; border-radius: 12px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px; overflow: hidden; height: 100%; }
         .card-header-custom { background: #fff; border-bottom: 1px solid #f0f0f0; padding: 15px 20px; font-weight: 700; color: #444; }
         
-        /* --- PERBAIKAN UTAMA: KUNCI TINGGI GRAFIK --- */
-        .chart-wrapper {
-            position: relative;
-            height: 300px; /* Tinggi grafik dikunci 300px */
-            width: 100%;
-        }
-        
-        /* PETA JUGA DIKUNCI */
-        .map-wrapper { height: 380px; width: 100%; position: relative; }
+        /* FIX HEIGHT UTAMA */
+        .fixed-box { height: 300px !important; width: 100%; position: relative; }
+        .chart-limit { height: 200px !important; width: 100%; position: relative; }
         #miniMap { height: 100%; width: 100%; z-index: 1; }
         
         .species-thumb { width: 80px; height: 80px; object-fit: cover; border-radius: 8px; margin-right: 15px; border: 2px solid #eee; }
         .flagship-box { background: linear-gradient(135deg, #fffde7 0%, #fff 100%); border: 2px solid #fbc02d; }
         .flagship-img { width: 100%; height: 250px; object-fit: cover; border-radius: 8px; border: 3px solid white; box-shadow: 0 3px 6px rgba(0,0,0,0.1); }
         .section-title { border-left: 5px solid #2c7a3f; padding-left: 15px; margin: 30px 0 20px 0; font-weight: 800; color: #2c7a3f; text-transform: uppercase; }
-        .alert-custom { background: #fff8e1; border-left: 4px solid #ffc107; color: #856404; font-size: 0.9rem; padding: 10px; margin-top: 15px; border-radius: 4px; }
+        .alert-custom { background: #fff8e1; border-left: 4px solid #ffc107; color: #856404; font-size: 0.85rem; padding: 10px; margin-top: 15px; border-radius: 4px; }
     </style>
 </head>
 <body>
@@ -65,79 +59,65 @@
             <div class="col-md-4 mb-2"><div class="stat-box border-green"><small class="fw-bold text-muted">Kekayaan (R)</small><div class="val-num text-success" id="valR">-</div><small>Kekayaan Tinggi</small></div></div>
         </div>
 
-        <!-- 2. PETA & GRAFIK (3 KOLOM) -->
+        <!-- 2. PETA & 3 GRAFIK (H/E/R) -->
         <div class="row">
             <div class="col-12 mb-3">
                 <div class="card card-custom">
                     <div class="card-header-custom"><i class="fas fa-map-marked-alt text-success me-2"></i> Area Delineasi Pantau</div>
-                    <div class="card-body p-0">
-                        <!-- PETA DIKUNCI -->
-                        <div class="map-wrapper"><div id="miniMap"></div></div>
-                    </div>
+                    <div class="card-body p-0"><div class="fixed-box"><div id="miniMap"></div></div></div>
                 </div>
             </div>
             
-            <!-- 3 GRAFIK BERBEDA WARNA -->
-            <div class="col-md-4 mb-3">
-                <div class="card card-custom">
-                    <div class="card-body">
-                        <h6 class="text-center fw-bold text-success">Tren Indeks H' (Hijau)</h6>
-                        <!-- GRAFIK DIKUNCI -->
-                        <div class="chart-wrapper"><canvas id="chartH"></canvas></div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-3">
-                <div class="card card-custom">
-                    <div class="card-body">
-                        <h6 class="text-center fw-bold text-primary">Tren Indeks E (Biru)</h6>
-                        <div class="chart-wrapper"><canvas id="chartE"></canvas></div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-3">
-                <div class="card card-custom">
-                    <div class="card-body">
-                        <h6 class="text-center fw-bold text-warning">Tren Indeks R (Oranye)</h6>
-                        <div class="chart-wrapper"><canvas id="chartR"></canvas></div>
-                    </div>
-                </div>
-            </div>
+            <div class="col-md-4 mb-3"><div class="card card-custom"><div class="card-body"><h6 class="text-center fw-bold text-success">Tren Indeks H' (Hijau)</h6><div class="chart-limit"><canvas id="chartH"></canvas></div></div></div></div>
+            <div class="col-md-4 mb-3"><div class="card card-custom"><div class="card-body"><h6 class="text-center fw-bold text-primary">Tren Indeks E (Biru)</h6><div class="chart-limit"><canvas id="chartE"></canvas></div></div></div></div>
+            <div class="col-md-4 mb-3"><div class="card card-custom"><div class="card-body"><h6 class="text-center fw-bold text-warning">Tren Indeks R (Oranye)</h6><div class="chart-limit"><canvas id="chartR"></canvas></div></div></div></div>
         </div>
 
         <h4 class="section-title">Detail Data Monitoring Flora & Fauna</h4>
 
         <!-- 3. FLORA & BURUNG -->
         <div class="row">
-            <!-- Flora -->
             <div class="col-lg-6 mb-4">
                 <div class="card card-custom h-100">
-                    <div class="card-header-custom"><i class="fas fa-leaf text-success me-2"></i> Statistik Flora</div>
+                    <div class="card-header-custom"><i class="fas fa-leaf text-success me-2"></i> Inventarisasi Flora (2025)</div>
                     <div class="card-body">
                         <div class="row text-center mb-3">
                             <div class="col-6"><div class="bg-light p-2 rounded"><h3 class="fw-bold text-success mb-0" id="floraTotal">-</h3><small>Jenis</small></div></div>
                             <div class="col-6"><div class="bg-light p-2 rounded"><h3 class="fw-bold text-success mb-0" id="floraFam">-</h3><small>Famili</small></div></div>
                         </div>
                         <h6 class="small fw-bold text-secondary">Tren Jumlah Spesies (2020-2025)</h6>
-                        <!-- GRAFIK DIKUNCI -->
-                        <div class="chart-wrapper"><canvas id="floraSpeciesChart"></canvas></div>
-                        <div class="alert-custom" id="floraNote"><i class="fas fa-exclamation-circle"></i> Memuat data...</div>
+                        <div class="chart-limit"><canvas id="floraSpeciesChart"></canvas></div>
+                        <div class="alert-custom" id="floraNote" style="display:none;"><i class="fas fa-exclamation-circle"></i></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Burung -->
             <div class="col-lg-6 mb-4">
                 <div class="card card-custom h-100">
-                    <div class="card-header-custom"><i class="fas fa-dove text-info me-2"></i> Statistik Avifauna</div>
+                    <div class="card-header-custom"><i class="fas fa-dove text-primary me-2"></i> Indeks Kehati - Burung (Avifauna)</div>
                     <div class="card-body">
-                         <div class="row text-center mb-3">
+                        <div class="row h-100 align-items-center">
+                            <div class="col-12 mb-4"><div class="stat-box border-blue bg-light"><small class="fw-bold text-primary">Keanekaragaman (H')</small><div class="val-num text-primary" id="birdH">-</div><small>Sedang/Stabil</small></div></div>
+                            <div class="col-6"><div class="stat-box border-blue bg-light"><small class="fw-bold text-primary">Kemerataan (E)</small><div class="val-num text-primary" id="birdE">-</div></div></div>
+                            <div class="col-6"><div class="stat-box border-blue bg-light"><small class="fw-bold text-primary">Kekayaan (R)</small><div class="val-num text-primary" id="birdR">-</div></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. BURUNG STATS & FLAGSHIP -->
+        <div class="row">
+            <div class="col-lg-6 mb-4">
+                <div class="card card-custom h-100">
+                    <div class="card-header-custom"><i class="fas fa-binoculars text-info me-2"></i> Statistik Avifauna</div>
+                    <div class="card-body">
+                        <div class="row text-center mb-3">
                             <div class="col-6"><div class="bg-light p-2 rounded"><h3 class="fw-bold text-info mb-0" id="birdSpecies">-</h3><small>Spesies</small></div></div>
                             <div class="col-6"><div class="bg-light p-2 rounded"><h3 class="fw-bold text-secondary mb-0" id="birdFamily">-</h3><small>Famili</small></div></div>
                         </div>
                         <h6 class="small fw-bold text-secondary">Tren Jumlah Spesies Burung</h6>
-                        <!-- GRAFIK DIKUNCI -->
-                        <div class="chart-wrapper"><canvas id="birdTrendChart"></canvas></div>
+                        <div class="chart-limit"><canvas id="birdTrendChart"></canvas></div>
                         <div class="mt-3 small">
                              <b>Dominasi:</b> <span id="birdDom">-</span><br>
                              <b>Spesies Kunci:</b> <span id="birdKey">-</span>
@@ -145,45 +125,32 @@
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- 4. INFO INDEKS BURUNG (HER) -->
-        <div class="row mb-4">
-            <div class="col-12"><div class="card card-custom"><div class="card-body bg-light">
-                <h6 class="fw-bold text-primary mb-3"><i class="fas fa-chart-bar me-2"></i> Indeks Kehati Burung (Avifauna) 2025</h6>
-                <div class="row text-center">
-                    <div class="col-md-4 border-end"><h2 class="fw-bold text-primary mb-0" id="birdH">-</h2><small>Keanekaragaman (H')</small></div>
-                    <div class="col-md-4 border-end"><h2 class="fw-bold text-primary mb-0" id="birdE">-</h2><small>Kemerataan (E)</small></div>
-                    <div class="col-md-4"><h2 class="fw-bold text-primary mb-0" id="birdR">-</h2><small>Kekayaan (R)</small></div>
-                </div>
-            </div></div></div>
-        </div>
-
-        <!-- 5. FLAGSHIP & RED LIST -->
-        <div class="row">
-            <div class="col-lg-5 mb-4" id="flagshipSection">
+            <div class="col-lg-6 mb-4" id="troidesSection">
                 <div class="card card-custom flagship-box h-100">
-                    <div class="card-body text-center">
-                        <img src="" class="flagship-img mb-3" id="flagImg" alt="Flagship" onerror="this.src='https://via.placeholder.com/400x300'">
-                        <h5 class="fw-bold mb-1"><i class="fas fa-crown text-warning"></i> FLAGSHIP SPECIES</h5>
-                        <h4 class="fw-bold text-danger" id="flagName">-</h4>
-                        <p class="small text-muted" id="flagDesc">-</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-7 mb-4">
-                <div class="card card-custom h-100">
-                    <div class="card-header-custom"><i class="fas fa-shield-alt text-danger me-2"></i> Daftar Spesies Dilindungi</div>
                     <div class="card-body">
-                        <div id="protectedList"></div>
+                        <div class="row align-items-center h-100">
+                            <div class="col-5"><img src="" class="flagship-img" id="flagImg" alt="Flagship" onerror="this.src='https://via.placeholder.com/400x300'"></div>
+                            <div class="col-7">
+                                <h5 class="fw-bold text-dark mb-1"><i class="fas fa-crown text-warning me-1"></i> FLAGSHIP SPECIES</h5>
+                                <h4 class="fw-bold text-danger" id="flagName">-</h4>
+                                <span class="badge bg-danger mb-2" id="flagStatus">-</span>
+                                <p class="small text-muted mb-0" style="line-height:1.4;" id="flagDesc">-</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
+        <!-- 5. RED LIST -->
+        <div class="card card-custom">
+            <div class="card-header-custom"><i class="fas fa-shield-alt text-danger me-2"></i> Daftar Spesies Dilindungi / Red List</div>
+            <div class="card-body"><div class="row" id="protectedList"></div></div>
+        </div>
     </div>
 
+    <!-- SCRIPT -->
     <script src="database.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
@@ -193,7 +160,6 @@
         const data = db_kehati.locations[id];
 
         if(data) {
-            // Header Image
             const headerUrl = data.headerImage ? data.headerImage : 'https://images.unsplash.com/photo-1511497584788-876760111969';
             document.getElementById('dynamicHeader').style.backgroundImage = `url('${headerUrl}')`;
 
@@ -206,7 +172,11 @@
 
             document.getElementById('floraTotal').innerText = data.floraStats?.total;
             document.getElementById('floraFam').innerText = data.floraStats?.famili;
-            document.getElementById('floraNote').innerText = data.floraStats?.note;
+            
+            if(data.floraStats?.note) {
+                document.getElementById('floraNote').style.display = 'block';
+                document.getElementById('floraNote').innerHTML = `<i class="fas fa-exclamation-triangle me-2"></i> ${data.floraStats.note}`;
+            }
 
             document.getElementById('birdSpecies').innerText = data.birdStats?.species;
             document.getElementById('birdFamily').innerText = data.birdStats?.family;
@@ -222,9 +192,10 @@
             if(data.flagshipSpecies) {
                 document.getElementById('flagName').innerText = data.flagshipSpecies.name;
                 document.getElementById('flagDesc').innerText = data.flagshipSpecies.desc;
+                document.getElementById('flagStatus').innerText = data.flagshipSpecies.status;
                 document.getElementById('flagImg').src = data.flagshipSpecies.img;
             } else {
-                document.getElementById('flagshipSection').innerHTML = `<div class="card card-custom h-100 p-4 text-center text-muted">Tidak ada Flagship Species.</div>`;
+                document.getElementById('troidesSection').innerHTML = `<div class="card card-custom h-100 d-flex align-items-center justify-content-center p-4"><p class="text-muted">Tidak ada Flagship Species.</p></div>`;
             }
 
             const listContainer = document.getElementById('protectedList');
@@ -233,7 +204,7 @@
                     let imgUrl = item.img ? item.img : 'https://via.placeholder.com/80';
                     let badge = item.status.includes('Dilindungi') ? 'bg-danger' : 'bg-warning text-dark';
                     listContainer.innerHTML += `
-                        <div class="d-flex align-items-center mb-3 border-bottom pb-2">
+                        <div class="col-md-6 protected-item">
                             <img src="${imgUrl}" class="species-thumb" onerror="this.src='https://via.placeholder.com/80'">
                             <div>
                                 <div class="fw-bold">${item.name}</div>
@@ -241,8 +212,9 @@
                             </div>
                         </div>`;
                 });
-            }
+            } else { listContainer.innerHTML = '<p class="text-muted w-100 text-center">Tidak ada catatan.</p>'; }
 
+            // PETA
             const map = L.map('miniMap', { zoomControl: false }).setView([data.lat, data.lng], 15);
             L.tileLayer('http://mt0.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', { maxZoom: 20 }).addTo(map);
             if(data.detailPolygon) {
@@ -251,6 +223,7 @@
                 });
             } else { L.marker([data.lat, data.lng]).addTo(map); }
 
+            // HELPER GRAFIK
             function createChart(ctxId, label, dataValues, color) {
                 new Chart(document.getElementById(ctxId).getContext('2d'), {
                     type: 'bar',
@@ -259,19 +232,22 @@
                         datasets: [{ label: label, data: dataValues, backgroundColor: color, borderRadius: 4 }] 
                     },
                     options: { 
-                        maintainAspectRatio: false, // KUNCI UTAMA
+                        maintainAspectRatio: false, 
                         plugins: { legend: {display:false}, datalabels: { anchor:'end', align:'top', font:{weight:'bold'} } },
                         scales: { y: { beginAtZero: false } }
                     }
                 });
             }
 
+            // RENDER 3 GRAFIK UTAMA
             if(data.historyH) createChart('chartH', "Indeks H'", data.historyH, '#4caf50'); 
             if(data.historyE) createChart('chartE', "Indeks E", data.historyE, '#2196f3');
             if(data.historyR) createChart('chartR', "Indeks R", data.historyR, '#ff9800');
 
+            // GRAFIK FLORA
             if(data.floraStats?.values) createChart('floraSpeciesChart', "Jml Spesies", data.floraStats.values, '#b2ff59'); 
 
+            // GRAFIK BURUNG GANDA
             if(data.birdDataGraph) {
                 new Chart(document.getElementById('birdTrendChart').getContext('2d'), {
                     type: 'bar',
@@ -283,7 +259,7 @@
                         ]
                     },
                     options: {
-                        maintainAspectRatio: false, // KUNCI UTAMA
+                        maintainAspectRatio: false, 
                         plugins: { 
                             legend: { display: true },
                             datalabels: { anchor:'end', align:'top', font:{weight:'bold', size:10} }
