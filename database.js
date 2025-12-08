@@ -118,7 +118,7 @@ const db_kehati = {
                 name: "Bubut Jawa (Centropus nigrorufus)",
                 desc: "Burung endemik Jawa yang statusnya Rentan (Vulnerable).",
                 status: "DILINDUNGI / ENDEMIK",
-                img: "bubut_jawa.jpg"
+                img: "https://raw.githubusercontent.com/sekolakonangindonesia-prog/rejoso-biodiversity/refs/heads/main/bubut_jawa.jpg"
             },
 
             detailPolygon: [ [[ -7.821934, 112.904844 ], [ -7.822091, 112.904874 ], [ -7.822509, 112.904954 ], [ -7.823218, 112.905150 ], [ -7.823271, 112.905662 ], [ -7.822238, 112.905875 ], [ -7.821881, 112.905548 ], [ -7.821827, 112.905051 ], [ -7.821934, 112.904844 ]] ]
