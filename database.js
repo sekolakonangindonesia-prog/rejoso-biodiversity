@@ -47,7 +47,7 @@ const db_kehati = {
             desc: "Area konservasi in-situ seluas 2,67 Ha. Terbagi menjadi Taman 1, 2, dan 3 (Area Alami).",
             year: "2025", status: "Sangat Baik", lat: -7.723, lng: 112.932,
             hasPolygon: true,
-            headerImage: "https://raw.githubusercontent.com/sekolakonangindonesia-prog/rejoso-biodiversity/refs/heads/main/kehatikbc.jpg",
+            headerImage: "https://raw.githubusercontent.com/sekolakonangindonesia-prog/rejoso-biodiversity/refs/heads/main/kehati_kbc.jpg",
 
             indices: { H: 3.99, E: 0.87, R: 15.72, cat: "Sangat Tinggi" },
             birdIndices: { H: 2.91, E: 0.89, R: 4.81 },
@@ -92,7 +92,7 @@ const db_kehati = {
             name: "Desa Galih - Lahan Pecaton",
             desc: "Area recharge mata air dengan vegetasi campuran.",
             year: "2025", status: "Baik", lat: -7.822, lng: 112.905, hasPolygon: true,
-            headerImage: "header_pecaton.jpg", 
+            headerImage: "https://raw.githubusercontent.com/sekolakonangindonesia-prog/rejoso-biodiversity/refs/heads/main/Pecaton.jpg", 
 
             indices: { H: 3.11, E: 0.79, R: 7.93, cat: "Tinggi" },
             birdIndices: { H: 3.07, E: 0.95, R: 5.33 },
@@ -140,7 +140,7 @@ const db_kehati = {
         "galih_andari": {
             name: "Desa Galih - Tegal Pak Andari",
             year: "2025", status: "Sedang", lat: -7.815, lng: 112.905, hasPolygon: true,
-            headerImage: "header_andari.jpg",
+            headerImage: "https://raw.githubusercontent.com/sekolakonangindonesia-prog/rejoso-biodiversity/refs/heads/main/Andari_galih.jpg",
             indices: { H: 2.75, E: 0.99, R: 4.18, cat: "Sedang" },
             historyH: [2.72, 2.75], historyE: [0.98, 0.99], historyR: [4.15, 4.18], chartLabels: ['2024', '2025'],
             birdIndices: { H: 2.2, E: 0.65, R: 2.8 },
