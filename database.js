@@ -77,7 +77,7 @@ const db_kehati = {
                 name: "Kupu-kupu Raja (Genus Troides)",
                 desc: "Spesies indikator kualitas lingkungan. Dilindungi PERMENLHK & CITES.",
                 status: "DILINDUNGI",
-                img: "kupu_troides.jpg"
+                img: "https://raw.githubusercontent.com/sekolakonangindonesia-prog/rejoso-biodiversity/refs/heads/main/kupu-troides.jpg"
             },
             
             // Detail Polygon (Disamakan dengan dashboard agar tidak kotak)
