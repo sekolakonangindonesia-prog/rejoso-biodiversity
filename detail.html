@@ -13,27 +13,44 @@
 
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; padding-bottom: 60px; }
-        .hero-header { position: relative; background: url('https://images.unsplash.com/photo-1511497584788-876760111969') center/cover; height: 320px; display: flex; align-items: center; justify-content: center; color: white; margin-bottom: 30px; border-bottom: 5px solid #2c7a3f; }
+        
+        /* HEADER DINAMIS */
+        .hero-header {
+            position: relative;
+            background-color: #333; /* Fallback color */
+            background-size: cover; background-position: center;
+            height: 350px; display: flex; align-items: center; justify-content: center;
+            color: white; margin-bottom: 30px; border-bottom: 5px solid #2c7a3f;
+        }
         .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); }
-        .hero-content { position: relative; z-index: 2; text-align: center; }
+        .hero-content { position: relative; z-index: 2; text-align: center; width: 90%; }
         .btn-back { background: white; color: #333; font-weight: bold; padding: 8px 20px; border-radius: 50px; text-decoration: none; display: inline-block; margin-top: 15px; }
+        
+        .section-title { border-left: 5px solid #2c7a3f; padding-left: 15px; margin: 30px 0 20px 0; font-weight: 800; color: #2c7a3f; text-transform: uppercase; }
         .stat-box { background: white; border-radius: 12px; padding: 15px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 10px; height: 100%; border-top: 4px solid #ddd; }
         .val-num { font-size: 2.2rem; font-weight: 800; margin: 5px 0; color: #333; }
         .border-green { border-top-color: #2e7d32; } 
         .border-blue { border-top-color: #1976d2; } 
+
         .card-custom { border: none; border-radius: 12px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px; overflow: hidden; height: 100%; }
         .card-header-custom { background: #fff; border-bottom: 1px solid #f0f0f0; padding: 15px 20px; font-weight: 700; color: #444; }
+        
         .fixed-box { height: 400px; width: 100%; }
         #miniMap { height: 100%; width: 100%; z-index: 1; }
-        .troides-box { background: linear-gradient(135deg, #fffde7 0%, #fff 100%); border: 2px solid #fbc02d; }
-        .troides-img { width: 100%; height: 200px; object-fit: cover; border-radius: 8px; border: 3px solid white; box-shadow: 0 3px 6px rgba(0,0,0,0.1); }
-        .section-title { border-left: 5px solid #2c7a3f; padding-left: 15px; margin: 30px 0 20px 0; font-weight: 800; color: #2c7a3f; text-transform: uppercase; }
-        .protected-item { padding: 10px 0; border-bottom: 1px dashed #eee; font-size: 0.9rem; }
+        
+        /* FLAGSHIP & LIST */
+        .flagship-box { background: linear-gradient(135deg, #fffde7 0%, #fff 100%); border: 2px solid #fbc02d; }
+        .flagship-img { width: 100%; height: 220px; object-fit: cover; border-radius: 8px; border: 3px solid white; box-shadow: 0 3px 6px rgba(0,0,0,0.1); }
+        
+        .protected-item { display: flex; align-items: center; padding: 10px 0; border-bottom: 1px dashed #eee; font-size: 0.9rem; }
+        .species-thumb { width: 50px; height: 50px; object-fit: cover; border-radius: 50%; margin-right: 15px; border: 2px solid #eee; }
+        .badge-status { font-size: 0.7rem; padding: 4px 8px; margin-top: 2px; }
     </style>
 </head>
 <body>
 
-    <div class="hero-header">
+    <!-- HERO HEADER (Gambar Dinamis via JS) -->
+    <div class="hero-header" id="dynamicHeader">
         <div class="hero-overlay"></div>
         <div class="hero-content">
             <h1 class="display-5 fw-bold" id="locName">Loading...</h1>
@@ -52,7 +69,7 @@
             <div class="col-md-4 mb-2"><div class="stat-box border-green"><small class="fw-bold text-muted">Kekayaan (R)</small><div class="val-num text-success" id="valR">-</div><small>Kekayaan Tinggi</small></div></div>
         </div>
 
-        <!-- 2. PETA & GRAFIK H' FLORA -->
+        <!-- 2. PETA & GRAFIK FLORA -->
         <div class="row">
             <div class="col-lg-6 mb-4">
                 <div class="card card-custom">
@@ -62,13 +79,13 @@
             </div>
             <div class="col-lg-6 mb-4">
                 <div class="card card-custom">
-                    <div class="card-header-custom"><i class="fas fa-chart-line text-success me-2"></i> Tren Indeks Kehati (Pohon)</div>
+                    <div class="card-header-custom"><i class="fas fa-chart-line text-success me-2"></i> Trend Indeks H' (Pohon)</div>
                     <div class="card-body"><div class="fixed-box"><canvas id="treeChart"></canvas></div></div>
                 </div>
             </div>
         </div>
 
-        <h4 class="section-title">Detail Data & Monitoring Satwa</h4>
+        <h4 class="section-title">Detail data Monitoring Flora dan Fauna</h4>
 
         <!-- 3. FLORA STATS & INDEKS BURUNG -->
         <div class="row">
@@ -100,8 +117,9 @@
             </div>
         </div>
 
-        <!-- 4. INFO BURUNG & KUPU-KUPU -->
+        <!-- 4. INFO BURUNG & FLAGSHIP SPECIES -->
         <div class="row">
+            <!-- KIRI: STATISTIK BURUNG -->
             <div class="col-lg-6 mb-4">
                 <div class="card card-custom h-100">
                     <div class="card-header-custom"><i class="fas fa-binoculars text-info me-2"></i> Statistik Avifauna</div>
@@ -117,17 +135,18 @@
                     </div>
                 </div>
             </div>
+
+            <!-- KANAN: FLAGSHIP SPECIES -->
             <div class="col-lg-6 mb-4" id="troidesSection">
-                <div class="card card-custom troides-box h-100">
+                <div class="card card-custom flagship-box h-100">
                     <div class="card-body">
                         <div class="row align-items-center h-100">
-                            <div class="col-5"><img src="https://raw.githubusercontent.com/sekolakonangindonesia-prog/rejoso-biodiversity/refs/heads/main/kupu-troides.jpg" class="troides-img" alt="Kupu Troides"></div>
+                            <div class="col-5"><img src="" class="flagship-img" id="flagImg" alt="Flagship Species" onerror="this.src='https://via.placeholder.com/400x300?text=No+Image'"></div>
                             <div class="col-7">
-                                <h5 class="fw-bold text-dark mb-1"><i class="fas fa-crown text-warning me-1"></i> Spesies Prioritas</h5>
-                                <h4 class="fw-bold" style="color:#d32f2f;">Kupu-kupu Raja</h4>
-                                <em class="text-muted d-block mb-2">Genus Troides</em>
-                                <span class="badge bg-danger mb-2">DILINDUNGI</span>
-                                <p class="small text-muted mb-0" style="line-height:1.4;">Teridentifikasi kembali di <b>Taman Kehati 3</b> (2025).</p>
+                                <h5 class="fw-bold text-dark mb-1"><i class="fas fa-crown text-warning me-1"></i> FLAGSHIP SPECIES</h5>
+                                <h4 class="fw-bold" style="color:#d32f2f;" id="flagName">-</h4>
+                                <span class="badge bg-danger mb-2" id="flagStatus">-</span>
+                                <p class="small text-muted mb-0" style="line-height:1.4;" id="flagDesc">-</p>
                             </div>
                         </div>
                     </div>
@@ -135,13 +154,14 @@
             </div>
         </div>
 
-        <!-- 5. RED LIST -->
+        <!-- 5. RED LIST (DENGAN FOTO) -->
         <div class="card card-custom">
             <div class="card-header-custom"><i class="fas fa-shield-alt text-danger me-2"></i> Daftar Spesies Dilindungi / Red List</div>
             <div class="card-body"><div class="row" id="protectedList"></div></div>
         </div>
     </div>
 
+    <!-- SCRIPT -->
     <script src="database.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
@@ -151,6 +171,11 @@
         const data = db_kehati.locations[id];
 
         if(data) {
+            // 1. SET HEADER IMAGE DINAMIS
+            // Mengambil gambar dari database, jika tidak ada pakai default hutan
+            const headerUrl = data.headerImage ? data.headerImage : 'https://images.unsplash.com/photo-1511497584788-876760111969';
+            document.getElementById('dynamicHeader').style.backgroundImage = `url('${headerUrl}')`;
+
             document.getElementById('locName').innerText = data.name;
             document.getElementById('locDesc').innerText = data.desc;
             document.getElementById('valH').innerText = data.indices?.H || '-';
@@ -158,15 +183,18 @@
             document.getElementById('valE').innerText = data.indices?.E || '-';
             document.getElementById('valR').innerText = data.indices?.R || '-';
 
+            // Indeks Burung
             if(data.birdIndices) {
                 document.getElementById('birdH').innerText = data.birdIndices.H;
                 document.getElementById('birdE').innerText = data.birdIndices.E;
                 document.getElementById('birdR').innerText = data.birdIndices.R;
             }
+            // Flora Stats
             if(data.floraStats) {
                 document.getElementById('floraTotal').innerText = data.floraStats.total;
                 document.getElementById('floraFam').innerText = data.floraStats.famili;
             }
+            // Bird Stats
             if(data.birdStats) {
                 document.getElementById('birdSpecies').innerText = data.birdStats.species;
                 document.getElementById('birdFamily').innerText = data.birdStats.family;
@@ -174,31 +202,40 @@
                 document.getElementById('birdKey').innerText = data.birdStats.key;
             }
 
+            // RED LIST (DENGAN FOTO)
             const listContainer = document.getElementById('protectedList');
             if(data.protectedList && data.protectedList.length > 0) {
                 data.protectedList.forEach(item => {
                     let badge = item.status.includes('Dilindungi') ? 'bg-danger' : 'bg-warning text-dark';
-                    listContainer.innerHTML += `<div class="col-md-6 protected-item"><div class="d-flex align-items-center"><strong>${item.name}</strong></div><span class="badge ${badge}">${item.status}</span></div>`;
+                    let imgUrl = item.img ? item.img : 'https://via.placeholder.com/50'; // Placeholder jika tdk ada foto
+                    
+                    listContainer.innerHTML += `
+                        <div class="col-md-6 protected-item">
+                            <img src="${imgUrl}" class="species-thumb" onerror="this.src='https://via.placeholder.com/50'">
+                            <div>
+                                <div class="fw-bold">${item.name}</div>
+                                <span class="badge ${badge} badge-status">${item.status}</span>
+                            </div>
+                        </div>`;
                 });
-            } else { listContainer.innerHTML = '<p class="text-muted w-100 text-center">Tidak ada catatan.</p>'; }
+            } else { listContainer.innerHTML = '<p class="text-muted w-100 text-center">Tidak ada catatan spesies dilindungi.</p>'; }
 
-            if(!data.hasTroides) document.getElementById('troidesSection').innerHTML = `<div class="card card-custom h-100 d-flex align-items-center justify-content-center p-4"><p class="text-muted">Tidak ada data spesies prioritas Kupu-kupu.</p></div>`;
+            // FLAGSHIP SPECIES
+            if(data.flagshipSpecies) {
+                document.getElementById('flagName').innerText = data.flagshipSpecies.name;
+                document.getElementById('flagDesc').innerText = data.flagshipSpecies.desc;
+                document.getElementById('flagStatus').innerText = data.flagshipSpecies.status;
+                document.getElementById('flagImg').src = data.flagshipSpecies.img;
+            } else {
+                document.getElementById('troidesSection').innerHTML = `<div class="card card-custom h-100 d-flex align-items-center justify-content-center p-4"><p class="text-muted">Tidak ada Flagship Species di area ini.</p></div>`;
+            }
 
-            // MAP
+            // PETA
             const map = L.map('miniMap', { zoomControl: false }).setView([data.lat, data.lng], 15);
             L.tileLayer('http://mt0.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', { maxZoom: 20 }).addTo(map);
-            
-            // Fiter Polygon dari database.js agar hanya menampilkan lokasi yang sedang dibuka (jika ada)
-            if(db_kehati.polygons) {
-                const geoLayer = L.geoJSON(db_kehati.polygons, {
-                    filter: function(feature) {
-                        return feature.properties.id_lokasi === id; 
-                    },
-                    style: function(f) { return { color: f.properties.color, fillColor: f.properties.color, fillOpacity: 0.4, weight: 2 }; }
-                }).addTo(map);
-                
-                // Zoom ke area poligon
-                setTimeout(() => { if(geoLayer.getLayers().length > 0) map.fitBounds(geoLayer.getBounds()); }, 500);
+            if(data.detailPolygon) {
+                const poly = L.polygon(data.detailPolygon, { color: '#ffd700', fillColor: '#ffd700', fillOpacity: 0.2, weight: 2 }).addTo(map);
+                setTimeout(() => { map.fitBounds(poly.getBounds()); }, 500);
             } else { L.marker([data.lat, data.lng]).addTo(map); }
 
             // GRAFIK POHON H'
@@ -211,11 +248,13 @@
             }
             
             // GRAFIK FLORA HIJAU
-            new Chart(document.getElementById('floraSpeciesChart'), {
-                type: 'bar',
-                data: { labels: ['2020','2021','2022','2023','2024','2025'], datasets: [{ data: [136,156,172,201,223,203], backgroundColor: '#42f557' }] },
-                options: { maintainAspectRatio: false, plugins: { legend:{display:false}, datalabels:{anchor:'end', align:'top', font:{weight:'bold'}} } }
-            });
+            if(data.floraStats && data.floraStats.values) {
+                new Chart(document.getElementById('floraSpeciesChart'), {
+                    type: 'bar',
+                    data: { labels: data.floraStats.years, datasets: [{ data: data.floraStats.values, backgroundColor: '#42f557' }] },
+                    options: { maintainAspectRatio: false, plugins: { legend:{display:false}, datalabels:{anchor:'end', align:'top', font:{weight:'bold'}} } }
+                });
+            }
         }
     </script>
 </body>
