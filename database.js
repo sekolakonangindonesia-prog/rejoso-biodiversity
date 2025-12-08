@@ -127,7 +127,7 @@ const db_kehati = {
         "galih_karyono": {
             name: "Desa Galih - Tegal Pak Karyono",
             year: "2025", status: "Sedang", lat: -7.814, lng: 112.913, hasPolygon: true,
-            headerImage: "header_karyono.jpg",
+            headerImage: "https://raw.githubusercontent.com/sekolakonangindonesia-prog/rejoso-biodiversity/refs/heads/main/Karyono_Galih.jpg",
             indices: { H: 2.74, E: 0.99, R: 4.03, cat: "Sedang" },
             historyH: [2.74], historyE: [0.99], historyR: [4.03], chartLabels: ['2025'],
             floraStats: { total: 80, famili: 20, years:['2025'], values:[80], note:"" },
