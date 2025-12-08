@@ -47,7 +47,7 @@ const db_kehati = {
             desc: "Area konservasi in-situ seluas 2,67 Ha. Terbagi menjadi Taman 1, 2, dan 3 (Area Alami).",
             year: "2025", status: "Sangat Baik", lat: -7.723, lng: 112.932,
             hasPolygon: true,
-            headerImage: "header_kehati.jpg",
+            headerImage: "https://raw.githubusercontent.com/sekolakonangindonesia-prog/rejoso-biodiversity/refs/heads/main/kehatikbc.jpg",
 
             indices: { H: 3.99, E: 0.87, R: 15.72, cat: "Sangat Tinggi" },
             birdIndices: { H: 2.91, E: 0.89, R: 4.81 },
@@ -69,8 +69,8 @@ const db_kehati = {
             protectedList: [
                 { name: "Cemara Norfolk (Araucaria heterophylla)", status: "IUCN: VU | P106", type: "Flora", img: "cemara_norfolk.jpg" },
                 { name: "Palem Kuning (Dypsis lutescens)", status: "IUCN: NT | CITES App II", type: "Flora", img: "palem_kuning.jpg" },
-                { name: "Bubut Jawa (Centropus nigrorufus)", status: "IUCN: VU | Endemik", type: "Fauna", img: "bubut_jawa.jpg" },
-                { name: "Biawak Air Asia (Varanus salvator)", status: "IUCN: LC | CITES App II", type: "Fauna", img: "biawak_air.jpg" }
+                { name: "Bubut Jawa (Centropus nigrorufus)", status: "IUCN: VU | Endemik", type: "Fauna", img: "https://raw.githubusercontent.com/sekolakonangindonesia-prog/rejoso-biodiversity/refs/heads/main/bubut_jawa.jpg" },
+                { name: "Biawak Air Asia (Varanus salvator)", status: "IUCN: LC | CITES App II", type: "Fauna", img: "https://raw.githubusercontent.com/sekolakonangindonesia-prog/rejoso-biodiversity/refs/heads/main/biawak_air.jpg" }
             ],
             
             flagshipSpecies: {
