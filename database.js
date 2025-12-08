@@ -111,7 +111,7 @@ const db_kehati = {
 
             protectedList: [
                 { name: "Bubut Jawa (Centropus nigrorufus)", status: "IUCN: VU | P106 | Endemik", type: "Fauna", img: "bubut_jawa.jpg" },
-                { name: "Tupai Kekes (Tupaia javanica)", status: "IUCN: LC | CITES App II", type: "Fauna", img: "tupai_kekes.jpg" }
+                { name: "Tupai Kekes (Tupaia javanica)", status: "IUCN: LC | CITES App II", type: "Fauna", img: "https://raw.githubusercontent.com/sekolakonangindonesia-prog/rejoso-biodiversity/refs/heads/main/Tupai_kekes.jpg.jpg" }
             ],
             
             flagshipSpecies: {
@@ -153,7 +153,7 @@ const db_kehati = {
         "umbulan": {
             name: "Kawasan Mata Air Umbulan",
             year: "2024", status: "Sangat Baik", lat: -7.730, lng: 112.950, hasPolygon: false,
-            headerImage: "header_umbulan.jpg",
+            headerImage: "https://raw.githubusercontent.com/sekolakonangindonesia-prog/rejoso-biodiversity/refs/heads/main/Umbulan_pas.jpg",
             indices: { H: 3.50, E: 0.85, R: 12.10, cat: "Sangat Tinggi" },
             historyH: [3.5], historyE: [0.85], historyR: [12.1], chartLabels: ['2024'],
             floraStats: { total: 180, famili: 60, years:['2024'], values:[180], note:"" },
@@ -166,7 +166,7 @@ const db_kehati = {
         "nguling": {
             name: "Kawasan Penyangga Nguling",
             year: "2024", status: "Sedang", lat: -7.680, lng: 113.050, hasPolygon: false,
-            headerImage: "header_nguling.jpg",
+            headerImage: "https://raw.githubusercontent.com/sekolakonangindonesia-prog/rejoso-biodiversity/refs/heads/main/Nguling_pas.jpg",
             indices: { H: 2.90, E: 0.70, R: 5.50, cat: "Sedang" },
             historyH: [2.9], historyE: [0.7], historyR: [5.5], chartLabels: ['2024'],
             floraStats: { total: 90, famili: 25, years:['2024'], values:[90], note:"" },
