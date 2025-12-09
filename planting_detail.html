@@ -7,49 +7,52 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&display=swap" rel="stylesheet">
+    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
-
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; }
-        .hero { background: linear-gradient(135deg, #1b5e20, #2e7d32); color: white; padding: 40px 0; text-align: center; margin-bottom: 30px; }
+        body { font-family: 'Montserrat', sans-serif; background-color: #f0f2f5; }
+        .hero-header { 
+            position: relative; background: url('hutan-bg.jpg') center/cover; height: 300px; 
+            display: flex; align-items: center; justify-content: center; color: white; 
+            margin-bottom: 30px; border-bottom: 5px solid #2e7d32;
+        }
+        .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); }
+        .hero-content { position: relative; z-index: 2; text-align: center; }
+        .logo-top { height: 50px; margin-bottom: 10px; }
+        
         .stat-box { background: white; padding: 20px; border-radius: 10px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .val-num { font-size: 2.5rem; font-weight: 800; margin: 10px 0; }
-        #miniMap { height: 400px; width: 100%; border-radius: 10px; z-index: 1; }
-        .gallery-img { width: 100%; height: 200px; object-fit: cover; border-radius: 8px; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        #miniMap { height: 350px; width: 100%; border-radius: 10px; }
+        .gallery-img { width: 100%; height: 200px; object-fit: cover; border-radius: 8px; }
+        .card { border: none; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-radius: 10px; }
     </style>
 </head>
 <body>
-    <div class="hero">
-        <h1 class="fw-bold" id="pageTitle">Loading...</h1>
-        <p id="pageDesc">...</p>
-        <a href="planting.html" class="btn btn-outline-light mt-2"><i class="fas fa-arrow-left me-2"></i>Kembali</a>
+
+    <div class="hero-header">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <img src="logo-sk.png" class="logo-top" onerror="this.style.display='none'">
+            <h1 class="fw-bold display-5" id="pageTitle">Loading...</h1>
+            <p class="lead" id="pageDesc">...</p>
+            <a href="planting.html" class="btn btn-outline-light mt-2 rounded-pill px-4"><i class="fas fa-arrow-left me-2"></i>Kembali</a>
+        </div>
     </div>
 
-    <div class="container" style="margin-top: -50px;">
+    <div class="container" style="margin-top: -50px; position: relative; z-index: 10;">
         <div class="row mb-4">
-            <div class="col-md-4"><div class="stat-box"><h2 class="text-success fw-bold" id="valTrees">-</h2><small>Pohon</small></div></div>
-            <div class="col-md-4"><div class="stat-box"><h2 class="text-warning fw-bold" style="color:#5d4037!important" id="valRorak">-</h2><small>Rorak</small></div></div>
-            <div class="col-md-4"><div class="stat-box"><h2 class="text-primary fw-bold" id="valSumur">-</h2><small>Sumur</small></div></div>
+            <div class="col-md-4"><div class="stat-box" style="border-top:4px solid #43a047"><i class="fas fa-tree text-success fa-2x"></i><div class="val-num text-success" id="valTrees">-</div><small>Pohon Ditanam</small></div></div>
+            <div class="col-md-4"><div class="stat-box" style="border-top:4px solid #795548"><i class="fas fa-inbox text-warning fa-2x" style="color:#795548!important"></i><div class="val-num" style="color:#795548" id="valRorak">-</div><small>Rorak Terbangun</small></div></div>
+            <div class="col-md-4"><div class="stat-box" style="border-top:4px solid #039be5"><i class="fas fa-water text-primary fa-2x"></i><div class="val-num text-primary" id="valSumur">-</div><small>Sumur & Biopori</small></div></div>
         </div>
 
         <div class="row">
-            <div class="col-lg-7 mb-4">
-                <div class="card p-3 h-100 shadow-sm border-0">
-                    <h6 class="fw-bold text-success mb-3">Peta Sebaran</h6>
-                    <div id="miniMap"></div>
-                </div>
-            </div>
-            <div class="col-lg-5 mb-4">
-                <div class="card p-3 h-100 shadow-sm border-0">
-                    <h6 class="fw-bold text-success mb-3">Komposisi Tanaman</h6>
-                    <canvas id="spChart"></canvas>
-                    <ul id="spList" class="list-group list-group-flush mt-3 fw-normal small"></ul>
-                </div>
-            </div>
+            <div class="col-lg-7 mb-4"><div class="card p-3 h-100 fw-bold">Peta Sebaran<div id="miniMap" class="mt-2"></div></div></div>
+            <div class="col-lg-5 mb-4"><div class="card p-3 h-100 fw-bold">Komposisi Tanaman<canvas id="spChart" class="mt-2"></canvas><ul id="spList" class="list-group list-group-flush mt-3 fw-normal small"></ul></div></div>
         </div>
         
-        <div class="card p-3 mb-5 shadow-sm border-0">
+        <div class="card p-4 mb-5">
             <h6 class="fw-bold mb-3">Dokumentasi Lapangan</h6>
             <div class="row g-3" id="gallery"></div>
         </div>
@@ -66,29 +69,24 @@
             document.getElementById('pageDesc').innerText = data.location;
             document.getElementById('valTrees').innerText = data.stats.trees.toLocaleString();
             document.getElementById('valRorak').innerText = data.stats.rorak.toLocaleString();
-            document.getElementById('valSumur').innerText = data.stats.sumur.toLocaleString();
+            
+            let sumurText = data.stats.biopori > 0 ? `${data.stats.sumur} Sumur + ${data.stats.biopori} Biopori` : `${data.stats.sumur} Unit`;
+            document.getElementById('valSumur').innerText = sumurText;
 
             const map = L.map('miniMap').setView([-7.723, 112.932], 13);
             L.tileLayer('https://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}', { maxZoom: 20 }).addTo(map);
+            const icon = L.divIcon({html:'<div style="background:#2e7d32;width:12px;height:12px;border-radius:50%;border:2px solid white;"></div>'});
             
-            // Render Polygon (Jika Ada)
-            if(data.areaPolygon) {
-                const poly = L.polygon(data.areaPolygon, {
-                    color: '#f1c40f', fillColor: '#f1c40f', fillOpacity: 0.3, weight: 2
-                }).addTo(map);
-                map.fitBounds(poly.getBounds());
-            }
-
-            // Render Titik
-            const icon = L.divIcon({html:'<div style="background:#2e7d32;width:10px;height:10px;border-radius:50%;border:2px solid white;box-shadow:0 0 2px black;"></div>'});
             let bounds = [];
             data.points.forEach(pt => {
-                L.marker([pt[0], pt[1]], {icon: icon}).addTo(map).bindPopup(`<b>${pt[2]}</b>`);
+                L.marker([pt[0], pt[1]], {icon: icon}).addTo(map).bindPopup(pt[2]);
                 bounds.push([pt[0], pt[1]]);
             });
-            
-            // Jika tidak ada polygon, zoom ke titik
-            if(!data.areaPolygon && bounds.length > 0) {
+
+            if(data.areaPolygon) {
+                const poly = L.polygon(data.areaPolygon, { color: '#f1c40f', fillColor: '#f1c40f', fillOpacity: 0.3 }).addTo(map);
+                map.fitBounds(poly.getBounds());
+            } else if(bounds.length) {
                 map.fitBounds(bounds);
             }
 
@@ -96,17 +94,15 @@
             const vals = Object.values(data.species);
             new Chart(document.getElementById('spChart'), {
                 type: 'doughnut',
-                data: { labels: labels, datasets: [{data: vals, backgroundColor: ['#1b5e20','#2e7d32','#43a047','#66bb6a','#a5d6a7']}] },
-                options: { plugins: { legend: {position:'right', labels:{boxWidth:10}} } }
+                data: { labels: labels, datasets: [{data: vals, backgroundColor: ['#2e7d32','#43a047','#66bb6a','#81c784','#a5d6a7']}] },
+                options: { plugins: { legend: {position:'right'} } }
             });
 
             const list = document.getElementById('spList');
-            labels.forEach((l,i) => list.innerHTML += `<li class="list-group-item d-flex justify-content-between px-0">${l} <span class="fw-bold">${vals[i]}</span></li>`);
+            labels.forEach((l,i) => list.innerHTML += `<li class="list-group-item d-flex justify-content-between">${l} <span>${vals[i]}</span></li>`);
 
             const gal = document.getElementById('gallery');
-            data.photos.forEach(src => gal.innerHTML += `<div class="col-md-3"><img src="${src}" class="gallery-img"></div>`);
-        } else {
-            document.body.innerHTML = "<h1 class='text-center mt-5'>Data Tidak Ditemukan</h1>";
+            data.photos.forEach(src => gal.innerHTML += `<div class="col-md-3 col-6"><img src="${src}" class="gallery-img"></div>`);
         }
     </script>
 </body>
