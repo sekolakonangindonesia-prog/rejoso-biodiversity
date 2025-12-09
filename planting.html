@@ -5,84 +5,126 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sebaran Penanaman - SIS KEHATI</title>
     
+    <!-- CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <!-- JS Charts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 
     <style>
         body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; padding-bottom: 50px; }
-        .navbar-custom { background: linear-gradient(to right, #1b5e20, #2e7d32); padding: 15px 0; }
-        .btn-home { color: white; border: 1px solid rgba(255,255,255,0.3); border-radius: 50px; padding: 5px 15px; text-decoration: none; }
         
-        /* CARD STATS */
-        .stat-card { color: white; border-radius: 8px; padding: 15px; position: relative; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .stat-val { font-size: 2rem; font-weight: 800; }
-        .bg-tree { background: #2e7d32; } .bg-rorak { background: #5d4037; } .bg-sumur { background: #0277bd; }
+        /* HEADER */
+        .navbar-custom { background: linear-gradient(to right, #1b5e20, #2e7d32); padding: 15px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+        .btn-home { color: white; border: 1px solid rgba(255,255,255,0.3); border-radius: 50px; padding: 5px 15px; text-decoration: none; transition: 0.3s; }
+        .btn-home:hover { background: white; color: #1b5e20; }
 
-        /* LAYOUT */
-        .card-custom { border: none; border-radius: 8px; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 20px; height: 100%; }
-        .card-header-custom { background: white; padding: 15px; border-bottom: 1px solid #eee; font-weight: 700; color: #333; }
+        /* KARTU STATISTIK (WARNA KUAT) */
+        .stat-card {
+            color: white; border-radius: 8px; padding: 20px; position: relative; overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: transform 0.3s;
+            min-height: 140px;
+        }
+        .stat-card:hover { transform: translateY(-5px); }
+        .stat-header { font-weight: 700; font-size: 0.9rem; text-transform: uppercase; margin-bottom: 10px; opacity: 0.9; }
+        .stat-val { font-size: 2.8rem; font-weight: 800; line-height: 1; margin-bottom: 5px; }
+        .stat-sub { font-size: 0.8rem; opacity: 0.8; }
+        .stat-icon { position: absolute; right: 15px; bottom: 15px; font-size: 4rem; opacity: 0.15; }
         
-        #map { height: 500px; width: 100%; border-radius: 0 0 8px 8px; z-index: 1; }
-        .chart-container { position: relative; height: 220px; width: 100%; }
+        .bg-tree { background: #2e7d32; }
+        .bg-rorak { background: #5d4037; }
+        .bg-sumur { background: #0277bd; }
+
+        /* LAYOUT PETA & GRAFIK */
+        .card-custom { border: none; border-radius: 8px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px; height: 100%; }
+        .card-header-custom { background: white; padding: 15px 20px; border-bottom: 1px solid #eee; font-weight: 700; color: #333; font-size: 0.95rem; }
         
-        /* WATER BALANCE CARD */
-        .wb-card { background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); border: 2px dashed #2196f3; display: flex; align-items: center; justify-content: center; text-align: center; height: 100%; min-height: 250px; }
-        
-        .table-hover tbody tr:hover { background-color: #e8f5e9; cursor: pointer; }
-        .badge-pill { padding: 5px 10px; border-radius: 50px; font-size: 0.75rem; }
+        #map { height: 500px; width: 100%; z-index: 1; border-radius: 0 0 8px 8px; }
+        .chart-wrapper { position: relative; height: 200px; width: 100%; }
+        .wb-card { background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); border: 2px dashed #2196f3; display: flex; align-items: center; justify-content: center; text-align: center; height: 100%; min-height: 250px; border-radius: 8px; }
+
+        /* TABEL LIST */
+        .table-hover tbody tr { transition: 0.2s; }
+        .table-hover tbody tr:hover { background-color: #e8f5e9; cursor: pointer; transform: scale(1.005); }
+        .badge-pill { padding: 6px 12px; border-radius: 50px; font-weight: 600; font-size: 0.75rem; }
     </style>
 </head>
 <body>
 
+    <!-- NAVBAR -->
     <nav class="navbar navbar-custom sticky-top">
         <div class="container-fluid px-4">
             <div class="d-flex align-items-center">
                 <i class="fas fa-seedling fa-lg text-white me-3"></i>
                 <span class="text-white fw-bold fs-4">MONITORING PENANAMAN</span>
             </div>
-            <a href="index.html" class="btn-home"><i class="fas fa-arrow-left me-2"></i>Home</a>
+            <a href="index.html" class="btn-home"><i class="fas fa-arrow-left me-2"></i>Dashboard Utama</a>
         </div>
     </nav>
 
     <div class="container-fluid px-4 mt-4">
         
-        <!-- 1. STATISTIK HEADER -->
-        <div class="row mb-3">
-            <div class="col-md-4"><div class="stat-card bg-tree"><div class="stat-val" id="totalTrees">0</div><small>Total Pohon</small><i class="fas fa-tree fa-2x position-absolute end-0 bottom-0 m-3 opacity-25"></i></div></div>
-            <div class="col-md-4"><div class="stat-card bg-rorak"><div class="stat-val" id="totalRorak">0</div><small>Total Rorak</small><i class="fas fa-inbox fa-2x position-absolute end-0 bottom-0 m-3 opacity-25"></i></div></div>
-            <div class="col-md-4"><div class="stat-card bg-sumur"><div class="stat-val" id="totalSumur">0</div><small>Sumur & Biopori</small><i class="fas fa-water fa-2x position-absolute end-0 bottom-0 m-3 opacity-25"></i></div></div>
+        <!-- 1. STATISTIK GLOBAL (HEADER) -->
+        <div class="row mb-4">
+            <div class="col-md-4 mb-2">
+                <div class="stat-card bg-tree">
+                    <div class="stat-header">Total Pohon Ditanam</div>
+                    <div class="stat-val" id="totalTrees">0</div>
+                    <div class="stat-sub">Akumulasi 2021-2025</div>
+                    <i class="fas fa-tree stat-icon"></i>
+                </div>
+            </div>
+            <div class="col-md-4 mb-2">
+                <div class="stat-card bg-rorak">
+                    <div class="stat-header">Total Rorak Terbangun</div>
+                    <div class="stat-val" id="totalRorak">0</div>
+                    <div class="stat-sub">Unit Sipil Teknis</div>
+                    <i class="fas fa-inbox stat-icon"></i>
+                </div>
+            </div>
+            <div class="col-md-4 mb-2">
+                <div class="stat-card bg-sumur">
+                    <div class="stat-header">Total Sumur Resapan</div>
+                    <div class="stat-val" id="totalSumur">0</div>
+                    <div class="stat-sub">Unit Infiltrasi</div>
+                    <i class="fas fa-water stat-icon"></i>
+                </div>
+            </div>
         </div>
 
-        <!-- 2. PETA & GRAFIK POHON -->
-        <div class="row">
-            <!-- PETA (KIRI) -->
-            <div class="col-lg-8 mb-3">
+        <!-- 2. PETA (KIRI) & GRAFIK (KANAN) -->
+        <div class="row mb-4">
+            <!-- PETA BESAR -->
+            <div class="col-lg-8">
                 <div class="card card-custom">
-                    <div class="card-header-custom d-flex justify-content-between">
+                    <div class="card-header-custom d-flex justify-content-between align-items-center">
                         <span><i class="fas fa-map-marked-alt text-success me-2"></i> Peta Sebaran Titik Sampling</span>
-                        <span class="badge bg-warning text-dark">Data Sampling</span>
+                        <span class="badge bg-warning text-dark"><i class="fas fa-info-circle"></i> Data Sampling</span>
                     </div>
-                    <div class="card-body p-0"><div id="map"></div></div>
+                    <div class="card-body p-0">
+                        <div id="map"></div>
+                    </div>
                 </div>
             </div>
 
-            <!-- KANAN: GRAFIK POHON & KOMPOSISI -->
-            <div class="col-lg-4 mb-3">
-                <!-- Grafik Batang Pohon -->
+            <!-- DUA GRAFIK -->
+            <div class="col-lg-4">
+                <!-- Grafik Batang -->
                 <div class="card card-custom mb-3" style="height: auto;">
-                    <div class="card-header-custom"><i class="fas fa-chart-bar text-success me-2"></i> Tren Penanaman Pohon</div>
+                    <div class="card-header-custom"><i class="fas fa-chart-bar text-primary me-2"></i> Tren Penanaman Pohon</div>
                     <div class="card-body">
-                        <div class="chart-container"><canvas id="chartPohon"></canvas></div>
+                        <div class="chart-wrapper"><canvas id="barChart"></canvas></div>
                     </div>
                 </div>
-                <!-- Grafik Pie Komposisi -->
+
+                <!-- Grafik Lingkaran -->
                 <div class="card card-custom" style="height: auto;">
                     <div class="card-header-custom"><i class="fas fa-chart-pie text-success me-2"></i> Komposisi Jenis (Total)</div>
                     <div class="card-body">
-                        <div class="chart-container"><canvas id="chartPie"></canvas></div>
+                        <div class="chart-wrapper"><canvas id="pieChart"></canvas></div>
                     </div>
                 </div>
             </div>
@@ -95,7 +137,7 @@
                 <div class="card card-custom">
                     <div class="card-header-custom"><i class="fas fa-inbox text-warning me-2" style="color:#5d4037!important"></i> Pembuatan Rorak</div>
                     <div class="card-body">
-                        <div class="chart-container"><canvas id="chartRorak"></canvas></div>
+                        <div class="chart-wrapper"><canvas id="chartRorak"></canvas></div>
                     </div>
                 </div>
             </div>
@@ -105,7 +147,7 @@
                 <div class="card card-custom">
                     <div class="card-header-custom"><i class="fas fa-water text-primary me-2"></i> Sumur Resapan & Biopori</div>
                     <div class="card-body">
-                        <div class="chart-container"><canvas id="chartSumur"></canvas></div>
+                        <div class="chart-wrapper"><canvas id="chartSumur"></canvas></div>
                     </div>
                 </div>
             </div>
@@ -128,113 +170,138 @@
             </div>
         </div>
 
-        <!-- 4. LIST PROGRAM -->
-        <div class="card card-custom">
-            <div class="card-header-custom"><i class="fas fa-list text-dark me-2"></i> Riwayat Program Tahunan</div>
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light"><tr><th class="ps-4">Tahun</th><th>Nama Program / Lokasi</th><th>Pohon</th><th>Rorak</th><th>Sipil Teknis Lain</th><th>Aksi</th></tr></thead>
-                    <tbody id="tableBody"></tbody>
-                </table>
+        <!-- 4. TABEL LIST TAHUNAN (BAWAH) -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card card-custom">
+                    <div class="card-header-custom"><i class="fas fa-list text-dark me-2"></i> Riwayat Program Tahunan</div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="ps-4">Tahun</th>
+                                    <th>Nama Program / Lokasi</th>
+                                    <th>Pohon</th>
+                                    <th>Rorak</th>
+                                    <th>Sipil Teknis Lain</th>
+                                    <th class="text-end pe-4">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableBody">
+                                <!-- Data JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
+        
     </div>
 
+    <!-- LOAD DATABASE & LIB -->
     <script src="database_planting.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
     <script>
         Chart.register(ChartDataLabels);
 
-        // --- 1. PREPARE DATA ---
-        let years = [], treeData = [], rorakData = [], sumurData = [], bioporiData = [];
+        // --- 1. PROSES DATA AGREGAT ---
+        let totalT = 0, totalR = 0, totalS = 0;
+        let years = [], dataTrees = [], dataRorak = [], dataSumur = [], dataBiopori = [];
         let speciesTotal = {};
-        let tTree = 0, tRorak = 0, tSumurBiopori = 0;
 
-        // Sort tahun ascending (2021 -> 2024)
-        const sortedKeys = Object.keys(db_planting.years).sort(); 
-
+        // Loop Database
+        const sortedKeys = Object.keys(db_planting.years).sort(); // Sort 2021 -> 2025
+        
         sortedKeys.forEach(key => {
             const item = db_planting.years[key];
+            
+            // Statistik
+            totalT += item.stats.trees;
+            totalR += item.stats.rorak;
+            totalS += (item.stats.sumur + (item.stats.biopori || 0));
+
+            // Grafik Data
             years.push(item.year);
-            treeData.push(item.stats.trees);
-            rorakData.push(item.stats.rorak);
-            sumurData.push(item.stats.sumur);
-            bioporiData.push(item.stats.biopori || 0); // Handle jika undefined
+            dataTrees.push(item.stats.trees);
+            dataRorak.push(item.stats.rorak);
+            dataSumur.push(item.stats.sumur);
+            dataBiopori.push(item.stats.biopori || 0);
 
-            tTree += item.stats.trees;
-            tRorak += item.stats.rorak;
-            tSumurBiopori += (item.stats.sumur + (item.stats.biopori || 0));
-
-            // Hitung Spesies
+            // Grafik Pie
             for (const [sp, val] of Object.entries(item.species)) {
                 speciesTotal[sp] = (speciesTotal[sp] || 0) + val;
             }
         });
 
-        // Update Header Stats
-        document.getElementById('totalTrees').innerText = tTree.toLocaleString();
-        document.getElementById('totalRorak').innerText = tRorak.toLocaleString();
-        document.getElementById('totalSumur').innerText = tSumurBiopori.toLocaleString();
+        document.getElementById('totalTrees').innerText = totalT.toLocaleString().replace(/,/g, ".");
+        document.getElementById('totalRorak').innerText = totalR.toLocaleString().replace(/,/g, ".");
+        document.getElementById('totalSumur').innerText = totalS.toLocaleString().replace(/,/g, ".");
 
-        // --- 2. MAP ---
+        // --- 2. RENDER PETA ---
         var map = L.map('map').setView([-7.760, 112.920], 12);
         L.tileLayer('https://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}', { maxZoom: 20 }).addTo(map);
-        const iconTree = L.divIcon({html:'<div style="background:#2e7d32;width:10px;height:10px;border-radius:50%;border:1px solid white;"></div>'});
+
+        const iconTree = L.divIcon({html: '<div style="background:#2e7d32;width:10px;height:10px;border-radius:50%;border:1px solid white;"></div>'});
 
         Object.values(db_planting.years).forEach(item => {
+            // Render TITIK
             item.points.forEach(pt => {
                 L.marker([pt[0], pt[1]], {icon: iconTree}).addTo(map).bindPopup(`<b>${item.year}</b><br>${item.location}`);
             });
+
+            // RENDER POLYGON (JIKA ADA - INI YANG BARU)
+            if (item.areaPolygon) {
+                L.polygon(item.areaPolygon, {
+                    color: '#f1c40f', fillColor: '#f1c40f', fillOpacity: 0.3, weight: 2
+                }).bindPopup(`<b>Area Konservasi ${item.year}</b>`).addTo(map);
+            }
         });
 
-        // --- 3. CHARTS ---
-        
-        // A. Grafik Pohon
-        new Chart(document.getElementById('chartPohon'), {
+        // --- 3. RENDER GRAFIK ---
+        // A. Grafik Batang Pohon
+        new Chart(document.getElementById('barChart'), {
             type: 'bar',
-            data: { labels: years, datasets: [{ label: 'Pohon', data: treeData, backgroundColor: '#2e7d32', borderRadius:4 }] },
-            options: { maintainAspectRatio: false, plugins: { legend:{display:false}, datalabels:{color:'white', anchor:'end', align:'top', color:'#333'} }, scales:{y:{beginAtZero:true}} }
+            data: { labels: years, datasets: [{ label: 'Pohon', data: dataTrees, backgroundColor: '#2e7d32', borderRadius:4 }] },
+            options: { maintainAspectRatio: false, plugins: { legend: {display:false}, datalabels: {color:'#333', anchor:'end', align:'top', font:{size:9}} }, scales: { y: {beginAtZero: true} } }
         });
 
-        // B. Grafik Pie (Top 5 Spesies + Lainnya)
-        // Sort spesies terbanyak
+        // B. Grafik Pie (Top 5)
         const sortedSpecies = Object.entries(speciesTotal).sort((a,b) => b[1] - a[1]);
         const topSpecies = sortedSpecies.slice(0, 5);
         const otherCount = sortedSpecies.slice(5).reduce((acc, curr) => acc + curr[1], 0);
-        
         let pieLabels = topSpecies.map(x => x[0]);
         let pieData = topSpecies.map(x => x[1]);
         if(otherCount > 0) { pieLabels.push("Lainnya"); pieData.push(otherCount); }
 
-        new Chart(document.getElementById('chartPie'), {
+        new Chart(document.getElementById('pieChart'), {
             type: 'doughnut',
             data: { labels: pieLabels, datasets: [{ data: pieData, backgroundColor: ['#1b5e20', '#2e7d32', '#43a047', '#66bb6a', '#81c784', '#b2dfdb'] }] },
-            options: { maintainAspectRatio: false, plugins: { legend:{position:'right', labels:{boxWidth:10}}, datalabels:{display:false} } }
+            options: { maintainAspectRatio: false, plugins: { legend: {position:'right', labels:{boxWidth:10}}, datalabels: {display:false} } }
         });
 
         // C. Grafik Rorak
         new Chart(document.getElementById('chartRorak'), {
             type: 'bar',
-            data: { labels: years, datasets: [{ label: 'Rorak', data: rorakData, backgroundColor: '#795548', borderRadius:4 }] },
+            data: { labels: years, datasets: [{ label: 'Rorak', data: dataRorak, backgroundColor: '#795548', borderRadius:4 }] },
             options: { maintainAspectRatio: false, plugins: { legend:{display:false}, datalabels:{anchor:'end', align:'top', color:'#333'} } }
         });
 
-        // D. Grafik Sumur & Biopori (Stacked/Grouped)
+        // D. Grafik Sumur & Biopori (Stacked)
         new Chart(document.getElementById('chartSumur'), {
             type: 'bar',
             data: { 
                 labels: years, 
                 datasets: [
-                    { label: 'Sumur Resapan', data: sumurData, backgroundColor: '#0277bd', borderRadius:4 },
+                    { label: 'Sumur', data: sumurData, backgroundColor: '#0277bd', borderRadius:4 },
                     { label: 'Biopori', data: bioporiData, backgroundColor: '#4fc3f7', borderRadius:4 }
                 ] 
             },
             options: { maintainAspectRatio: false, plugins: { datalabels:{display:false}, legend:{position:'bottom'} }, scales:{x:{stacked:true}, y:{stacked:true}} }
         });
 
-        // --- 4. TABLE ---
+        // --- 4. RENDER TABEL ---
         const tbody = document.getElementById('tableBody');
-        // Reverse order for table (Newest first)
         sortedKeys.reverse().forEach(key => {
             const item = db_planting.years[key];
             let sipilLain = item.stats.biopori ? `Sumur: ${item.stats.sumur}, Biopori: ${item.stats.biopori}` : `Sumur: ${item.stats.sumur}`;
@@ -243,13 +310,12 @@
             <tr onclick="window.location.href='planting_detail.html?id=${key}'">
                 <td class="ps-4 fw-bold">${item.year}</td>
                 <td>${item.location}</td>
-                <td><span class="badge badge-pill bg-success">${item.stats.trees.toLocaleString()}</span></td>
+                <td><span class="badge badge-pill bg-success">${item.stats.trees.toLocaleString().replace(/,/g, ".")}</span></td>
                 <td><span class="badge badge-pill text-white" style="background:#795548">${item.stats.rorak}</span></td>
                 <td><span class="badge badge-pill bg-info text-dark">${sipilLain}</span></td>
                 <td><button class="btn btn-sm btn-outline-secondary rounded-pill px-3">Detail</button></td>
             </tr>`;
         });
-
     </script>
 </body>
 </html>
