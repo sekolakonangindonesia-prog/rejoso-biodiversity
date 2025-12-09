@@ -18,16 +18,15 @@
         /* --- 1. HERO SECTION (TAMPILAN DEPAN) --- */
         .hero {
             position: relative;
-            /* Ganti URL ini dengan foto hutan asli Anda nanti */
-            background: url('https://raw.githubusercontent.com/sekolakonangindonesia-prog/rejoso-biodiversity/refs/heads/main/hutan-bg.jpg') no-repeat center center/cover;
-            height: 100vh; /* Full Layar */
+            /* Pastikan file hutan-bg.jpg sudah diupload ke GitHub */
+            background: url('hutan-bg.jpg') no-repeat center center/cover;
+            height: 100vh;
             display: flex;
             align-items: center;
             color: white;
             overflow: hidden;
         }
         
-        /* Lapisan Gelap supaya tulisan terbaca */
         .hero::before {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.8));
@@ -36,9 +35,8 @@
         .hero-content { position: relative; z-index: 2; padding-top: 80px; }
         
         .logo-area { position: absolute; top: 30px; left: 5%; z-index: 10; display: flex; align-items: center; }
-        .logo-img { height: 60px; margin-right: 15px; background: white; padding: 5px; border-radius: 50%; } /* Placeholder Logo */
-        .logo-text { font-weight: 800; font-size: 1.5rem; letter-spacing: 2px; text-transform: uppercase; color: white; text-shadow: 2px 2px 4px black; }
-
+        .logo-img { height: 60px; margin-right: 15px; } /* Pastikan logo-sk.png background transparan */
+        
         .main-title { font-size: 3.5rem; font-weight: 800; line-height: 1.1; margin-bottom: 20px; text-shadow: 2px 2px 10px rgba(0,0,0,0.5); }
         .sub-points { font-size: 1.2rem; border-left: 5px solid var(--accent); padding-left: 20px; margin-top: 30px; }
         .sub-points li { list-style: none; margin-bottom: 10px; display: flex; align-items: center; }
@@ -47,11 +45,11 @@
         .btn-scroll {
             margin-top: 40px; padding: 15px 40px; font-size: 1.1rem; font-weight: bold;
             background: var(--accent); color: var(--dark); border: none; border-radius: 50px;
-            transition: 0.3s; text-transform: uppercase;
+            transition: 0.3s; text-transform: uppercase; text-decoration: none; display: inline-block; cursor: pointer;
         }
-        .btn-scroll:hover { background: white; transform: translateY(-3px); box-shadow: 0 5px 15px rgba(255,255,255,0.4); }
+        .btn-scroll:hover { background: white; transform: translateY(-3px); box-shadow: 0 5px 15px rgba(255,255,255,0.4); color: var(--primary); }
 
-        /* --- 2. MENU NAVIGASI (MASA DEPAN) --- */
+        /* --- 2. MENU NAVIGASI --- */
         .menu-section { padding: 60px 0; background: white; text-align: center; }
         .menu-card {
             background: #f8f9fa; border: 1px solid #eee; border-radius: 15px; padding: 30px;
@@ -60,9 +58,9 @@
         .menu-card:hover { transform: translateY(-10px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); border-bottom: 5px solid var(--primary); }
         .menu-icon { font-size: 3rem; color: var(--primary); margin-bottom: 20px; }
         .menu-title { font-weight: 700; font-size: 1.2rem; margin-bottom: 10px; }
-        .menu-desc { font-size: 0.9rem; color: #666; }
+        .menu-desc { font-size: 0.9rem; color: #666; margin-bottom: 20px; }
 
-        /* --- 3. DASHBOARD STYLES (YANG LAMA) --- */
+        /* --- 3. DASHBOARD STYLES --- */
         #dashboard-area { padding: 40px 0; background: #e8f5e9; }
         .card-custom { border: none; border-radius: 10px; background: white; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
         .card-header-custom { background: white; padding: 15px 20px; border-bottom: 1px solid #eee; font-weight: 700; color: #1b5e20; }
@@ -73,7 +71,6 @@
         .bg-good { background-color: #e3f2fd; color: #1565c0; border: 1px solid #1565c0; }
         .bg-warning-custom { background-color: #fff3e0; color: #ef6c00; border: 1px solid #ef6c00; }
         
-        /* Responsive Text */
         @media (max-width: 768px) { .main-title { font-size: 2.5rem; } .logo-text { font-size: 1.1rem; } }
     </style>
 </head>
@@ -83,9 +80,9 @@
     <div class="hero">
         <!-- LOGO AREA -->
         <div class="logo-area">
-            <!-- Ganti src dengan logo asli Sekola Konang nanti -->
-            <img src="https://raw.githubusercontent.com/sekolakonangindonesia-prog/rejoso-biodiversity/refs/heads/main/logo-sk.png" class="logo-img" alt="Logo">
-            <div class="logo-text">SEKOLA KONANG<br><span style="font-size:0.8rem; font-weight:400; opacity:0.9;">INDONESIA</span></div>
+            <!-- Pastikan file logo-sk.png sudah diupload -->
+            <img src="logo-sk.png" class="logo-img" alt="Logo" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2913/2913465.png'">
+            <div class="text-white fw-bold ms-2" style="line-height: 1.2;">SEKOLA KONANG<br><span style="font-weight:400; font-size:0.9rem;">INDONESIA</span></div>
         </div>
 
         <div class="container hero-content">
@@ -94,7 +91,6 @@
                     <h4 style="color: var(--accent); letter-spacing: 2px; font-weight:bold;">MONITORING & KONSERVASI</h4>
                     <h1 class="main-title">HUTAN REJOSO,<br>PENYANGGA KEHIDUPAN</h1>
                     
-                    <!-- Poin-poin dari gambar Anda -->
                     <ul class="sub-points">
                         <li><i class="fas fa-paw"></i> Habitat Satwa Liar (Wildlife)</li>
                         <li><i class="fas fa-water"></i> Sumber Daya Air & Pangan</li>
@@ -107,7 +103,7 @@
         </div>
     </div>
 
-    <!-- 2. MENU UTAMA (INTEGRASI MASA DEPAN) -->
+    <!-- 2. MENU UTAMA -->
     <div id="menu-area" class="menu-section">
         <div class="container">
             <div class="text-center mb-5">
@@ -116,41 +112,40 @@
             </div>
             
             <div class="row g-4">
-                <!-- Card 1: KEHATI (Aktif) -->
+                <!-- Card 1: KEHATI (Link ke Bawah) -->
                 <div class="col-md-4">
                     <div class="menu-card" onclick="document.getElementById('dashboard-area').scrollIntoView({behavior: 'smooth'})">
                         <i class="fas fa-leaf menu-icon"></i>
                         <h3 class="menu-title">Monitoring Kehati</h3>
-                        <p class="menu-desc">Data indeks keanekaragaman hayati (H', E, R), sebaran flora, dan monitoring satwa (burung/kupu-kupu).</p>
+                        <p class="menu-desc">Data indeks keanekaragaman hayati (H', E, R), sebaran flora, dan monitoring satwa.</p>
+                        <span class="badge bg-success">AKTIF - SCROLL KE BAWAH</span>
+                    </div>
+                </div>
+
+                <!-- Card 2: PENANAMAN (Link ke Halaman Baru) -->
+                <div class="col-md-4">
+                    <div class="menu-card" onclick="window.location.href='planting.html'">
+                        <i class="fas fa-tree menu-icon" style="color: #ef6c00;"></i>
+                        <h3 class="menu-title">Sebaran Penanaman</h3>
+                        <p class="menu-desc">Peta lokasi penanaman, jumlah pohon, data tutupan lahan, dan progres pertumbuhan.</p>
                         <span class="badge bg-success">AKTIF SEKARANG</span>
                     </div>
                 </div>
 
-                <!-- Card 2: Penanaman (Future) -->
+                <!-- Card 3: KARBON (Coming Soon) -->
                 <div class="col-md-4">
-                    <div class="menu-card" onclick="alert('Modul Peta Sebaran Tanaman akan segera hadir!')">
-                        <i class="fas fa-tree menu-icon" style="color: #ef6c00;"></i>
-                        <h3 class="menu-title">Sebaran Penanaman</h3>
-                        <p class="menu-desc">Peta lokasi penanaman, jumlah pohon, data tutupan lahan, dan progres pertumbuhan.</p>
+                    <div class="menu-card" onclick="alert('Modul Hitungan Karbon akan segera hadir!')">
+                        <i class="fas fa-smog menu-icon" style="color: #0277bd;"></i>
+                        <h3 class="menu-title">Serapan Karbon</h3>
+                        <p class="menu-desc">Kalkulasi stok karbon, PJLH, dan kontribusi terhadap perubahan iklim.</p>
                         <span class="badge bg-secondary">SEGERA HADIR</span>
                     </div>
                 </div>
-
-                <!-- Card 3: Karbon (Future) -->
-                <div class="col-md-4">
-                    <div class="menu-card" onclick="window.location.href='planting.html'">
-                    <i class="fas fa-tree menu-icon" style="color: #ef6c00;"></i>
-                    <h3 class="menu-title">Sebaran Penanaman</h3>
-                    <p class="menu-desc">Peta lokasi penanaman, jumlah pohon, data tutupan lahan, dan progres pertumbuhan.</p>
-                    <!-- Ubah Badge jadi Hijau -->
-                    <span class="badge bg-success">AKTIF SEKARANG</span>
-                </div>
-            </div>
             </div>
         </div>
     </div>
 
-    <!-- 3. DASHBOARD AREA (PETA YANG SUDAH KITA BUAT) -->
+    <!-- 3. DASHBOARD AREA (KEHATI) -->
     <div id="dashboard-area">
         <div class="container-fluid px-4">
             <div class="row mb-3">
@@ -199,7 +194,7 @@
         <small>&copy; 2025 Yayasan Sekola Konang Indonesia. All Rights Reserved.</small>
     </footer>
 
-    <!-- SCRIPT (SAMA SEPERTI SEBELUMNYA) -->
+    <!-- SCRIPT -->
     <script src="database.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
@@ -207,26 +202,28 @@
         L.control.zoom({ position: 'topright' }).addTo(map);
         L.tileLayer('https://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}', { maxZoom: 20 }).addTo(map);
 
-        L.geoJSON(db_kehati.polygons, {
-            style: function(f) { return { color: f.properties.color, fillColor: f.properties.color, fillOpacity: 0.5, weight: 3 }; },
-            onEachFeature: function(f, l) { l.bindPopup(`<b>${f.properties.name}</b><br><a href="detail.html?id=${f.properties.id_lokasi}">Lihat Detail</a>`); }
-        }).addTo(map);
+        if(typeof db_kehati !== 'undefined') {
+            L.geoJSON(db_kehati.polygons, {
+                style: function(f) { return { color: f.properties.color, fillColor: f.properties.color, fillOpacity: 0.5, weight: 3 }; },
+                onEachFeature: function(f, l) { l.bindPopup(`<b>${f.properties.name}</b><br><a href="detail.html?id=${f.properties.id_lokasi}">Lihat Detail</a>`); }
+            }).addTo(map);
 
-        const tableBody = document.getElementById('tableBody');
-        const locs = db_kehati.locations;
+            const tableBody = document.getElementById('tableBody');
+            const locs = db_kehati.locations;
 
-        for (const [key, loc] of Object.entries(locs)) {
-            let badgeClass = loc.indices?.H > 3 ? 'bg-excellent' : (loc.indices?.H > 1.5 ? 'bg-good' : 'bg-warning-custom');
-            let markerColor = loc.indices?.H > 3 ? 'green' : (loc.indices?.H > 1.5 ? 'blue' : 'orange');
+            for (const [key, loc] of Object.entries(locs)) {
+                let badgeClass = loc.indices?.H > 3 ? 'bg-excellent' : (loc.indices?.H > 1.5 ? 'bg-good' : 'bg-warning-custom');
+                let markerColor = loc.indices?.H > 3 ? 'green' : (loc.indices?.H > 1.5 ? 'blue' : 'orange');
 
-            if (!loc.hasPolygon) {
-                const circleIcon = L.divIcon({ className: 'custom-pin', html: `<div style="background-color:${markerColor}; width:14px; height:14px; border:2px solid white; border-radius:50%; box-shadow:0 0 5px black;"></div>`, iconSize: [14, 14] });
-                L.marker([loc.lat, loc.lng], {icon: circleIcon}).addTo(map)
-                    .bindPopup(`<b>${loc.name}</b><br><a href="detail.html?id=${key}" style="font-weight:bold; color:${markerColor}">Lihat Detail</a>`);
+                if (!loc.hasPolygon) {
+                    const circleIcon = L.divIcon({ className: 'custom-pin', html: `<div style="background-color:${markerColor}; width:14px; height:14px; border:2px solid white; border-radius:50%; box-shadow:0 0 5px black;"></div>`, iconSize: [14, 14] });
+                    L.marker([loc.lat, loc.lng], {icon: circleIcon}).addTo(map)
+                        .bindPopup(`<b>${loc.name}</b><br><a href="detail.html?id=${key}" style="font-weight:bold; color:${markerColor}">Lihat Detail</a>`);
+                }
+
+                let row = `<tr onclick="window.location.href='detail.html?id=${key}'"><td class="ps-4 fw-bold text-dark">${loc.name}</td><td>${loc.year}</td><td><strong>${loc.indices?.H || '-'}</strong></td><td><span class="badge-status ${badgeClass}">${loc.status}</span></td><td><button class="btn btn-sm btn-outline-secondary py-0">Detail</button></td></tr>`;
+                tableBody.innerHTML += row;
             }
-
-            let row = `<tr onclick="window.location.href='detail.html?id=${key}'"><td class="ps-4 fw-bold text-dark">${loc.name}</td><td>${loc.year}</td><td><strong>${loc.indices?.H || '-'}</strong></td><td><span class="badge-status ${badgeClass}">${loc.status}</span></td><td><button class="btn btn-sm btn-outline-secondary py-0">Detail</button></td></tr>`;
-            tableBody.innerHTML += row;
         }
     </script>
 </body>
