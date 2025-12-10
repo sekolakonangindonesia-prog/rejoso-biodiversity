@@ -76,7 +76,7 @@
             <div class="col-md-4 mb-3"><div class="card card-custom"><div class="card-header-custom"><i class="fas fa-balance-scale text-info me-2"></i> Water Balance</div><div class="card-body p-2"><div class="wb-card"><div><i class="fas fa-calculator fa-3x text-primary mb-3"></i><h5 class="fw-bold text-primary">Kalkulasi Neraca Air</h5><p class="small text-muted px-3">Sedang dalam proses penghitungan tim ahli.</p><span class="badge bg-secondary">Dalam Pengembangan</span></div></div></div></div></div>
         </div>
 
-        <!-- TABEL LIST (YANG TADI HILANG) -->
+        <!-- TABEL LIST (YANG TADI HILANG KARENA ERROR JS DI ATASNYA) -->
         <div class="card card-custom">
             <div class="card-header-custom"><i class="fas fa-list text-dark me-2"></i> Riwayat Program Tahunan</div>
             <div class="table-responsive">
@@ -105,18 +105,16 @@
             
             totalT += item.stats.trees;
             totalR += item.stats.rorak;
-            // Handle undefined biopori
+            
+            // Perbaikan Logika Biopori agar tidak NaN
             let b = item.stats.biopori || 0;
-            totalS += (item.stats.sumur + b);
+            let s = item.stats.sumur || 0;
+            totalS += (s + b);
 
             years.push(item.year);
             dataTrees.push(item.stats.trees);
-            
-            // LOGIKA FILTER RORAK: Jika tahun 2025, masukkan null atau 0 agar tidak muncul di grafik
-            // Tapi karena di database saya sudah set 0, kita push langsung
             dataRorak.push(item.stats.rorak);
-            
-            dataSumur.push(item.stats.sumur);
+            dataSumur.push(s);
             dataBiopori.push(b);
 
             for (const [sp, val] of Object.entries(item.species)) {
@@ -136,8 +134,7 @@
 
         const iconTree = L.divIcon({html: '<div style="background:#2e7d32;width:10px;height:10px;border-radius:50%;border:1px solid white;"></div>'});
 
-        // RENDER POLYGON & POINT
-        if(db_planting.polygons && db_planting.polygons.features) {
+        if(typeof db_planting.polygons !== 'undefined' && db_planting.polygons.features) {
             L.geoJSON(db_planting.polygons, {
                 style: function(f) { return { color: f.properties.color || '#f1c40f', fillColor: f.properties.color || '#f1c40f', fillOpacity: 0.3, weight: 2 }; },
                 onEachFeature: function(f, l) { l.bindPopup(`<b>${f.properties.name}</b>`); }
@@ -145,10 +142,11 @@
         }
 
         Object.values(db_planting.years).forEach(item => {
-            item.points.forEach(pt => {
-                L.marker([pt[0], pt[1]], {icon: iconTree}).addTo(map).bindPopup(`<b>${item.year}</b><br>${item.location}`);
-            });
-            // Manual Polygon (Data 2021)
+            if(item.points){
+                item.points.forEach(pt => {
+                    L.marker([pt[0], pt[1]], {icon: iconTree}).addTo(map).bindPopup(`<b>${item.year}</b><br>${item.location}`);
+                });
+            }
             if (item.areaPolygon) {
                 L.polygon(item.areaPolygon, { color: '#f1c40f', fillColor: '#f1c40f', fillOpacity: 0.3, weight: 2 }).bindPopup(`<b>Area Konservasi ${item.year}</b>`).addTo(map);
             }
@@ -175,10 +173,9 @@
             options: { maintainAspectRatio: false, plugins: { legend: {position:'right', labels:{boxWidth:10}}, datalabels: {display:false} } }
         });
 
-        // GRAFIK RORAK (FILTER TAHUN 2025)
-        // Kita buat array baru khusus Rorak yang tidak menyertakan 2025
-        let rorakYears = years.slice(0, -1); // Hapus elemen terakhir (2025)
-        let rorakValues = dataRorak.slice(0, -1); // Hapus nilai terakhir (0)
+        // GRAFIK RORAK (HILANGKAN TAHUN TERAKHIR/2025 JIKA DATA 0 AGAR RAPI)
+        let rorakYears = years.slice(0, -1); 
+        let rorakValues = dataRorak.slice(0, -1); 
         
         new Chart(document.getElementById('chartRorak'), {
             type: 'bar',
@@ -186,23 +183,24 @@
             options: { maintainAspectRatio: false, plugins: { legend:{display:false}, datalabels:{anchor:'end', align:'top', color:'#333'} } }
         });
 
-        // GRAFIK SUMUR & BIOPORI
+        // GRAFIK SUMUR & BIOPORI (PERBAIKAN VARIABEL DI SINI)
         new Chart(document.getElementById('chartSumur'), {
             type: 'bar',
             data: { 
                 labels: years, 
                 datasets: [
-                    { label: 'Sumur Resapan', data: sumurData, backgroundColor: '#0277bd', borderRadius:4 },
-                    { label: 'Biopori', data: bioporiData, backgroundColor: '#4fc3f7', borderRadius:4 } // Biru Muda
+                    { label: 'Sumur Resapan', data: dataSumur, backgroundColor: '#0277bd', borderRadius:4 }, // SUDAH DIPERBAIKI (sebelumnya sumurData)
+                    { label: 'Biopori', data: dataBiopori, backgroundColor: '#4fc3f7', borderRadius:4 } // SUDAH DIPERBAIKI (sebelumnya bioporiData)
                     ]
          },
             options: { maintainAspectRatio: false, plugins: { datalabels:{display:false}, legend:{position:'bottom'} }, scales:{x:{stacked:true}, y:{stacked:true}} }
         });
 
-        // TABLE (PASTI MUNCUL SEKARANG)
+        // TABLE
         const tbody = document.getElementById('tableBody');
         sortedKeys.reverse().forEach(key => {
             const item = db_planting.years[key];
+            // Format tampilan teks sumur & biopori
             let sipilLain = item.stats.biopori ? `Sumur: ${item.stats.sumur}, Biopori: ${item.stats.biopori}` : `Sumur: ${item.stats.sumur}`;
             
              tbody.innerHTML += `
@@ -215,9 +213,6 @@
                 <td><button class="btn btn-sm btn-outline-secondary rounded-pill px-3">Detail</button></td>
             </tr>`;
         });
-    </script>
-</body>
-</html>
     </script>
 </body>
 </html>
