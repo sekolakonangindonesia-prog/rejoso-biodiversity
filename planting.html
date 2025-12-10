@@ -191,11 +191,9 @@
             type: 'bar',
             data: { 
                 labels: years, 
-                datasets: [
-                    { label: 'Sumur Resapan', data: sumurData, backgroundColor: '#0277bd', borderRadius:4 },
+                datasets: { label: 'Sumur Resapan', data: sumurData, backgroundColor: '#0277bd', borderRadius:4 },
                     { label: 'Biopori', data: bioporiData, backgroundColor: '#4fc3f7', borderRadius:4 } // Biru Muda
-                ] 
-            },
+         }),
             options: { maintainAspectRatio: false, plugins: { datalabels:{display:false}, legend:{position:'bottom'} }, scales:{x:{stacked:true}, y:{stacked:true}} }
         });
 
