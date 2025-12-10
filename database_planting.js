@@ -1,84 +1,100 @@
 const db_planting = {
-    // 1. DATA POLYGON (UNTUK PETA DASHBOARD)
-    // Format GeoJSON Wajib: [Longitude (112), Latitude (-7)]
-    polygons: {
-        "type": "FeatureCollection",
-        "features": [
-            // TAMAN KEHATI
-            { 
-                "type": "Feature", "properties": { "name": "Taman Kehati", "id": "taman_kehati", "color": "#29b6f6" },
-                "geometry": { "type": "Polygon", "coordinates": [[ [112.933906, -7.722551], [112.934018, -7.722334], [112.934140, -7.722282], [112.934357, -7.722215], [112.933150, -7.721930], [112.933316, -7.722165], [112.933620, -7.722398], [112.933796, -7.722477], [112.933906, -7.722551] ]] }
-            },
-            // TEGAL PAK ANDARI (DATA JSON ASLI ANDA)
-            {
-                "type": "Feature", "properties": { "name": "Tegal Pak Andari", "id": "tanam_2024", "color": "#8e44ad" },
-                "geometry": { "type": "Polygon", "coordinates": [[ 
-                    [112.905288, -7.815048], [112.905335, -7.814989], [112.905334, -7.814978], [112.905318, -7.814965], 
-                    [112.905303, -7.814954], [112.905283, -7.814951], [112.905259, -7.814961], [112.905225, -7.814953], 
-                    [112.905206, -7.814945], [112.905188, -7.814937], [112.905167, -7.814931], [112.905144, -7.814927], 
-                    [112.905119, -7.814933], [112.905104, -7.814932], [112.905082, -7.814928], [112.905058, -7.814940], 
-                    [112.905042, -7.814922], [112.905028, -7.814915], [112.905022, -7.814930], [112.905008, -7.814942], 
-                    [112.904990, -7.814947], [112.904955, -7.814936], [112.904717, -7.815100], [112.904479, -7.815462], 
-                    [112.904588, -7.815972], [112.904767, -7.816181], [112.905305, -7.816111], [112.905295, -7.815588], 
-                    [112.905251, -7.815100], [112.905280, -7.815111], [112.905270, -7.815075], [112.905288, -7.815048]
-                ]] }
-            }
-        ]
-    },
-
-    // 2. DATA TAHUNAN (STATISTIK)
     years: {
         "tanam_2025": {
             id: "tanam_2025",
             year: 2025,
-            location: "Pemeliharaan & Monitoring",
-            desc: "Fokus pada pemeliharaan tanaman (Tidak ada penanaman baru).",
-            // POHON 0, RORAK 0 (DATA SAYA NOL-KAN AGAR TIDAK MUNCUL DI GRAFIK RORAK)
-            stats: { trees: 0, rorak: 0, sumur: 5, biopori: 0 },
-            species: { "Tanaman Eksisting": 0 }, 
-            points: [ [-7.705, 112.920, "Rorak"], [-7.708, 112.923, "Sumur"] ],
-            photos: ["https://via.placeholder.com/400x300?text=Monitoring+2025"]
+            location: "Desa Galih & Kawasan Penyangga",
+            desc: "Fokus pada pengayaan tanaman buah produktif dan pembuatan rorak di area miring.",
+            stats: { trees: 2450, rorak: 150, sumur: 20 },
+            species: { "Alpukat": 1000, "Durian": 500, "Sengon": 950 },
+            points: [ [-7.705, 112.920, "Pohon"], [-7.706, 112.921, "Pohon"], [-7.707, 112.922, "Rorak"], [-7.708, 112.923, "Sumur"] ],
+            areaPolygon: null, // Tidak ada polygon khusus
+            photos: ["https://via.placeholder.com/400x300?text=Tanam+2025", "https://via.placeholder.com/400x300?text=Rorak+2025"]
         },
         "tanam_2024": {
             id: "tanam_2024",
             year: 2024,
             location: "Area Pecaton & Tegal Karyono",
-            desc: "Rehabilitasi lahan kritis dengan tanaman kayu keras.",
-            // REVISI: POHON 2000, RORAK 1500
-            stats: { trees: 2000, rorak: 1500, sumur: 30, biopori: 0 },
-            species: { "Kayu Manis": 200, "Sintok": 200, "Matoa": 200, "Kluwek": 400, "Kopi": 600, "Alpukat": 200, "Gondang": 200 },
-            points: [ [-7.710, 112.925, "Pohon"], [-7.712, 112.928, "Pohon"], [-7.711, 112.926, "Rorak"] ],
-            photos: ["https://via.placeholder.com/400x300?text=Tanam+2024"]
+            desc: "Rehabilitasi lahan kritis dengan tanaman kayu keras dan sipil teknis masif.",
+            stats: { trees: 20000, rorak: 1500, sumur: 30 },
+            species: { "Sengon": 1500, "Gamelina": 500, "Beringin": 500, "Lainnya": 17500 },
+            points: [ [-7.710, 112.925, "Pohon"], [-7.712, 112.928, "Pohon"], [-7.711, 112.926, "Rorak"], [-7.713, 112.929, "Rorak"], [-7.714, 112.930, "Sumur"] ],
+            areaPolygon: null,
+            photos: ["https://via.placeholder.com/400x300?text=Bibit+2024", "https://via.placeholder.com/400x300?text=Sumur+2024"]
         },
         "tanam_2023": {
             id: "tanam_2023",
             year: 2023,
             location: "Kawasan Mata Air Umbulan",
-            desc: "Fokus tanaman kopi dan sipil teknis biopori.",
-            stats: { trees: 5000, rorak: 500, sumur: 0, biopori: 110 },
-            species: { "Kopi Robusta": 5000 },
-            points: [ [-7.730, 112.950, "Pohon"], [-7.731, 112.951, "Biopori"] ],
-            photos: ["https://via.placeholder.com/400x300?text=Kopi+2023"]
+            desc: "Penanaman sabuk hijau di sekitar mata air.",
+            stats: { trees: 5000, rorak: 500, sumur: 30 },
+            species: { "Beringin": 1000, "Aren": 1000, "Bambu": 1000, "Kopi": 2000 },
+            points: [ [-7.730, 112.950, "Pohon"], [-7.731, 112.951, "Sumur"], [-7.732, 112.952, "Pohon"] ],
+            areaPolygon: null,
+            photos: ["https://via.placeholder.com/400x300?text=Tanam+2023", "https://via.placeholder.com/400x300?text=Mata+Air"]
         },
         "tanam_2022": {
             id: "tanam_2022",
             year: 2022,
             location: "Desa Galih - Area Atas",
-            desc: "Agroforestri kopi dan alpukat.",
-            stats: { trees: 10000, rorak: 750, sumur: 20, biopori: 300 },
+            desc: "Program agroforestri kopi dan tanaman naungan.",
+            stats: { trees: 10000, rorak: 750, sumur: 20 },
             species: { "Kopi Robusta": 7500, "Alpukat": 2500 },
             points: [ [-7.814, 112.913, "Pohon"], [-7.815, 112.914, "Sumur"] ],
-            photos: ["https://via.placeholder.com/400x300?text=Alpukat+2022"]
+            areaPolygon: null,
+            photos: ["https://via.placeholder.com/400x300?text=Kopi+2022"]
         },
+        
+        // --- DATA 2021 (REAL GEOJSON UPDATE) ---
         "tanam_2021": {
             id: "tanam_2021",
             year: 2021,
             location: "Program Konservasi AQUA Keboncandi",
-            desc: "Inisiasi program dengan berbagai jenis buah.",
-            stats: { trees: 5000, rorak: 250, sumur: 10, biopori: 300 },
-            species: { "Kepel": 600, "Sukun": 700, "Kelengkeng": 600, "Jambu": 600, "Nangka": 700, "Alpukat": 600, "Lainnya": 1200 },
-            points: [ [-7.822, 112.905, "Pohon"], [-7.806, 112.909, "Sumur"] ],
-            photos: ["https://via.placeholder.com/400x300?text=Tanam+2021"]
+            desc: "Program awal rehabilitasi hutan lindung dengan pola agroforestri buah-buahan.",
+            stats: { trees: 5000, rorak: 250, sumur: 10 },
+            species: { "Alpukat": 1500, "Nangka": 1500, "Sukun": 1000, "Kelengkeng": 500, "Jambu Air": 500 },
+            
+            // 1. DATA TITIK POHON (Diambil dari GeoJSON Anda)
+            points: [
+                [-7.822741, 112.905788, "Alpukat"], [-7.806920, 112.909211, "Sawo Duren"], [-7.806136, 112.902091, "Sukun"],
+                [-7.817353, 112.915786, "Alpukat"], [-7.817128, 112.914718, "Nangka"], [-7.808558, 112.909899, "Sukun"],
+                [-7.806008, 112.908983, "Keluwih"], [-7.817486, 112.915908, "Alpukat"], [-7.805980, 112.909091, "Keluwih"],
+                [-7.819303, 112.912475, "Nangka"], [-7.806041, 112.908911, "Sukun"], [-7.808586, 112.909891, "Sukun"],
+                [-7.805813, 112.909155, "Sukun"], [-7.805713, 112.909085, "Longan"], [-7.805905, 112.909266, "Keluwih"],
+                [-7.819354, 112.912425, "Alpukat"], [-7.805238, 112.906371, "Sawo Duren"], [-7.817628, 112.915946, "Alpukat"],
+                [-7.805738, 112.908913, "Keluwih"], [-7.817471, 112.915211, "Nangka"], [-7.816678, 112.914268, "Alpukat"],
+                [-7.808461, 112.909853, "Longan"], [-7.806936, 112.909365, "Longan"], [-7.805498, 112.909190, "Longan"],
+                [-7.805941, 112.908950, "Sukun"], [-7.806157, 112.901298, "Alpukat"], [-7.806356, 112.901705, "Alpukat"],
+                [-7.806358, 112.901766, "Alpukat"], [-7.806409, 112.901791, "Alpukat"], [-7.805971, 112.901406, "Alpukat"],
+                [-7.806013, 112.901896, "Sawo Duren"], [-7.806086, 112.902113, "Nangka"], [-7.806381, 112.901544, "Nangka"],
+                [-7.806751, 112.901418, "Alpukat"], [-7.806370, 112.901741, "Alpukat"], [-7.805953, 112.901450, "Alpukat"]
+            ],
+
+            // 2. DATA POLYGON AREA (HUTAN LINDUNG) - Format [Lat, Lng]
+            areaPolygon: [
+                [-7.788098, 112.907606], [-7.787914, 112.906803], [-7.788033, 112.903957], [-7.788540, 112.898797],
+                [-7.789545, 112.897274], [-7.791464, 112.896062], [-7.794634, 112.895026], [-7.797781, 112.894990],
+                [-7.799964, 112.895831], [-7.801607, 112.895072], [-7.802277, 112.894327], [-7.802959, 112.895090],
+                [-7.804302, 112.895264], [-7.805029, 112.894858], [-7.806259, 112.895221], [-7.807157, 112.895774],
+                [-7.807803, 112.895763], [-7.808639, 112.896375], [-7.810119, 112.896051], [-7.811080, 112.896395],
+                [-7.812721, 112.895811], [-7.813348, 112.896941], [-7.815065, 112.897235], [-7.815686, 112.897731],
+                [-7.816465, 112.897720], [-7.817809, 112.898957], [-7.818627, 112.899828], [-7.818482, 112.900869],
+                [-7.819576, 112.900476], [-7.820345, 112.900821], [-7.820667, 112.901738], [-7.820366, 112.902577],
+                [-7.821373, 112.902746], [-7.822589, 112.902420], [-7.823929, 112.903612], [-7.824176, 112.905589],
+                [-7.823905, 112.906751], [-7.823866, 112.908005], [-7.823223, 112.909044], [-7.822972, 112.909928],
+                [-7.823288, 112.910948], [-7.825361, 112.912290], [-7.825938, 112.912860], [-7.827303, 112.913405],
+                [-7.827601, 112.914133], [-7.827427, 112.914680], [-7.828664, 112.914696], [-7.829434, 112.915337],
+                [-7.829796, 112.920093], [-7.828532, 112.919666], [-7.827299, 112.918696], [-7.826375, 112.918291],
+                [-7.825592, 112.917413], [-7.825000, 112.917768], [-7.824154, 112.917496], [-7.822625, 112.917634],
+                [-7.820846, 112.917861], [-7.819814, 112.917751], [-7.819377, 112.917383], [-7.818717, 112.917288],
+                [-7.816762, 112.917521], [-7.814898, 112.917478], [-7.813735, 112.917950], [-7.813391, 112.918508],
+                [-7.812872, 112.919064], [-7.812335, 112.919371], [-7.811496, 112.919284], [-7.809485, 112.918544],
+                [-7.807345, 112.918872], [-7.805723, 112.919556], [-7.803858, 112.919069], [-7.801831, 112.919549],
+                [-7.799517, 112.918969], [-7.797639, 112.919684], [-7.796353, 112.919449], [-7.793862, 112.917117],
+                [-7.792361, 112.916971], [-7.792420, 112.914979], [-7.793330, 112.912590], [-7.793254, 112.909957],
+                [-7.792294, 112.907616], [-7.791199, 112.907287], [-7.788098, 112.907606]
+            ],
+            photos: ["https://via.placeholder.com/400x300?text=Konservasi+2021", "https://via.placeholder.com/400x300?text=Bibit+2021"]
         }
     }
 };
