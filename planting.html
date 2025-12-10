@@ -16,43 +16,29 @@
     <style>
         body { font-family: 'Montserrat', sans-serif; background-color: #f0f2f5; padding-bottom: 50px; }
         
-        /* HERO HEADER (Gaya Baru) */
-        .hero-header {
-            position: relative;
-            background: url('hutan-bg.jpg') no-repeat center center/cover;
-            height: 350px;
-            display: flex; align-items: center; justify-content: center;
-            color: white; margin-bottom: 30px; border-bottom: 5px solid #2e7d32;
-        }
+        .hero-header { position: relative; background: url('hutan-bg.jpg') no-repeat center center/cover; height: 350px; display: flex; align-items: center; justify-content: center; color: white; margin-bottom: 30px; border-bottom: 5px solid #2e7d32; }
         .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); }
-        .hero-content { position: relative; z-index: 2; text-align: center; width: 100%; }
-        
-        /* Logo di Header */
+        .hero-content { position: relative; z-index: 2; text-align: center; }
         .logo-top { height: 50px; margin-right: 15px; }
-        .btn-home { background: rgba(255,255,255,0.2); color: white; border: 1px solid white; border-radius: 50px; padding: 8px 20px; text-decoration: none; transition:0.3s; margin-top:15px; display:inline-block; }
-        .btn-home:hover { background: white; color: #1b5e20; }
-
-        /* KARTU STATISTIK */
-        .stat-card { color: white; border-radius: 8px; padding: 20px; position: relative; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); min-height: 140px; }
+        .btn-home { background: rgba(255,255,255,0.2); color: white; border: 1px solid white; border-radius: 50px; padding: 8px 20px; text-decoration: none; display:inline-block; margin-top:10px; }
+        
+        .stat-card { color: white; border-radius: 8px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); min-height: 140px; position:relative; overflow:hidden;}
         .stat-val { font-size: 2.8rem; font-weight: 800; line-height: 1; margin-bottom: 5px; }
         .stat-header { font-weight: 700; font-size: 0.9rem; text-transform: uppercase; margin-bottom: 10px; opacity: 0.9; }
         .bg-tree { background: #2e7d32; } .bg-rorak { background: #5d4037; } .bg-sumur { background: #0277bd; }
+        .stat-icon { position: absolute; right: 15px; bottom: 15px; font-size: 4rem; opacity: 0.15; }
 
         .card-custom { border: none; border-radius: 8px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px; height: 100%; }
         .card-header-custom { background: white; padding: 15px; border-bottom: 1px solid #eee; font-weight: 700; color: #333; }
         #map { height: 450px; width: 100%; z-index: 1; border-radius: 0 0 8px 8px; }
         .chart-wrapper { position: relative; height: 200px; width: 100%; }
-        
-        /* Water Balance */
         .wb-card { background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); border: 2px dashed #2196f3; display: flex; align-items: center; justify-content: center; text-align: center; height: 100%; min-height: 250px; border-radius: 8px; }
-
-        .table-hover tbody tr:hover { background-color: #e8f5e9; cursor: pointer; }
+        .table-hover tbody tr:hover { background-color: #e8f5e9; cursor: pointer; transform: scale(1.005); transition:0.2s; }
         .badge-pill { padding: 6px 12px; border-radius: 50px; font-weight: 600; font-size: 0.75rem; }
     </style>
 </head>
 <body>
 
-    <!-- HERO HEADER (GANTI NAVBAR) -->
     <div class="hero-header">
         <div class="hero-overlay"></div>
         <div class="hero-content">
@@ -67,30 +53,30 @@
 
     <div class="container-fluid px-4" style="margin-top: -50px; position: relative; z-index: 10;">
         
-        <!-- 1. STATISTIK GLOBAL -->
+        <!-- STATS -->
         <div class="row mb-4">
-            <div class="col-md-4 mb-2"><div class="stat-card bg-tree"><div class="stat-header">Total Pohon Ditanam</div><div class="stat-val" id="totalTrees">0</div><small>Akumulasi 2021-2025</small><i class="fas fa-tree fa-3x position-absolute end-0 bottom-0 m-3 opacity-25"></i></div></div>
-            <div class="col-md-4 mb-2"><div class="stat-card bg-rorak"><div class="stat-header">Total Rorak</div><div class="stat-val" id="totalRorak">0</div><small>Unit Sipil Teknis</small><i class="fas fa-inbox fa-3x position-absolute end-0 bottom-0 m-3 opacity-25"></i></div></div>
-            <div class="col-md-4 mb-2"><div class="stat-card bg-sumur"><div class="stat-header">Total Sumur & Biopori</div><div class="stat-val" id="totalSumur">0</div><small>Unit Infiltrasi</small><i class="fas fa-water fa-3x position-absolute end-0 bottom-0 m-3 opacity-25"></i></div></div>
+            <div class="col-md-4 mb-2"><div class="stat-card bg-tree"><div class="stat-header">Total Pohon Ditanam</div><div class="stat-val" id="totalTrees">0</div><small>Akumulasi 2021-2025</small><i class="fas fa-tree stat-icon"></i></div></div>
+            <div class="col-md-4 mb-2"><div class="stat-card bg-rorak"><div class="stat-header">Total Rorak</div><div class="stat-val" id="totalRorak">0</div><small>Unit Sipil Teknis</small><i class="fas fa-inbox stat-icon"></i></div></div>
+            <div class="col-md-4 mb-2"><div class="stat-card bg-sumur"><div class="stat-header">Total Sumur & Biopori</div><div class="stat-val" id="totalSumur">0</div><small>Unit Infiltrasi</small><i class="fas fa-water stat-icon"></i></div></div>
         </div>
 
-        <!-- 2. PETA & GRAFIK POHON -->
+        <!-- PETA & GRAFIK POHON -->
         <div class="row mb-4">
-            <div class="col-lg-8 mb-3"><div class="card card-custom"><div class="card-header-custom d-flex justify-content-between"><span><i class="fas fa-map-marked-alt text-success me-2"></i> Peta Sebaran</span><span class="badge bg-warning text-dark">Sampling</span></div><div class="card-body p-0"><div id="map"></div></div></div></div>
+            <div class="col-lg-8 mb-3"><div class="card card-custom"><div class="card-header-custom d-flex justify-content-between"><span><i class="fas fa-map-marked-alt text-success me-2"></i> Peta Sebaran</span><span class="badge bg-warning text-dark">Sampling & Area</span></div><div class="card-body p-0"><div id="map"></div></div></div></div>
             <div class="col-lg-4 mb-3">
                 <div class="card card-custom mb-3" style="height: auto;"><div class="card-header-custom"><i class="fas fa-chart-bar text-primary me-2"></i> Realisasi Tahunan</div><div class="card-body"><div class="chart-wrapper"><canvas id="barChart"></canvas></div></div></div>
                 <div class="card card-custom" style="height: auto;"><div class="card-header-custom"><i class="fas fa-chart-pie text-success me-2"></i> Komposisi Jenis</div><div class="card-body"><div class="chart-wrapper"><canvas id="pieChart"></canvas></div></div></div>
             </div>
         </div>
 
-        <!-- 3. GRAFIK SIPIL TEKNIS -->
+        <!-- GRAFIK SIPIL TEKNIS -->
         <div class="row mb-4">
             <div class="col-md-4 mb-3"><div class="card card-custom"><div class="card-header-custom"><i class="fas fa-inbox text-warning me-2" style="color:#5d4037!important"></i> Pembuatan Rorak</div><div class="card-body"><div class="chart-wrapper"><canvas id="chartRorak"></canvas></div></div></div></div>
             <div class="col-md-4 mb-3"><div class="card card-custom"><div class="card-header-custom"><i class="fas fa-water text-primary me-2"></i> Sumur & Biopori</div><div class="card-body"><div class="chart-wrapper"><canvas id="chartSumur"></canvas></div></div></div></div>
             <div class="col-md-4 mb-3"><div class="card card-custom"><div class="card-header-custom"><i class="fas fa-balance-scale text-info me-2"></i> Water Balance</div><div class="card-body p-2"><div class="wb-card"><div><i class="fas fa-calculator fa-3x text-primary mb-3"></i><h5 class="fw-bold text-primary">Kalkulasi Neraca Air</h5><p class="small text-muted px-3">Sedang dalam proses penghitungan tim ahli.</p><span class="badge bg-secondary">Dalam Pengembangan</span></div></div></div></div></div>
         </div>
 
-        <!-- 4. TABEL LIST -->
+        <!-- TABEL LIST (YANG TADI HILANG) -->
         <div class="card card-custom">
             <div class="card-header-custom"><i class="fas fa-list text-dark me-2"></i> Riwayat Program Tahunan</div>
             <div class="table-responsive">
@@ -111,23 +97,32 @@
         let years=[], dataTrees=[], dataRorak=[], dataSumur=[], dataBiopori=[];
         let speciesTotal={};
 
-        // Sort 2021 -> 2025
+        // LOOP DATA
         const sortedKeys = Object.keys(db_planting.years).sort(); 
         
         sortedKeys.forEach(key => {
             const item = db_planting.years[key];
+            
             totalT += item.stats.trees;
             totalR += item.stats.rorak;
-            totalS += (item.stats.sumur + (item.stats.biopori || 0));
+            // Handle undefined biopori
+            let b = item.stats.biopori || 0;
+            totalS += (item.stats.sumur + b);
 
             years.push(item.year);
             dataTrees.push(item.stats.trees);
+            
+            // LOGIKA FILTER RORAK: Jika tahun 2025, masukkan null atau 0 agar tidak muncul di grafik
+            // Tapi karena di database saya sudah set 0, kita push langsung
             dataRorak.push(item.stats.rorak);
+            
             dataSumur.push(item.stats.sumur);
-            dataBiopori.push(item.stats.biopori || 0);
+            dataBiopori.push(b);
 
             for (const [sp, val] of Object.entries(item.species)) {
-                if(sp !== "Tanaman Eksisting") speciesTotal[sp] = (speciesTotal[sp] || 0) + val;
+                if(sp !== "Tanaman Eksisting" && sp !== "Lainnya") {
+                     speciesTotal[sp] = (speciesTotal[sp] || 0) + val;
+                }
             }
         });
 
@@ -135,26 +130,38 @@
         document.getElementById('totalRorak').innerText = totalR.toLocaleString().replace(/,/g, ".");
         document.getElementById('totalSumur').innerText = totalS.toLocaleString().replace(/,/g, ".");
 
+        // MAP
         var map = L.map('map').setView([-7.760, 112.920], 12);
         L.tileLayer('https://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}', { maxZoom: 20 }).addTo(map);
 
         const iconTree = L.divIcon({html: '<div style="background:#2e7d32;width:10px;height:10px;border-radius:50%;border:1px solid white;"></div>'});
 
+        // RENDER POLYGON & POINT
+        if(db_planting.polygons && db_planting.polygons.features) {
+            L.geoJSON(db_planting.polygons, {
+                style: function(f) { return { color: f.properties.color || '#f1c40f', fillColor: f.properties.color || '#f1c40f', fillOpacity: 0.3, weight: 2 }; },
+                onEachFeature: function(f, l) { l.bindPopup(`<b>${f.properties.name}</b>`); }
+            }).addTo(map);
+        }
+
         Object.values(db_planting.years).forEach(item => {
             item.points.forEach(pt => {
                 L.marker([pt[0], pt[1]], {icon: iconTree}).addTo(map).bindPopup(`<b>${item.year}</b><br>${item.location}`);
             });
+            // Manual Polygon (Data 2021)
             if (item.areaPolygon) {
                 L.polygon(item.areaPolygon, { color: '#f1c40f', fillColor: '#f1c40f', fillOpacity: 0.3, weight: 2 }).bindPopup(`<b>Area Konservasi ${item.year}</b>`).addTo(map);
             }
         });
 
+        // GRAFIK POHON
         new Chart(document.getElementById('barChart'), {
             type: 'bar',
             data: { labels: years, datasets: [{ label: 'Pohon', data: dataTrees, backgroundColor: '#2e7d32', borderRadius:4 }] },
             options: { maintainAspectRatio: false, plugins: { legend: {display:false}, datalabels: {color:'#333', anchor:'end', align:'top', font:{size:9}} }, scales: { y: {beginAtZero: true} } }
         });
 
+        // GRAFIK PIE
         const sortedSpecies = Object.entries(speciesTotal).sort((a,b) => b[1] - a[1]);
         const topSpecies = sortedSpecies.slice(0, 5);
         const otherCount = sortedSpecies.slice(5).reduce((acc, curr) => acc + curr[1], 0);
@@ -168,28 +175,36 @@
             options: { maintainAspectRatio: false, plugins: { legend: {position:'right', labels:{boxWidth:10}}, datalabels: {display:false} } }
         });
 
+        // GRAFIK RORAK (FILTER TAHUN 2025)
+        // Kita buat array baru khusus Rorak yang tidak menyertakan 2025
+        let rorakYears = years.slice(0, -1); // Hapus elemen terakhir (2025)
+        let rorakValues = dataRorak.slice(0, -1); // Hapus nilai terakhir (0)
+        
         new Chart(document.getElementById('chartRorak'), {
             type: 'bar',
-            data: { labels: years, datasets: [{ label: 'Rorak', data: dataRorak, backgroundColor: '#795548', borderRadius:4 }] },
+            data: { labels: rorakYears, datasets: [{ label: 'Rorak', data: rorakValues, backgroundColor: '#795548', borderRadius:4 }] },
             options: { maintainAspectRatio: false, plugins: { legend:{display:false}, datalabels:{anchor:'end', align:'top', color:'#333'} } }
         });
 
+        // GRAFIK SUMUR & BIOPORI
         new Chart(document.getElementById('chartSumur'), {
             type: 'bar',
             data: { 
                 labels: years, 
                 datasets: [
-                    { label: 'Sumur', data: sumurData, backgroundColor: '#0277bd', borderRadius:4 },
-                    { label: 'Biopori', data: bioporiData, backgroundColor: '#4fc3f7', borderRadius:4 }
+                    { label: 'Sumur Resapan', data: sumurData, backgroundColor: '#0277bd', borderRadius:4 },
+                    { label: 'Biopori', data: bioporiData, backgroundColor: '#4fc3f7', borderRadius:4 } // Biru Muda
                 ] 
             },
             options: { maintainAspectRatio: false, plugins: { datalabels:{display:false}, legend:{position:'bottom'} }, scales:{x:{stacked:true}, y:{stacked:true}} }
         });
 
+        // TABLE (PASTI MUNCUL SEKARANG)
         const tbody = document.getElementById('tableBody');
         sortedKeys.reverse().forEach(key => {
             const item = db_planting.years[key];
             let sipilLain = item.stats.biopori ? `Sumur: ${item.stats.sumur}, Biopori: ${item.stats.biopori}` : `Sumur: ${item.stats.sumur}`;
+            
             tbody.innerHTML += `
             <tr onclick="window.location.href='planting_detail.html?id=${key}'">
                 <td class="ps-4 fw-bold">${item.year}</td>
