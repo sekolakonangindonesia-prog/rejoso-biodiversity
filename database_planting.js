@@ -5,10 +5,10 @@ const db_planting = {
             year: 2025,
             location: "Desa Galih & Kawasan Penyangga",
             desc: "Fokus pada pengayaan tanaman buah produktif dan pembuatan rorak di area miring.",
-            stats: { trees: 0, rorak: 0, sumur: 0},
+            stats: { trees: 0, rorak: 0, sumur: 0, biopori: 0 },
             species: { "Alpukat": 0, "Durian": 0, "Sengon": 0 },
             points: [ [-7.705, 112.920, "Pohon"], [-7.706, 112.921, "Pohon"], [-7.707, 112.922, "Rorak"], [-7.708, 112.923, "Sumur"] ],
-            areaPolygon: null, // Tidak ada polygon khusus
+            areaPolygon: null,
             photos: ["https://via.placeholder.com/400x300?text=Tanam+2025", "https://via.placeholder.com/400x300?text=Rorak+2025"]
         },
         "tanam_2024": {
@@ -16,7 +16,7 @@ const db_planting = {
             year: 2024,
             location: "Area Pecaton & Tegal Karyono",
             desc: "Rehabilitasi lahan kritis dengan tanaman kayu keras dan sipil teknis masif.",
-            stats: { trees: 2000, rorak: 1500, sumur: 0 },
+            stats: { trees: 2000, rorak: 1500, sumur: 0, biopori: 0 },
             species: { "Sengon": 1500, "Gamelina": 500, "Beringin": 500, "Lainnya": 17500 },
             points: [ [-7.710, 112.925, "Pohon"], [-7.712, 112.928, "Pohon"], [-7.711, 112.926, "Rorak"], [-7.713, 112.929, "Rorak"], [-7.714, 112.930, "Sumur"] ],
             areaPolygon: null,
@@ -27,7 +27,7 @@ const db_planting = {
             year: 2023,
             location: "Kawasan Mata Air Umbulan",
             desc: "Penanaman sabuk hijau di sekitar mata air.",
-            stats: { trees: 5000, rorak: 500, sumur: 0},
+            stats: { trees: 5000, rorak: 500, sumur: 0, biopori: 110 },
             species: { "Beringin": 1000, "Aren": 1000, "Bambu": 1000, "Kopi": 2000 },
             points: [ [-7.730, 112.950, "Pohon"], [-7.731, 112.951, "Sumur"], [-7.732, 112.952, "Pohon"] ],
             areaPolygon: null,
@@ -38,23 +38,21 @@ const db_planting = {
             year: 2022,
             location: "Desa Galih - Area Atas",
             desc: "Program agroforestri kopi dan tanaman naungan.",
-            stats: { trees: 10000, rorak: 750, sumur: 20 },
+            stats: { trees: 10000, rorak: 750, sumur: 20, biopori: 300 },
             species: { "Kopi Robusta": 7500, "Alpukat": 2500 },
             points: [ [-7.814, 112.913, "Pohon"], [-7.815, 112.914, "Sumur"] ],
             areaPolygon: null,
             photos: ["https://via.placeholder.com/400x300?text=Kopi+2022"]
         },
         
-        // --- DATA 2021 (REAL GEOJSON UPDATE) ---
         "tanam_2021": {
             id: "tanam_2021",
             year: 2021,
             location: "Program Konservasi AQUA Keboncandi",
             desc: "Program awal rehabilitasi hutan lindung dengan pola agroforestri buah-buahan.",
-            stats: { trees: 5000, rorak: 250, sumur: 10 },
+            stats: { trees: 5000, rorak: 250, sumur: 10, biopori: 300 },
             species: { "Alpukat": 1500, "Nangka": 1500, "Sukun": 1000, "Kelengkeng": 500, "Jambu Air": 500 },
             
-            // 1. DATA TITIK POHON (Diambil dari GeoJSON Anda)
             points: [
                 [-7.822741, 112.905788, "Alpukat"], [-7.806920, 112.909211, "Sawo Duren"], [-7.806136, 112.902091, "Sukun"],
                 [-7.817353, 112.915786, "Alpukat"], [-7.817128, 112.914718, "Nangka"], [-7.808558, 112.909899, "Sukun"],
@@ -70,7 +68,6 @@ const db_planting = {
                 [-7.806751, 112.901418, "Alpukat"], [-7.806370, 112.901741, "Alpukat"], [-7.805953, 112.901450, "Alpukat"]
             ],
 
-            // 2. DATA POLYGON AREA (HUTAN LINDUNG) - Format [Lat, Lng]
             areaPolygon: [
                 [-7.788098, 112.907606], [-7.787914, 112.906803], [-7.788033, 112.903957], [-7.788540, 112.898797],
                 [-7.789545, 112.897274], [-7.791464, 112.896062], [-7.794634, 112.895026], [-7.797781, 112.894990],
