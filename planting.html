@@ -206,15 +206,23 @@
             let sipilLain = item.stats.biopori ? `Sumur: ${item.stats.sumur}, Biopori: ${item.stats.biopori}` : `Sumur: ${item.stats.sumur}`;
             
             tbody.innerHTML += `
+           const tbody = document.getElementById('tableBody');
+        // Reverse order for table (Newest first)
+        sortedKeys.reverse().forEach(key => {
+            const item = db_planting.years[key];
+            let sipilLain = item.stats.biopori ? `Sumur: ${item.stats.sumur}, Biopori: ${item.stats.biopori}` : `Sumur: ${item.stats.sumur}`;
+            
+            tbody.innerHTML += `
             <tr onclick="window.location.href='planting_detail.html?id=${key}'">
                 <td class="ps-4 fw-bold">${item.year}</td>
                 <td>${item.location}</td>
-                <td><span class="badge badge-pill bg-success">${item.stats.trees.toLocaleString().replace(/,/g, ".")}</span></td>
+                <td><span class="badge badge-pill bg-success">${item.stats.trees.toLocaleString()}</span></td>
                 <td><span class="badge badge-pill text-white" style="background:#795548">${item.stats.rorak}</span></td>
                 <td><span class="badge badge-pill bg-info text-dark">${sipilLain}</span></td>
                 <td><button class="btn btn-sm btn-outline-secondary rounded-pill px-3">Detail</button></td>
             </tr>`;
         });
+
     </script>
 </body>
 </html>
