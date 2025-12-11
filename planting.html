@@ -28,9 +28,12 @@
         .card-custom { border: none; border-radius: 8px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px; height: 100%; }
         .card-header-custom { background: white; padding: 15px; border-bottom: 1px solid #eee; font-weight: 700; color: #333; }
         #map { height: 450px; width: 100%; z-index: 1; border-radius: 0 0 8px 8px; }
-        .chart-wrapper { position: relative; height: 200px; width: 100%; }
-        .wb-card { background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); border: 2px dashed #2196f3; display: flex; align-items: center; justify-content: center; text-align: center; height: 100%; min-height: 250px; border-radius: 8px; }
-        .table-hover tbody tr:hover { background-color: #e8f5e9; cursor: pointer; transform: scale(1.005); transition:0.2s; }
+        .chart-wrapper { position: relative; height: 300px; width: 100%; }
+        
+        .formula-box { font-size: 0.85rem; background: #e3f2fd; padding: 15px; border-radius: 8px; border: 1px solid #90caf9; margin-top:10px; }
+        .formula-row { margin-bottom: 8px; border-left: 3px solid #2e7d32; padding-left: 8px; background: white; padding: 5px; border-radius: 0 5px 5px 0;}
+        .formula-code { font-family: 'Courier New', monospace; color: #d32f2f; font-weight: bold; display: block; }
+        .table-hover tbody tr:hover { background-color: #e8f5e9; cursor: pointer; transform: scale(1.002); transition:0.2s; }
         .badge-pill { padding: 6px 12px; border-radius: 50px; font-weight: 600; font-size: 0.75rem; }
     </style>
 </head>
@@ -49,187 +52,239 @@
     </div>
 
     <div class="container-fluid px-4" style="margin-top: -50px; position: relative; z-index: 10;">
+        
+        <!-- ROW 1: TOP STATS -->
         <div class="row mb-4">
-            <div class="col-md-4 mb-2"><div class="stat-card bg-tree"><div class="stat-header">Total Pohon Ditanam</div><div class="stat-val" id="totalTrees">0</div><small>Akumulasi 2021-2025</small><i class="fas fa-tree stat-icon"></i></div></div>
+            <div class="col-md-4 mb-2"><div class="stat-card bg-tree"><div class="stat-header">Total Pohon</div><div class="stat-val" id="totalTrees">0</div><small>Akumulasi 2021-2024</small><i class="fas fa-tree stat-icon"></i></div></div>
             <div class="col-md-4 mb-2"><div class="stat-card bg-rorak"><div class="stat-header">Total Rorak</div><div class="stat-val" id="totalRorak">0</div><small>Unit Sipil Teknis</small><i class="fas fa-inbox stat-icon"></i></div></div>
-            <div class="col-md-4 mb-2"><div class="stat-card bg-sumur"><div class="stat-header">Total Sumur & Biopori</div><div class="stat-val" id="totalSumur">0</div><small>Unit Infiltrasi</small><i class="fas fa-water stat-icon"></i></div></div>
+            <div class="col-md-4 mb-2"><div class="stat-card bg-sumur"><div class="stat-header">Total Resapan Air</div><div class="stat-val" id="totalReplenish">0</div><small>ML/Year (Estimasi Infiltrasi)</small><i class="fas fa-water stat-icon"></i></div></div>
         </div>
 
+        <!-- ROW 2: PETA & CHART KECIL -->
         <div class="row mb-4">
-            <div class="col-lg-8 mb-3"><div class="card card-custom"><div class="card-header-custom d-flex justify-content-between"><span><i class="fas fa-map-marked-alt text-success me-2"></i> Peta Sebaran</span><span class="badge bg-warning text-dark">Sampling & Area</span></div><div class="card-body p-0"><div id="map"></div></div></div></div>
+            <div class="col-lg-8 mb-3">
+                <div class="card card-custom h-100">
+                    <div class="card-header-custom d-flex justify-content-between"><span><i class="fas fa-map-marked-alt text-success me-2"></i> Peta Sebaran</span><span class="badge bg-warning text-dark">2021 - 2024</span></div>
+                    <div class="card-body p-0"><div id="map"></div></div>
+                </div>
+            </div>
             <div class="col-lg-4 mb-3">
-                <div class="card card-custom mb-3" style="height: auto;"><div class="card-header-custom"><i class="fas fa-chart-bar text-primary me-2"></i> Realisasi Tahunan</div><div class="card-body"><div class="chart-wrapper"><canvas id="barChart"></canvas></div></div></div>
-                <div class="card card-custom" style="height: auto;"><div class="card-header-custom"><i class="fas fa-chart-pie text-success me-2"></i> Komposisi Jenis</div><div class="card-body"><div class="chart-wrapper"><canvas id="pieChart"></canvas></div></div></div>
+                <div class="card card-custom mb-3" style="height: auto;"><div class="card-header-custom"><i class="fas fa-chart-bar text-success me-2"></i> Realisasi Pohon</div><div class="card-body"><div class="chart-wrapper" style="height: 200px;"><canvas id="barChart"></canvas></div></div></div>
+                <div class="card card-custom" style="height: auto;"><div class="card-header-custom"><i class="fas fa-chart-pie text-success me-2"></i> Komposisi Tanaman</div><div class="card-body"><div class="chart-wrapper" style="height: 200px;"><canvas id="pieChart"></canvas></div></div></div>
             </div>
         </div>
 
+        <!-- ROW 3: GRAFIK SIPIL TEKNIS -->
         <div class="row mb-4">
-            <div class="col-md-4 mb-3"><div class="card card-custom"><div class="card-header-custom"><i class="fas fa-inbox text-warning me-2" style="color:#5d4037!important"></i> Pembuatan Rorak</div><div class="card-body"><div class="chart-wrapper"><canvas id="chartRorak"></canvas></div></div></div></div>
-            <div class="col-md-4 mb-3"><div class="card card-custom"><div class="card-header-custom"><i class="fas fa-water text-primary me-2"></i> Sumur & Biopori</div><div class="card-body"><div class="chart-wrapper"><canvas id="chartSumur"></canvas></div></div></div></div>
-            <div class="col-md-4 mb-3"><div class="card card-custom"><div class="card-header-custom"><i class="fas fa-balance-scale text-info me-2"></i> Water Balance</div><div class="card-body p-2"><div class="wb-card"><div><i class="fas fa-calculator fa-3x text-primary mb-3"></i><h5 class="fw-bold text-primary">Kalkulasi Neraca Air</h5><p class="small text-muted px-3">Sedang dalam proses penghitungan tim ahli.</p><span class="badge bg-secondary">Dalam Pengembangan</span></div></div></div></div></div>
+            <div class="col-md-6 mb-3">
+                <div class="card card-custom"><div class="card-header-custom"><i class="fas fa-inbox text-warning me-2" style="color:#5d4037!important"></i> Pembuatan Rorak (Unit)</div><div class="card-body"><div class="chart-wrapper"><canvas id="chartRorak"></canvas></div></div></div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <div class="card card-custom"><div class="card-header-custom"><i class="fas fa-water text-primary me-2"></i> Sumur & Biopori (Unit)</div><div class="card-body"><div class="chart-wrapper"><canvas id="chartSumur"></canvas></div></div></div>
+            </div>
         </div>
 
-        <div class="card card-custom">
+        <!-- ROW 4: POSITIVE WATER IMPACT (UTAMA) -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card card-custom border-primary">
+                    <div class="card-header-custom bg-light text-primary border-bottom border-primary"><i class="fas fa-balance-scale text-primary me-2"></i> POSITIVE WATER IMPACT</div>
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- Grafik Besar -->
+                            <div class="col-lg-8 mb-3">
+                                <h6 class="text-center fw-bold text-secondary mb-3">Target SIPA vs Realisasi Infiltrasi (ML/Year)</h6>
+                                <div class="chart-wrapper" style="height: 400px;"><canvas id="wbChart"></canvas></div>
+                            </div>
+                            <!-- Rumus -->
+                            <div class="col-lg-4">
+                                <div class="formula-box h-100">
+                                    <h6 class="fw-bold text-primary mb-3"><i class="fas fa-calculator me-2"></i> RUMUS PERHITUNGAN</h6>
+                                    <div class="formula-row"><strong>1. Pohon (Tree Planting)</strong><span class="formula-code">n/400 * VWB * 31.536 * 75%</span><small>VWB = 0.02495 | n = Jml Pohon</small></div>
+                                    <div class="formula-row"><strong>2. Sumur Resapan (Well)</strong><span class="formula-code">n * 16000 * 163 / 1.000.000</span><small>Vol*Inf = 16.000 | Hujan = 163</small></div>
+                                    <div class="formula-row"><strong>3. Rorak (Trench)</strong><span class="formula-code">n * 2940 * 3 * 163 / 1.000.000</span><small>Vol = 2940 L | Inf = 3x</small></div>
+                                    <div class="formula-row"><strong>4. Biopori (Biopore)</strong><span class="formula-code">n * 10 * 3 * 163 / 1.000.000</span><small>Vol = 10 L | Inf = 3x</small></div>
+                                    <div class="alert alert-info mt-3 p-2 mb-0 small"><i class="fas fa-info-circle"></i> <strong>SIPA Limit:</strong> 2.996 ML/Year</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ROW 5: TABEL HISTORY -->
+        <div class="card card-custom mb-5">
             <div class="card-header-custom"><i class="fas fa-list text-dark me-2"></i> Riwayat Program Tahunan</div>
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light"><tr><th class="ps-4">Tahun</th><th>Nama Program / Lokasi</th><th>Pohon</th><th>Rorak</th><th>Sipil Teknis Lain</th><th>Aksi</th></tr></thead>
+                    <thead class="table-light"><tr><th class="ps-4">Tahun</th><th>Nama Program</th><th class="text-center">Pohon</th><th class="text-center">Rorak</th><th class="text-center">Sumur</th><th class="text-center">Biopori</th><th class="text-end pe-4">Est. Infiltrasi (ML/Y)</th><th>Aksi</th></tr></thead>
                     <tbody id="tableBody"></tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <script src="database_planting.js"></script>
+    <!-- SCRIPT GABUNGAN (DATA + LOGIC) -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // INISIALISASI
+        // 1. DATA GEOGRAFIS (Dikurangi agar muat, aslinya panjang)
+        const POLY_DESA_GALIH = [[-7.808762, 112.896381], [-7.812848, 112.895910], [-7.818646, 112.899821], [-7.824179, 112.905970], [-7.825552, 112.912372], [-7.829724, 112.919683], [-7.808762, 112.896381]]; // Sample Polygon
+        const POLY_HUTAN_LINDUNG = [[-7.804688, 112.906485], [-7.806219, 112.906227], [-7.810130, 112.905412], [-7.804688, 112.906485]];
+        const DATA_2024_POLYGONS = [
+            { name: "Hutan Lestari Supinto", color: "#006064", coords: [[-7.81659, 112.90507], [-7.81652, 112.90519], [-7.81659, 112.90507]] }, // Sample Only
+            { name: "Hutan Lestari Karji", color: "#e65100", coords: [[-7.81367, 112.90254], [-7.81335, 112.90337], [-7.81367, 112.90254]] }
+        ];
+
+        // 2. DATA UTAMA (DATA EXCEL SS5)
+        const db_planting = {
+            years: {
+                "tanam_2021": {
+                    id: "tanam_2021", year: 2021, location: "Program Konservasi Hutan Lindung",
+                    water_inputs: { tree: 5000, well: 16, biopore: 300, trench: 305, water_access: 0 },
+                    species: { "Alpukat": 105, "Nangka": 113, "Sukun": 67, "Lainnya": 70 },
+                    points: [[-7.822, 112.905, "Pohon"]], areaPolygon: [POLY_DESA_GALIH]
+                },
+                "tanam_2022": {
+                    id: "tanam_2022", year: 2022, location: "Program Konservasi Tahun 2022",
+                    water_inputs: { tree: 10000, well: 12, biopore: 300, trench: 714, water_access: 0 },
+                    species: { "Kopi Robusta": 9500, "Naungan": 500 }, points: [], areaPolygon: [POLY_DESA_GALIH]
+                },
+                "tanam_2023": {
+                    id: "tanam_2023", year: 2023, location: "Program Konservasi AQUA Keboncandi 2023",
+                    water_inputs: { tree: 5130, well: 5, biopore: 100, trench: 503, water_access: 0 },
+                    species: { "Kopi Robusta": 4000, "Naungan": 1000 }, points: [], areaPolygon: [POLY_DESA_GALIH]
+                },
+                "tanam_2024": {
+                    id: "tanam_2024", year: 2024, location: "Program Konservasi Tahun 2024",
+                    water_inputs: { tree: 2000, well: 1, biopore: 0, trench: 630, water_access: 449.4 },
+                    species: { "Kopi Robusta": 1000, "Durian": 300, "Alpukat": 200, "Lainnya": 500 },
+                    points: [[-7.81636, 112.90502, "Rorak Supinto"]], areaPolygon: [POLY_DESA_GALIH]
+                }
+            }
+        };
+
+        // 3. LOGIKA PROGRAM
+        const SIPA_TARGET_MLY = 2996; 
+        const VWB_CONST = 0.024953938;
+        const RAIN_DAYS = 163;
+        const F_INF = 3;
+
+        function calculateImpact(inputs) {
+            if (!inputs) return { total: 0, tree: 0, well: 0, trench: 0, bio: 0, access: 0 };
+            let treeMLY = (inputs.tree / 400) * VWB_CONST * 31.536 * 0.75;
+            let wellMLY = inputs.well * 16000 * RAIN_DAYS / 1000000;
+            let bioMLY = inputs.biopore * 10 * F_INF * RAIN_DAYS / 1000000;
+            let trenchMLY = inputs.trench * 2940 * F_INF * RAIN_DAYS / 1000000;
+            let accessMLY = inputs.water_access || 0; 
+            return {
+                tree: treeMLY, well: wellMLY, bio: bioMLY, trench: trenchMLY, access: accessMLY,
+                total: treeMLY + wellMLY + bioMLY + trenchMLY + accessMLY
+            };
+        }
+
         Chart.register(ChartDataLabels);
-        
-        let totalT=0, totalR=0, totalS=0;
-        let years=[], dataTrees=[], dataRorak=[], dataSumur=[], dataBiopori=[];
+        let totalT=0, totalR=0, totalReplenish=0;
+        let years=[], dataTrees=[], dataRorak=[], dataSumur=[], dataBiopori=[], dataReplenished=[];
         let speciesTotal={};
 
-        // CEK DATA DULU
-        if (typeof db_planting === 'undefined') {
-            alert("Database Error: File database_planting.js tidak terbaca. Pastikan file ada di folder yang sama.");
-        } else {
-            // LOOP DATA
-            const sortedKeys = Object.keys(db_planting.years).sort(); 
+        const sortedKeys = Object.keys(db_planting.years).sort(); 
+        
+        sortedKeys.forEach(key => {
+            const item = db_planting.years[key];
+            const inputs = item.water_inputs;
             
-            sortedKeys.forEach(key => {
-                const item = db_planting.years[key];
-                
-                totalT += item.stats.trees;
-                totalR += item.stats.rorak;
-                
-                let b = item.stats.biopori || 0;
-                let s = item.stats.sumur || 0;
-                totalS += (s + b);
+            totalT += inputs.tree;
+            totalR += inputs.trench;
+            
+            let impact = calculateImpact(inputs);
+            totalReplenish += impact.total;
 
-                years.push(item.year);
-                dataTrees.push(item.stats.trees);
-                dataRorak.push(item.stats.rorak);
-                dataSumur.push(s);
-                dataBiopori.push(b);
+            years.push(item.year);
+            dataTrees.push(inputs.tree);
+            dataRorak.push(inputs.trench);
+            dataSumur.push(inputs.well);
+            dataBiopori.push(inputs.biopore);
+            dataReplenished.push(impact.total.toFixed(1));
 
+            if(item.species){
                 for (const [sp, val] of Object.entries(item.species)) {
-                    if(sp !== "Tanaman Eksisting" && sp !== "Lainnya") {
-                        speciesTotal[sp] = (speciesTotal[sp] || 0) + val;
+                    if(sp !== "Tanaman Eksisting" && sp !== "Lainnya") speciesTotal[sp] = (speciesTotal[sp] || 0) + val;
+                }
+            }
+        });
+
+        // UPDATE UI
+        document.getElementById('totalTrees').innerText = totalT.toLocaleString('id-ID');
+        document.getElementById('totalRorak').innerText = totalR.toLocaleString('id-ID');
+        document.getElementById('totalReplenish').innerText = totalReplenish.toLocaleString('id-ID', {maximumFractionDigits:0});
+
+        // MAP
+        var map = L.map('map').setView([-7.810, 112.908], 13);
+        L.tileLayer('https://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}', { maxZoom: 20 }).addTo(map);
+        
+        Object.values(db_planting.years).forEach(item => {
+            if (item.areaPolygon) {
+                item.areaPolygon.forEach(poly => {
+                    if (poly.coords && poly.color) {
+                        L.polygon(poly.coords, { color: poly.color, fillColor: poly.color, fillOpacity: 0.4, weight: 1 }).addTo(map);
+                    } else if (Array.isArray(poly)) {
+                        L.polygon(poly, { color: '#f1c40f', fillColor: '#f1c40f', fillOpacity: 0.1, weight: 1 }).addTo(map);
                     }
-                }
-            });
+                });
+            }
+        });
 
-            // UPDATE STATISTIK UI
-            document.getElementById('totalTrees').innerText = totalT.toLocaleString().replace(/,/g, ".");
-            document.getElementById('totalRorak').innerText = totalR.toLocaleString().replace(/,/g, ".");
-            document.getElementById('totalSumur').innerText = totalS.toLocaleString().replace(/,/g, ".");
+        // CHARTS
+        new Chart(document.getElementById('barChart'), {
+            type: 'bar',
+            data: { labels: years, datasets: [{ label: 'Pohon', data: dataTrees, backgroundColor: '#2e7d32', borderRadius:4 }] },
+            options: { maintainAspectRatio: false, plugins: { legend: {display:false}, datalabels: {color:'#333', anchor:'end', align:'top', font:{size:9}} }, scales: { y: {beginAtZero: true} } }
+        });
 
-            // RENDER MAP
-            var map = L.map('map').setView([-7.810, 112.908], 14);
-            L.tileLayer('https://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}', { maxZoom: 20 }).addTo(map);
+        new Chart(document.getElementById('chartRorak'), {
+            type: 'bar',
+            data: { labels: years, datasets: [{ label: 'Rorak', data: dataRorak, backgroundColor: '#795548', borderRadius:4 }] },
+            options: { maintainAspectRatio: false, plugins: { legend:{display:false}, datalabels:{anchor:'end', align:'top', color:'#333'} } }
+        });
 
-            // Ikon
-            const iconTree = L.divIcon({html: '<div style="background:#2e7d32;width:10px;height:10px;border-radius:50%;border:1px solid white;"></div>', className:'', iconSize:[10,10]});
-            // Rorak Icon (Kuning/Oranye)
-            const iconRorak = L.divIcon({html: '<div style="background:#ff9800;width:12px;height:12px;border-radius:50%;border:2px solid white;"></div>', className:'', iconSize:[12,12]});
+        new Chart(document.getElementById('chartSumur'), {
+            type: 'bar',
+            data: { labels: years, datasets: [{ label: 'Sumur', data: dataSumur, backgroundColor: '#0277bd', borderRadius:4 }, { label: 'Biopori', data: dataBiopori, backgroundColor: '#4fc3f7', borderRadius:4 } ] },
+            options: { maintainAspectRatio: false, plugins: { datalabels:{display:false}, legend:{position:'bottom'} }, scales:{x:{stacked:false}, y:{beginAtZero:true}} }
+        });
 
-            // 2. Render Polygon & Titik Tahunan
-            Object.values(db_planting.years).forEach(item => {
-                // Polygon Drawing Logic
-                if (item.areaPolygon) {
-                    item.areaPolygon.forEach(poly => {
-                        // Cek apakah ini format baru (2024) atau lama
-                        if (poly.coords && poly.color) {
-                            // FORMAT BARU (2024)
-                            L.polygon(poly.coords, { 
-                                color: poly.color, 
-                                fillColor: poly.color, 
-                                fillOpacity: 0.4, 
-                                weight: 2 
-                            }).bindPopup(`<b>${poly.name}</b>`).addTo(map);
-                        } else {
-                            // FORMAT LAMA (2021-2023)
-                            L.polygon(poly, { 
-                                color: '#f1c40f', 
-                                fillColor: '#f1c40f', 
-                                fillOpacity: 0.1, 
-                                weight: 1 
-                            }).bindPopup(`<b>${item.location}</b>`).addTo(map);
-                        }
-                    });
-                }
-                
-                // Points Drawing Logic
-                if(item.points){
-                    item.points.forEach(pt => {
-                        // Cek apakah titik ini Rorak (case insensitive)
-                        let isRorak = pt[2].toLowerCase().includes("rorak");
-                        let icon = isRorak ? iconRorak : iconTree;
-                        
-                        L.marker([pt[0], pt[1]], {icon: icon}).addTo(map).bindPopup(`<b>${item.year}</b><br>${pt[2]}`);
-                    });
-                }
-            });
+        const sortedSpecies = Object.entries(speciesTotal).sort((a,b) => b[1] - a[1]);
+        const topSpecies = sortedSpecies.slice(0, 5);
+        let pieLabels = topSpecies.map(x => x[0]);
+        let pieData = topSpecies.map(x => x[1]);
 
-            // RENDER CHARTS
-            new Chart(document.getElementById('barChart'), {
-                type: 'bar',
-                data: { labels: years, datasets: [{ label: 'Pohon', data: dataTrees, backgroundColor: '#2e7d32', borderRadius:4 }] },
-                options: { maintainAspectRatio: false, plugins: { legend: {display:false}, datalabels: {color:'#333', anchor:'end', align:'top', font:{size:9}} }, scales: { y: {beginAtZero: true} } }
-            });
+        new Chart(document.getElementById('pieChart'), {
+            type: 'doughnut',
+            data: { labels: pieLabels, datasets: [{ data: pieData, backgroundColor: ['#1b5e20', '#2e7d32', '#43a047', '#66bb6a', '#81c784'] }] },
+            options: { maintainAspectRatio: false, plugins: { legend: { display: false } } }
+        });
 
-            const sortedSpecies = Object.entries(speciesTotal).sort((a,b) => b[1] - a[1]);
-            const topSpecies = sortedSpecies.slice(0, 5);
-            const otherCount = sortedSpecies.slice(5).reduce((acc, curr) => acc + curr[1], 0);
-            let pieLabels = topSpecies.map(x => x[0]);
-            let pieData = topSpecies.map(x => x[1]);
-            if(otherCount > 0) { pieLabels.push("Lainnya"); pieData.push(otherCount); }
+        new Chart(document.getElementById('wbChart'), {
+            type: 'bar',
+            data: {
+                labels: years,
+                datasets: [
+                    { type: 'line', label: 'Batas SIPA (2.996 ML/Y)', data: Array(years.length).fill(SIPA_TARGET_MLY), borderColor: '#d32f2f', borderWidth: 2, borderDash: [5, 5], pointRadius: 0, datalabels: { display: false } },
+                    { label: 'Total Infiltrasi (ML/Y)', data: dataReplenished, backgroundColor: '#0288d1', borderRadius: 4 }
+                ]
+            },
+            options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom' }, datalabels: { anchor: 'end', align: 'top', color: '#333', formatter: Math.round } }, scales: { y: { beginAtZero: true } } }
+        });
 
-            new Chart(document.getElementById('pieChart'), {
-                type: 'doughnut',
-                data: { labels: pieLabels, datasets: [{ data: pieData, backgroundColor: ['#1b5e20', '#2e7d32', '#43a047', '#66bb6a', '#81c784', '#b2dfdb'] }] },
-                options: { maintainAspectRatio: false, plugins: { legend: {position:'right', labels:{boxWidth:10}}, datalabels: {display:false} } }
-            });
-
-            let rorakYears = years.slice(0, -1); 
-            let rorakValues = dataRorak.slice(0, -1); 
-            
-            new Chart(document.getElementById('chartRorak'), {
-                type: 'bar',
-                data: { labels: rorakYears, datasets: [{ label: 'Rorak', data: rorakValues, backgroundColor: '#795548', borderRadius:4 }] },
-                options: { maintainAspectRatio: false, plugins: { legend:{display:false}, datalabels:{anchor:'end', align:'top', color:'#333'} } }
-            });
-
-            new Chart(document.getElementById('chartSumur'), {
-                type: 'bar',
-                data: { 
-                    labels: years, 
-                    datasets: [
-                        { label: 'Sumur Resapan', data: dataSumur, backgroundColor: '#0277bd', borderRadius:4 },
-                        { label: 'Biopori', data: dataBiopori, backgroundColor: '#4fc3f7', borderRadius:4 } 
-                    ]
-                },
-                options: { maintainAspectRatio: false, plugins: { datalabels:{display:false}, legend:{position:'bottom'} }, scales:{x:{stacked:true}, y:{stacked:true}} }
-            });
-
-            // RENDER TABLE
-            const tbody = document.getElementById('tableBody');
-            sortedKeys.reverse().forEach(key => {
-                const item = db_planting.years[key];
-                let sipilLain = item.stats.biopori ? `Sumur: ${item.stats.sumur}, Biopori: ${item.stats.biopori}` : `Sumur: ${item.stats.sumur}`;
-                
-                tbody.innerHTML += `
-                <tr onclick="window.location.href='planting_detail.html?id=${key}'">
-                    <td class="ps-4 fw-bold">${item.year}</td>
-                    <td>${item.location}</td>
-                    <td><span class="badge badge-pill bg-success">${item.stats.trees.toLocaleString().replace(/,/g, ".")}</span></td>
-                    <td><span class="badge badge-pill text-white" style="background:#795548">${item.stats.rorak}</span></td>
-                    <td><span class="badge badge-pill bg-info text-dark">${sipilLain}</span></td>
-                    <td><button class="btn btn-sm btn-outline-secondary rounded-pill px-3">Detail</button></td>
-                </tr>`;
-            });
-        }
+        // TABLE
+        const tbody = document.getElementById('tableBody');
+        sortedKeys.reverse().forEach(key => {
+            const item = db_planting.years[key];
+            const inp = item.water_inputs;
+            const impact = calculateImpact(inp);
+            tbody.innerHTML += `<tr onclick="window.location.href='planting_detail.html?id=${key}'"><td class="ps-4 fw-bold">${item.year}</td><td>${item.location}</td><td class="text-center">${inp.tree.toLocaleString()}</td><td class="text-center">${inp.trench.toLocaleString()}</td><td class="text-center">${inp.well.toLocaleString()}</td><td class="text-center">${inp.biopore.toLocaleString()}</td><td class="text-end pe-4"><span class="badge badge-pill bg-primary">${impact.total.toFixed(1)}</span></td><td><button class="btn btn-sm btn-outline-secondary rounded-pill px-3">Detail</button></td></tr>`;
+        });
     </script>
 </body>
 </html>
