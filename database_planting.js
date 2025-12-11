@@ -503,7 +503,7 @@ const db_planting = {
             year: 2021,
             location: "Program Konservasi Hutan Lindung",
             desc: "Rehabilitasi area Hutan Lindung dengan berbagai jenis tanaman buah dan tanaman konservasi.",
-            stats: { trees: 407, rorak: 250, sumur: 10, biopori: 300 }, // Jumlah pohon disesuaikan real count
+            stats: { trees: 5000, rorak: 250, sumur: 10, biopori: 300 }, // Jumlah pohon disesuaikan real count
             species: { 
                 "Alpukat": 105, 
                 "Nangka": 113, 
