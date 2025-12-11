@@ -615,12 +615,12 @@ const db_planting = {
             location: "Program Konservasi Tahun 2024",
             desc: "Kegiatan konservasi Hutan Lestari Desa Galih dengan penanaman dan pembuatan rorak di 17 lokasi.",
             stats: { 
-                trees: 2500, // Estimasi 
-                rorak: 1168, // Unit Rorak
+                trees: 2000, // Estimasi 
+                rorak: 1500, // Unit Rorak
                 sumur: 0, 
                 biopori: 0 
             },
-            species: { "Kopi Robusta": 1000, "Durian": 300, "Alpukat": 200, "Lainnya": 1000 },
+            species: { "Kayu Manis": 200, "Sintok Putih": 200, "Matoa": 200, "Kluwe": 400, "Kopi Arabika Arteng": 600, "Alpukat": 200, "Gondang": 200 },
             
             // TITIK RORAK (Dari JSON Baru)
             points: [
@@ -657,8 +657,8 @@ const db_planting = {
             year: 2023,
             location: "Program Konservasi AQUA Keboncandi Tahun 2023",
             desc: "Intensifikasi penanaman di area Pecaton, Tegal Desa Galih, dan Tegal Karyono.",
-            stats: { trees: 5000, rorak: 500, sumur: 0, biopori: 110 },
-            species: { "Kopi Robusta": 4000, "Naungan": 1000 },
+            stats: { trees: 5000, rorak: 500, sumur: 5, biopori: 110 },
+            species: { "Kopi Robusta": 5000 },
             
             points: POINTS_2023_SURVEY,
 
@@ -683,7 +683,7 @@ const db_planting = {
             location: "Program Konservasi Tahun 2022",
             desc: "Program agroforestri berbasis kopi di area Petung dan Desa Galih.",
             stats: { trees: 10000, rorak: 750, sumur: 20, biopori: 300 },
-            species: { "Kopi Robusta": 9500, "Naungan": 500 },
+            species: { "Kopi Robusta": 7500, "Alpukat": 2500 },
             
             points: POINTS_2022_SURVEY,
 
@@ -718,7 +718,7 @@ const db_planting = {
             year: 2021,
             location: "Program Konservasi Hutan Lindung",
             desc: "Rehabilitasi area Hutan Lindung dengan berbagai jenis tanaman buah dan tanaman konservasi.",
-            stats: { trees: 407, rorak: 250, sumur: 10, biopori: 300 }, 
+            stats: { trees: 5000, rorak: 250, sumur: 10, biopori: 300 }, 
             species: { 
                 "Alpukat": 105, 
                 "Nangka": 113, 
