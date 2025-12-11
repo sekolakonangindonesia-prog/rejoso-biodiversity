@@ -162,3 +162,105 @@ const db_planting = {
                 [-7.81547, 112.91491, "Kopi Robusta"], [-7.81552, 112.91474, "Kopi Robusta"], [-7.81549, 112.91476, "Kopi Robusta"],
                 [-7.81543, 112.91482, "Kopi Robusta"], [-7.81451, 112.91299, "Kopi Robusta"], [-7.81448, 112.91286, "Kopi Robusta"]
             ],
+
+            // Polygon: Hanya Background Desa (Polygon kecil sudah di handle oleh FEATURES_2024)
+            areaPolygon: [POLY_DESA_GALIH],
+            photos: ["https://via.placeholder.com/400x300?text=Hutan+Lestari+2024"]
+        },
+
+        // --- TAHUN 2023 ---
+        "tanam_2023": {
+            id: "tanam_2023",
+            year: 2023,
+            location: "Program Konservasi AQUA Keboncandi Tahun 2023",
+            desc: "Intensifikasi penanaman di area Pecaton, Tegal Desa Galih, dan Tegal Karyono.",
+            stats: { trees: 5000, rorak: 500, sumur: 0, biopori: 110 },
+            species: { "Kopi Robusta": 4000, "Naungan": 1000 },
+            
+            // SEBARAN TITIK PENANAMAN 2023 (DIPERBANYAK)
+            points: [
+                // Area Pecaton
+                [-7.82260, 112.90530], [-7.82270, 112.90540], [-7.82280, 112.90550], [-7.82290, 112.90560],
+                [-7.82250, 112.90520], [-7.82240, 112.90510], [-7.82230, 112.90500], [-7.82220, 112.90490],
+                [-7.82210, 112.90480], [-7.82200, 112.90490], [-7.82190, 112.90500], [-7.82180, 112.90510],
+                // Area Tegal Galih
+                [-7.81560, 112.91480], [-7.81570, 112.91490], [-7.81580, 112.91500], [-7.81590, 112.91510],
+                [-7.81550, 112.91470], [-7.81540, 112.91460], [-7.81530, 112.91450], [-7.81520, 112.91460],
+                // Area Tegal Karyono
+                [-7.81440, 112.91300], [-7.81450, 112.91290], [-7.81460, 112.91280], [-7.81430, 112.91270],
+                [-7.81420, 112.91260], [-7.81410, 112.91250], [-7.81435, 112.91240], [-7.81445, 112.91230]
+            ],
+
+            // Polygon: Master Desa Galih + Delineasi 2023
+            areaPolygon: [
+                POLY_DESA_GALIH,    // Konteks Desa
+                POLY_PECATON,       // Area Tanam 1
+                POLY_TEGAL_GALIH,   // Area Tanam 2
+                POLY_TEGAL_KARYONO  // Area Tanam 3
+            ],
+            photos: ["https://via.placeholder.com/400x300?text=Tanam+2023", "https://via.placeholder.com/400x300?text=Mata+Air"]
+        },
+
+        // --- TAHUN 2022 ---
+        "tanam_2022": {
+            id: "tanam_2022",
+            year: 2022,
+            location: "Program Konservasi Tahun 2022",
+            desc: "Program agroforestri berbasis kopi di area Petung dan Desa Galih.",
+            stats: { trees: 10000, rorak: 750, sumur: 20, biopori: 300 },
+            species: { "Kopi Robusta": 9500, "Naungan": 500 },
+            
+            // SEBARAN TITIK TANAM 2022 (DIPERBANYAK & DIPERBAIKI LOKASINYA)
+            points: [
+                // Area Petung (Sekitar -7.814, 112.927)
+                [-7.814316, 112.92754], [-7.814361, 112.927745], [-7.814322, 112.927738], [-7.814510, 112.927654],
+                [-7.814442, 112.927582], [-7.814407, 112.927661], [-7.814326, 112.927714], [-7.814522, 112.927658],
+                [-7.814344, 112.927759], [-7.814391, 112.927719], [-7.814485, 112.927653], [-7.814554, 112.927641],
+                [-7.814600, 112.927600], [-7.814700, 112.927800], [-7.814800, 112.927500], [-7.814900, 112.927600],
+                
+                // Area Galih Dalam (Sekitar -7.809, 112.911)
+                [-7.809043, 112.911077], [-7.808955, 112.911144], [-7.809139, 112.911145], [-7.808918, 112.911127],
+                [-7.809009, 112.911129], [-7.808934, 112.911082], [-7.808854, 112.911079], [-7.809117, 112.911075],
+                [-7.809003, 112.911093], [-7.808925, 112.911101], [-7.809200, 112.911200], [-7.809300, 112.911300]
+            ],
+
+            // Polygon: Master Desa Galih + Master Petung (BERDAMPINGAN SESUAI SS1)
+            areaPolygon: [
+                POLY_DESA_GALIH,    // Area Kiri
+                POLY_PETUNG,        // Area Kanan
+                POLY_PLOT_PETUNG,   // Plot Detail
+                POLY_PLOT_GALIH     // Plot Detail
+            ],
+            photos: ["https://via.placeholder.com/400x300?text=Kopi+2022"]
+        },
+        
+        // --- TAHUN 2021 (DIPERBAIKI) ---
+        "tanam_2021": {
+            id: "tanam_2021",
+            year: 2021,
+            location: "Program Konservasi AQUA Keboncandi",
+            desc: "Program awal rehabilitasi hutan lindung dengan pola agroforestri buah-buahan.",
+            stats: { trees: 5000, rorak: 250, sumur: 10, biopori: 300 },
+            species: { "Alpukat": 1500, "Nangka": 1500, "Sukun": 1000, "Kelengkeng": 500, "Jambu Air": 500 },
+            
+            // SEBARAN TITIK TANAM 2021 (DIPERBANYAK)
+            points: [
+                // Cluster Hutan Lindung (Atas)
+                [-7.82274, 112.90578], [-7.82390, 112.90675], [-7.82536, 112.91229], [-7.82730, 112.91340],
+                [-7.82943, 112.91533], [-7.82979, 112.92009], [-7.82729, 112.91869], [-7.82559, 112.91741],
+                [-7.82262, 112.91763], [-7.82084, 112.91786], [-7.81871, 112.91728], [-7.81676, 112.91752],
+                // Cluster Desa Galih (Bawah/Tersebar)
+                [-7.80692, 112.90921], [-7.80613, 112.90209], [-7.81735, 112.91578], [-7.81712, 112.91471],
+                [-7.80855, 112.90989], [-7.80600, 112.90898], [-7.81748, 112.91590], [-7.80598, 112.90909],
+                [-7.81930, 112.91247], [-7.80604, 112.90891], [-7.80858, 112.90989], [-7.80581, 112.90915]
+            ],
+
+            // Polygon: Desa Galih + Hutan Lindung
+            areaPolygon: [
+                POLY_DESA_GALIH, 
+                POLY_HUTAN_LINDUNG
+            ], 
+            photos: ["https://via.placeholder.com/400x300?text=Bibit+2021"]
+        }
+    }
+};
