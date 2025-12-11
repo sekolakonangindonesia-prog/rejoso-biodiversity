@@ -59,7 +59,7 @@ const db_kehati = {
             lat: -7.723, lng: 112.932,
             hasPolygon: true,
             // Header: Gunakan file yang diupload ke github
-            headerImage: "header_kehati.jpg",
+            headerImage: "https://github.com/sekolakonangindonesia-prog/rejoso-biodiversity/blob/main/kehati_kbc.jpg?raw=true",
 
             indices: { H: 3.99, E: 0.87, R: 15.72, cat: "Sangat Tinggi" },
             birdIndices: { H: 2.91, E: 0.89, R: 4.81 },
@@ -89,7 +89,7 @@ const db_kehati = {
                 name: "Kupu-kupu Raja (Genus Troides)",
                 desc: "Spesies indikator kualitas lingkungan. Dilindungi PERMENLHK & CITES.",
                 status: "DILINDUNGI",
-                img: "kupu_troides.jpg"
+                img: "https://raw.githubusercontent.com/sekolakonangindonesia-prog/rejoso-biodiversity/refs/heads/main/kupu-troides.jpg"
             },
             
             detailPolygon: [
@@ -103,7 +103,7 @@ const db_kehati = {
             name: "Desa Galih - Lahan Pecaton",
             desc: "Area recharge mata air dengan vegetasi campuran.",
             year: "2025", status: "Baik", lat: -7.822, lng: 112.905, hasPolygon: true,
-            headerImage: "header_pecaton.jpg", 
+            headerImage: "https://raw.githubusercontent.com/sekolakonangindonesia-prog/rejoso-biodiversity/refs/heads/main/Pecaton.jpg", 
 
             indices: { H: 3.11, E: 0.79, R: 7.93, cat: "Tinggi" },
             birdIndices: { H: 3.07, E: 0.95, R: 5.33 },
@@ -138,7 +138,7 @@ const db_kehati = {
         "galih_karyono": {
             name: "Desa Galih - Tegal Pak Karyono",
             year: "2025", status: "Sedang", lat: -7.814, lng: 112.913, hasPolygon: true,
-            headerImage: "header_karyono.jpg",
+            headerImage: "https://raw.githubusercontent.com/sekolakonangindonesia-prog/rejoso-biodiversity/refs/heads/main/Karyono_Galih.jpg",
             indices: { H: 2.74, E: 0.99, R: 4.03, cat: "Sedang" },
             historyH: [2.74], historyE: [0.99], historyR: [4.03], chartLabels: ['2025'],
             floraStats: { total: 80, famili: 20, years:['2025'], values:[80], note:"" },
@@ -151,7 +151,7 @@ const db_kehati = {
         "galih_andari": {
             name: "Desa Galih - Tegal Pak Andari",
             year: "2025", status: "Sedang", lat: -7.815, lng: 112.905, hasPolygon: true,
-            headerImage: "header_andari.jpg",
+            headerImage: "https://raw.githubusercontent.com/sekolakonangindonesia-prog/rejoso-biodiversity/refs/heads/main/Andari_galih.jpg",
             indices: { H: 2.75, E: 0.99, R: 4.18, cat: "Sedang" },
             historyH: [2.72, 2.75], historyE: [0.98, 0.99], historyR: [4.15, 4.18], chartLabels: ['2024', '2025'],
             birdIndices: { H: 2.2, E: 0.65, R: 2.8 },
@@ -164,7 +164,7 @@ const db_kehati = {
         "umbulan": {
             name: "Kawasan Mata Air Umbulan",
             year: "2024", status: "Sangat Baik", lat: -7.730, lng: 112.950, hasPolygon: false,
-            headerImage: "header_umbulan.jpg",
+            headerImage: "https://raw.githubusercontent.com/sekolakonangindonesia-prog/rejoso-biodiversity/refs/heads/main/Umbulan_pas.jpg",
             indices: { H: 3.50, E: 0.85, R: 12.10, cat: "Sangat Tinggi" },
             historyH: [3.5], historyE: [0.85], historyR: [12.1], chartLabels: ['2024'],
             floraStats: { total: 180, famili: 60, years:['2024'], values:[180], note:"" },
@@ -177,7 +177,7 @@ const db_kehati = {
         "nguling": {
             name: "Kawasan Penyangga Nguling",
             year: "2024", status: "Sedang", lat: -7.680, lng: 113.050, hasPolygon: false,
-            headerImage: "header_nguling.jpg",
+            headerImage: "https://raw.githubusercontent.com/sekolakonangindonesia-prog/rejoso-biodiversity/refs/heads/main/Nguling_pas.jpg",
             indices: { H: 2.90, E: 0.70, R: 5.50, cat: "Sedang" },
             historyH: [2.9], historyE: [0.7], historyR: [5.5], chartLabels: ['2024'],
             floraStats: { total: 90, famili: 25, years:['2024'], values:[90], note:"" },
