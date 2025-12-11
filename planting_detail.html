@@ -73,21 +73,57 @@
             let sumurText = data.stats.biopori > 0 ? `${data.stats.sumur} Sumur + ${data.stats.biopori} Biopori` : `${data.stats.sumur} Unit`;
             document.getElementById('valSumur').innerText = sumurText;
 
-            const map = L.map('miniMap').setView([-7.723, 112.932], 13);
+            const map = L.map('miniMap').setView([-7.810, 112.908], 14);
             L.tileLayer('https://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}', { maxZoom: 20 }).addTo(map);
-            const icon = L.divIcon({html:'<div style="background:#2e7d32;width:12px;height:12px;border-radius:50%;border:2px solid white;"></div>'});
+            
+            // Definisikan Ikon
+            const iconTree = L.divIcon({html:'<div style="background:#2e7d32;width:12px;height:12px;border-radius:50%;border:2px solid white;"></div>', className: ''});
+            const iconRorak = L.divIcon({html:'<div style="background:#ff9800;width:12px;height:12px;border-radius:50%;border:2px solid white;"></div>', className: ''});
             
             let bounds = [];
+            
+            // Render Points
             data.points.forEach(pt => {
+                let isRorak = pt[2].toLowerCase().includes("rorak");
+                let icon = isRorak ? iconRorak : iconTree;
+                
                 L.marker([pt[0], pt[1]], {icon: icon}).addTo(map).bindPopup(pt[2]);
                 bounds.push([pt[0], pt[1]]);
             });
 
+            // Render Polygon
             if(data.areaPolygon) {
-                const poly = L.polygon(data.areaPolygon, { color: '#f1c40f', fillColor: '#f1c40f', fillOpacity: 0.3 }).addTo(map);
-                map.fitBounds(poly.getBounds());
-            } else if(bounds.length) {
-                map.fitBounds(bounds);
+                let firstPoly = null;
+                data.areaPolygon.forEach(poly => {
+                    // Cek format baru (2024) atau lama
+                    if (poly.coords && poly.color) {
+                        // 2024
+                        L.polygon(poly.coords, { 
+                            color: poly.color, 
+                            fillColor: poly.color, 
+                            fillOpacity: 0.4,
+                            weight: 2
+                        }).bindPopup(poly.name).addTo(map);
+                        if(!firstPoly) firstPoly = poly.coords; // Simpan untuk bounds
+                    } else {
+                        // Lama
+                        L.polygon(poly, { 
+                            color: '#f1c40f', 
+                            fillColor: '#f1c40f', 
+                            fillOpacity: 0.3,
+                            weight: 2
+                        }).addTo(map);
+                        if(!firstPoly) firstPoly = poly;
+                    }
+                });
+
+                // Auto Zoom ke polygon pertama jika ada
+                if (firstPoly) {
+                    const tempPoly = L.polygon(firstPoly);
+                    map.fitBounds(tempPoly.getBounds());
+                } else if (bounds.length) {
+                    map.fitBounds(bounds);
+                }
             }
 
             const labels = Object.keys(data.species);
