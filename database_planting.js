@@ -153,7 +153,7 @@ const db_planting = {
             year: 2024,
             location: "Hutan Lestari Desa Galih (17 Area)",
             desc: "Konservasi intensif di 17 plot Hutan Lestari.",
-            stats: { trees: 2500, rorak: 450, sumur: 0, biopori: 0 },
+            stats: { trees: 2000, rorak: 1500, sumur: 0, biopori: 0 },
             species: { "Kopi Robusta": 1000, "Durian": 300, "Alpukat": 200, "Lainnya": 1000 },
             points: [
                 // Rorak
