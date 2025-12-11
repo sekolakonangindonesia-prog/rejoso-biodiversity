@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sebaran Penanaman - SIS KEHATI</title>
+    <title>Monitoring Penanaman - SIS KEHATI</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -20,19 +20,30 @@
         .hero-content { position: relative; z-index: 2; text-align: center; }
         .logo-top { height: 50px; margin-right: 15px; }
         .btn-home { background: rgba(255,255,255,0.2); color: white; border: 1px solid white; border-radius: 50px; padding: 8px 20px; text-decoration: none; display:inline-block; margin-top:10px; }
+        
+        /* Stats Cards */
         .stat-card { color: white; border-radius: 8px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); min-height: 140px; position:relative; overflow:hidden;}
         .stat-val { font-size: 2.8rem; font-weight: 800; line-height: 1; margin-bottom: 5px; }
         .stat-header { font-weight: 700; font-size: 0.9rem; text-transform: uppercase; margin-bottom: 10px; opacity: 0.9; }
         .bg-tree { background: #2e7d32; } .bg-rorak { background: #5d4037; } .bg-sumur { background: #0277bd; }
         .stat-icon { position: absolute; right: 15px; bottom: 15px; font-size: 4rem; opacity: 0.15; }
+        
+        /* Cards & Layout */
         .card-custom { border: none; border-radius: 8px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px; height: 100%; }
         .card-header-custom { background: white; padding: 15px; border-bottom: 1px solid #eee; font-weight: 700; color: #333; }
-        #map { height: 450px; width: 100%; z-index: 1; border-radius: 0 0 8px 8px; }
-        .chart-wrapper { position: relative; height: 300px; width: 100%; }
         
-        .formula-box { font-size: 0.85rem; background: #e3f2fd; padding: 15px; border-radius: 8px; border: 1px solid #90caf9; margin-top:10px; }
-        .formula-row { margin-bottom: 8px; border-left: 3px solid #2e7d32; padding-left: 8px; background: white; padding: 5px; border-radius: 0 5px 5px 0;}
-        .formula-code { font-family: 'Courier New', monospace; color: #d32f2f; font-weight: bold; display: block; }
+        /* Map & Charts */
+        #map { height: 450px; width: 100%; z-index: 1; border-radius: 0 0 8px 8px; }
+        .chart-wrapper { position: relative; width: 100%; height: 300px; }
+        
+        /* Formula Box */
+        .formula-box { background: #e3f2fd; padding: 20px; border-radius: 8px; border: 1px solid #90caf9; font-size: 0.85rem; height: 100%; }
+        .formula-title { font-weight: 800; color: #1565c0; margin-bottom: 15px; text-transform: uppercase; }
+        .formula-row { background: white; padding: 10px; border-radius: 6px; margin-bottom: 8px; border-left: 4px solid #2e7d32; }
+        .formula-name { font-weight: bold; display: block; color: #333; }
+        .formula-code { font-family: 'Courier New', monospace; color: #d32f2f; font-weight: bold; display: block; margin-top: 3px; }
+        .formula-note { font-size: 0.75rem; color: #666; font-style: italic; }
+
         .table-hover tbody tr:hover { background-color: #e8f5e9; cursor: pointer; transform: scale(1.002); transition:0.2s; }
         .badge-pill { padding: 6px 12px; border-radius: 50px; font-weight: 600; font-size: 0.75rem; }
     </style>
@@ -55,7 +66,7 @@
         
         <!-- ROW 1: TOP STATS -->
         <div class="row mb-4">
-            <div class="col-md-4 mb-2"><div class="stat-card bg-tree"><div class="stat-header">Total Pohon</div><div class="stat-val" id="totalTrees">0</div><small>Akumulasi 2021-2024</small><i class="fas fa-tree stat-icon"></i></div></div>
+            <div class="col-md-4 mb-2"><div class="stat-card bg-tree"><div class="stat-header">Total Pohon</div><div class="stat-val" id="totalTrees">0</div><small>Akumulasi 2021-2025</small><i class="fas fa-tree stat-icon"></i></div></div>
             <div class="col-md-4 mb-2"><div class="stat-card bg-rorak"><div class="stat-header">Total Rorak</div><div class="stat-val" id="totalRorak">0</div><small>Unit Sipil Teknis</small><i class="fas fa-inbox stat-icon"></i></div></div>
             <div class="col-md-4 mb-2"><div class="stat-card bg-sumur"><div class="stat-header">Total Resapan Air</div><div class="stat-val" id="totalReplenish">0</div><small>ML/Year (Estimasi Infiltrasi)</small><i class="fas fa-water stat-icon"></i></div></div>
         </div>
@@ -80,7 +91,7 @@
                 <div class="card card-custom"><div class="card-header-custom"><i class="fas fa-inbox text-warning me-2" style="color:#5d4037!important"></i> Pembuatan Rorak (Unit)</div><div class="card-body"><div class="chart-wrapper"><canvas id="chartRorak"></canvas></div></div></div>
             </div>
             <div class="col-md-6 mb-3">
-                <div class="card card-custom"><div class="card-header-custom"><i class="fas fa-water text-primary me-2"></i> Sumur & Biopori (Unit)</div><div class="card-body"><div class="chart-wrapper"><canvas id="chartSumur"></canvas></div></div></div>
+                <div class="card card-custom"><div class="card-header-custom"><i class="fas fa-water text-primary me-2"></i> Sumur Resapan & Biopori</div><div class="card-body"><div class="chart-wrapper"><canvas id="chartSumur"></canvas></div></div></div>
             </div>
         </div>
 
@@ -98,13 +109,31 @@
                             </div>
                             <!-- Rumus -->
                             <div class="col-lg-4">
-                                <div class="formula-box h-100">
-                                    <h6 class="fw-bold text-primary mb-3"><i class="fas fa-calculator me-2"></i> RUMUS PERHITUNGAN</h6>
-                                    <div class="formula-row"><strong>1. Pohon (Tree Planting)</strong><span class="formula-code">n/400 * VWB * 31.536 * 75%</span><small>VWB = 0.02495 | n = Jml Pohon</small></div>
-                                    <div class="formula-row"><strong>2. Sumur Resapan (Well)</strong><span class="formula-code">n * 16000 * 163 / 1.000.000</span><small>Vol*Inf = 16.000 | Hujan = 163</small></div>
-                                    <div class="formula-row"><strong>3. Rorak (Trench)</strong><span class="formula-code">n * 2940 * 3 * 163 / 1.000.000</span><small>Vol = 2940 L | Inf = 3x</small></div>
-                                    <div class="formula-row"><strong>4. Biopori (Biopore)</strong><span class="formula-code">n * 10 * 3 * 163 / 1.000.000</span><small>Vol = 10 L | Inf = 3x</small></div>
-                                    <div class="alert alert-info mt-3 p-2 mb-0 small"><i class="fas fa-info-circle"></i> <strong>SIPA Limit:</strong> 2.996 ML/Year</div>
+                                <div class="formula-box">
+                                    <div class="formula-title"><i class="fas fa-calculator me-2"></i> Rumus Perhitungan</div>
+                                    <div class="formula-row">
+                                        <span class="formula-name">1. Pohon (Tree Planting)</span>
+                                        <span class="formula-code">n/400 * VWB * 31.536 * 75%</span>
+                                        <span class="formula-note">VWB = 0.02495 | n = Jml Pohon</span>
+                                    </div>
+                                    <div class="formula-row">
+                                        <span class="formula-name">2. Sumur Resapan (Well)</span>
+                                        <span class="formula-code">n * 16000 * 163 / 1.000.000</span>
+                                        <span class="formula-note">Vol*Inf = 16.000 | Hujan = 163</span>
+                                    </div>
+                                    <div class="formula-row">
+                                        <span class="formula-name">3. Rorak (Trench)</span>
+                                        <span class="formula-code">n * 2940 * 3 * 163 / 1.000.000</span>
+                                        <span class="formula-note">Vol = 2940 L | Inf = 3x</span>
+                                    </div>
+                                    <div class="formula-row">
+                                        <span class="formula-name">4. Biopori (Biopore)</span>
+                                        <span class="formula-code">n * 10 * 3 * 163 / 1.000.000</span>
+                                        <span class="formula-note">Vol = 10 L | Inf = 3x</span>
+                                    </div>
+                                    <div class="alert alert-primary mt-3 mb-0 py-2 px-3 small">
+                                        <i class="fas fa-info-circle me-1"></i> <strong>SIPA Limit:</strong> 2.996 ML/Year
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -118,48 +147,74 @@
             <div class="card-header-custom"><i class="fas fa-list text-dark me-2"></i> Riwayat Program Tahunan</div>
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light"><tr><th class="ps-4">Tahun</th><th>Nama Program</th><th class="text-center">Pohon</th><th class="text-center">Rorak</th><th class="text-center">Sumur</th><th class="text-center">Biopori</th><th class="text-end pe-4">Est. Infiltrasi (ML/Y)</th><th>Aksi</th></tr></thead>
+                    <thead class="table-light"><tr><th class="ps-4">Tahun</th><th>Nama Program</th><th class="text-center">Pohon</th><th class="text-center">Rorak</th><th class="text-center">Sumur Resapan</th><th class="text-center">Biopori</th><th class="text-end pe-4">Est. Infiltrasi (ML/Y)</th><th>Aksi</th></tr></thead>
                     <tbody id="tableBody"></tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <!-- SCRIPT GABUNGAN (DATA + LOGIC) -->
+    <!-- SCRIPT & DATA -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // 1. DATA GEOGRAFIS (Dikurangi agar muat, aslinya panjang)
-        const POLY_DESA_GALIH = [[-7.808762, 112.896381], [-7.812848, 112.895910], [-7.818646, 112.899821], [-7.824179, 112.905970], [-7.825552, 112.912372], [-7.829724, 112.919683], [-7.808762, 112.896381]]; // Sample Polygon
+        // 1. DATA MASTER KOORDINAT (Disalin dari database_planting.js Anda)
+        const POLY_DESA_GALIH = [[-7.808762, 112.896381], [-7.812848, 112.895910], [-7.818646, 112.899821], [-7.824179, 112.905970], [-7.825552, 112.912372], [-7.829724, 112.919683], [-7.808762, 112.896381]];
         const POLY_HUTAN_LINDUNG = [[-7.804688, 112.906485], [-7.806219, 112.906227], [-7.810130, 112.905412], [-7.804688, 112.906485]];
+        const POLY_PETUNG = [[-7.796914, 112.919663], [-7.803634, 112.919162], [-7.808091, 112.918568], [-7.812625, 112.919209], [-7.829622, 112.920887], [-7.796914, 112.919663]];
+
+        // 17 Delineasi 2024 (Data dari Anda)
         const DATA_2024_POLYGONS = [
-            { name: "Hutan Lestari Supinto", color: "#006064", coords: [[-7.81659, 112.90507], [-7.81652, 112.90519], [-7.81659, 112.90507]] }, // Sample Only
-            { name: "Hutan Lestari Karji", color: "#e65100", coords: [[-7.81367, 112.90254], [-7.81335, 112.90337], [-7.81367, 112.90254]] }
+            { name: "Hutan Lestari Supinto", color: "#006064", coords: [[-7.81659, 112.90507], [-7.81652, 112.90519], [-7.81659, 112.90507]] },
+            { name: "Hutan lestari Karji", color: "#e65100", coords: [[-7.81367, 112.90254], [-7.81335, 112.90337], [-7.81367, 112.90254]] },
+            { name: "Hutan Lestari Andari 01", color: "#ff5252", coords: [[-7.8151, 112.90525], [-7.81502, 112.9053], [-7.8151, 112.90525]] },
+            { name: "Hutan Lestari Juman Tugu 02", color: "#ffea00", coords: [[-7.81609, 112.91223], [-7.81635, 112.91197], [-7.81609, 112.91223]] },
+            { name: "Hutan Lestari Andari 02", color: "#01579b", coords: [[-7.80581, 112.90023], [-7.8054, 112.8995], [-7.80581, 112.90023]] },
+            { name: "Hutan Lestari Kariono Gondrong", color: "#3949ab", coords: [[-7.81266, 112.90895], [-7.81282, 112.90896], [-7.81266, 112.90895]] },
+            { name: "Hutan Lestari Misti", color: "#558b2f", coords: [[-7.81492, 112.91344], [-7.81455, 112.91367], [-7.81492, 112.91344]] },
+            { name: "Hutan Lestari Pecaton", color: "#0f9d58", coords: [[-7.82163, 112.906], [-7.8211, 112.90539], [-7.82163, 112.906]] },
+            { name: "Hutan Lestari Juman Gentong 01", color: "#ffd600", coords: [[-7.79375, 112.91429], [-7.79375, 112.9144], [-7.79375, 112.91429]] },
+            { name: "Hutan Lestari Seneto", color: "#880e4f", coords: [[-7.81678, 112.91058], [-7.81652, 112.91041], [-7.81678, 112.91058]] },
+            { name: "Hutan Lestari Ngadi", color: "#7cb342", coords: [[-7.80997, 112.91318], [-7.80985, 112.91298], [-7.80997, 112.91318]] },
+            { name: "Hutan lestari Kariono Brewok", color: "#0288d1", coords: [[-7.81441, 112.91303], [-7.81437, 112.91301], [-7.81441, 112.91303]] },
+            { name: "Hutan Lestari Sugita", color: "#097138", coords: [[-7.81366, 112.90308], [-7.814, 112.90369], [-7.81366, 112.90308]] },
+            { name: "Hutan Lestari Sukarjo", color: "#fbc02d", coords: [[-7.8072, 112.90118], [-7.80669, 112.90127], [-7.8072, 112.90118]] },
+            { name: "Hutan lestari Wanto", color: "#f9a825", coords: [[-7.81374, 112.90433], [-7.81315, 112.90408], [-7.81374, 112.90433]] }
         ];
 
-        // 2. DATA UTAMA (DATA EXCEL SS5)
+        // 2. DATA UTAMA (SESUAI SS2 & KODE LAMA ANDA)
         const db_planting = {
             years: {
                 "tanam_2021": {
                     id: "tanam_2021", year: 2021, location: "Program Konservasi Hutan Lindung",
-                    water_inputs: { tree: 5000, well: 16, biopore: 300, trench: 305, water_access: 0 },
-                    species: { "Alpukat": 105, "Nangka": 113, "Sukun": 67, "Lainnya": 70 },
-                    points: [[-7.822, 112.905, "Pohon"]], areaPolygon: [POLY_DESA_GALIH]
+                    // Data Sesuai SS2 Detail Page (5.000 Pohon, 250 Rorak, 10 Sumur, 300 Biopori)
+                    water_inputs: { tree: 5000, well: 10, biopore: 300, trench: 250, water_access: 0 },
+                    species: { "Alpukat": 105, "Nangka": 113, "Sukun": 67, "Keluwih": 27, "Jambu Air": 15, "Longan": 10, "Lainnya": 70 },
+                    points: [[-7.822, 112.905, "Pohon"], [-7.810, 112.907, "Pohon"]], 
+                    areaPolygon: [POLY_DESA_GALIH, POLY_HUTAN_LINDUNG]
                 },
                 "tanam_2022": {
                     id: "tanam_2022", year: 2022, location: "Program Konservasi Tahun 2022",
-                    water_inputs: { tree: 10000, well: 12, biopore: 300, trench: 714, water_access: 0 },
-                    species: { "Kopi Robusta": 9500, "Naungan": 500 }, points: [], areaPolygon: [POLY_DESA_GALIH]
+                    // Data Sesuai Kode Lama Anda
+                    water_inputs: { tree: 10000, well: 20, biopore: 300, trench: 750, water_access: 0 },
+                    species: { "Kopi Robusta": 9500, "Naungan": 500 },
+                    points: [[-7.814, 112.927, "Kopi"]], 
+                    areaPolygon: [POLY_DESA_GALIH, POLY_PETUNG]
                 },
                 "tanam_2023": {
                     id: "tanam_2023", year: 2023, location: "Program Konservasi AQUA Keboncandi 2023",
-                    water_inputs: { tree: 5130, well: 5, biopore: 100, trench: 503, water_access: 0 },
-                    species: { "Kopi Robusta": 4000, "Naungan": 1000 }, points: [], areaPolygon: [POLY_DESA_GALIH]
+                    // Data Sesuai Kode Lama Anda
+                    water_inputs: { tree: 5000, well: 0, biopore: 110, trench: 500, water_access: 0 },
+                    species: { "Kopi Robusta": 4000, "Naungan": 1000 },
+                    points: [[-7.822, 112.905, "Kopi"]], 
+                    areaPolygon: [POLY_DESA_GALIH]
                 },
                 "tanam_2024": {
                     id: "tanam_2024", year: 2024, location: "Program Konservasi Tahun 2024",
-                    water_inputs: { tree: 2000, well: 1, biopore: 0, trench: 630, water_access: 449.4 },
-                    species: { "Kopi Robusta": 1000, "Durian": 300, "Alpukat": 200, "Lainnya": 500 },
-                    points: [[-7.81636, 112.90502, "Rorak Supinto"]], areaPolygon: [POLY_DESA_GALIH]
+                    // Data Sesuai Kode 2024 Anda (Estimasi)
+                    water_inputs: { tree: 2500, well: 0, biopore: 0, trench: 450, water_access: 0 },
+                    species: { "Kopi Robusta": 1000, "Durian": 300, "Alpukat": 200, "Lainnya": 1000 },
+                    points: [[-7.81636, 112.90502, "Rorak Supinto"]], 
+                    areaPolygon: [POLY_DESA_GALIH, ...DATA_2024_POLYGONS]
                 }
             }
         };
@@ -219,18 +274,28 @@
         document.getElementById('totalRorak').innerText = totalR.toLocaleString('id-ID');
         document.getElementById('totalReplenish').innerText = totalReplenish.toLocaleString('id-ID', {maximumFractionDigits:0});
 
-        // MAP
+        // MAP (FIXED)
         var map = L.map('map').setView([-7.810, 112.908], 13);
         L.tileLayer('https://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}', { maxZoom: 20 }).addTo(map);
         
+        const iconTree = L.divIcon({html: '<div style="background:#2e7d32;width:8px;height:8px;border-radius:50%;border:1px solid white;"></div>'});
+        const iconRorak = L.divIcon({html: '<div style="background:#ff9800;width:10px;height:10px;border-radius:50%;border:1px solid white;"></div>'});
+
         Object.values(db_planting.years).forEach(item => {
             if (item.areaPolygon) {
                 item.areaPolygon.forEach(poly => {
+                    // Logic: Jika format baru (object dengan coords), pakai properti color. Jika lama (array), pakai kuning.
                     if (poly.coords && poly.color) {
-                        L.polygon(poly.coords, { color: poly.color, fillColor: poly.color, fillOpacity: 0.4, weight: 1 }).addTo(map);
+                        L.polygon(poly.coords, { color: poly.color, fillColor: poly.color, fillOpacity: 0.4, weight: 1 }).bindPopup(poly.name).addTo(map);
                     } else if (Array.isArray(poly)) {
                         L.polygon(poly, { color: '#f1c40f', fillColor: '#f1c40f', fillOpacity: 0.1, weight: 1 }).addTo(map);
                     }
+                });
+            }
+            if(item.points){
+                item.points.forEach(pt => {
+                    let isRorak = pt[2].toLowerCase().includes("rorak");
+                    L.marker([pt[0], pt[1]], {icon: isRorak ? iconRorak : iconTree}).addTo(map);
                 });
             }
         });
@@ -250,7 +315,7 @@
 
         new Chart(document.getElementById('chartSumur'), {
             type: 'bar',
-            data: { labels: years, datasets: [{ label: 'Sumur', data: dataSumur, backgroundColor: '#0277bd', borderRadius:4 }, { label: 'Biopori', data: dataBiopori, backgroundColor: '#4fc3f7', borderRadius:4 } ] },
+            data: { labels: years, datasets: [{ label: 'Sumur Resapan', data: dataSumur, backgroundColor: '#0277bd', borderRadius:4 }, { label: 'Biopori', data: dataBiopori, backgroundColor: '#4fc3f7', borderRadius:4 } ] },
             options: { maintainAspectRatio: false, plugins: { datalabels:{display:false}, legend:{position:'bottom'} }, scales:{x:{stacked:false}, y:{beginAtZero:true}} }
         });
 
