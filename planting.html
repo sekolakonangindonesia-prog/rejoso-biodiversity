@@ -15,19 +15,16 @@
 
     <style>
         body { font-family: 'Montserrat', sans-serif; background-color: #f0f2f5; padding-bottom: 50px; }
-        
         .hero-header { position: relative; background: url('hutan-bg.jpg') no-repeat center center/cover; height: 350px; display: flex; align-items: center; justify-content: center; color: white; margin-bottom: 30px; border-bottom: 5px solid #2e7d32; }
         .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); }
         .hero-content { position: relative; z-index: 2; text-align: center; }
         .logo-top { height: 50px; margin-right: 15px; }
         .btn-home { background: rgba(255,255,255,0.2); color: white; border: 1px solid white; border-radius: 50px; padding: 8px 20px; text-decoration: none; display:inline-block; margin-top:10px; }
-        
         .stat-card { color: white; border-radius: 8px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); min-height: 140px; position:relative; overflow:hidden;}
         .stat-val { font-size: 2.8rem; font-weight: 800; line-height: 1; margin-bottom: 5px; }
         .stat-header { font-weight: 700; font-size: 0.9rem; text-transform: uppercase; margin-bottom: 10px; opacity: 0.9; }
         .bg-tree { background: #2e7d32; } .bg-rorak { background: #5d4037; } .bg-sumur { background: #0277bd; }
         .stat-icon { position: absolute; right: 15px; bottom: 15px; font-size: 4rem; opacity: 0.15; }
-
         .card-custom { border: none; border-radius: 8px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px; height: 100%; }
         .card-header-custom { background: white; padding: 15px; border-bottom: 1px solid #eee; font-weight: 700; color: #333; }
         #map { height: 450px; width: 100%; z-index: 1; border-radius: 0 0 8px 8px; }
@@ -52,15 +49,12 @@
     </div>
 
     <div class="container-fluid px-4" style="margin-top: -50px; position: relative; z-index: 10;">
-        
-        <!-- STATS -->
         <div class="row mb-4">
             <div class="col-md-4 mb-2"><div class="stat-card bg-tree"><div class="stat-header">Total Pohon Ditanam</div><div class="stat-val" id="totalTrees">0</div><small>Akumulasi 2021-2025</small><i class="fas fa-tree stat-icon"></i></div></div>
             <div class="col-md-4 mb-2"><div class="stat-card bg-rorak"><div class="stat-header">Total Rorak</div><div class="stat-val" id="totalRorak">0</div><small>Unit Sipil Teknis</small><i class="fas fa-inbox stat-icon"></i></div></div>
             <div class="col-md-4 mb-2"><div class="stat-card bg-sumur"><div class="stat-header">Total Sumur & Biopori</div><div class="stat-val" id="totalSumur">0</div><small>Unit Infiltrasi</small><i class="fas fa-water stat-icon"></i></div></div>
         </div>
 
-        <!-- PETA & GRAFIK POHON -->
         <div class="row mb-4">
             <div class="col-lg-8 mb-3"><div class="card card-custom"><div class="card-header-custom d-flex justify-content-between"><span><i class="fas fa-map-marked-alt text-success me-2"></i> Peta Sebaran</span><span class="badge bg-warning text-dark">Sampling & Area</span></div><div class="card-body p-0"><div id="map"></div></div></div></div>
             <div class="col-lg-4 mb-3">
@@ -69,14 +63,12 @@
             </div>
         </div>
 
-        <!-- GRAFIK SIPIL TEKNIS -->
         <div class="row mb-4">
             <div class="col-md-4 mb-3"><div class="card card-custom"><div class="card-header-custom"><i class="fas fa-inbox text-warning me-2" style="color:#5d4037!important"></i> Pembuatan Rorak</div><div class="card-body"><div class="chart-wrapper"><canvas id="chartRorak"></canvas></div></div></div></div>
             <div class="col-md-4 mb-3"><div class="card card-custom"><div class="card-header-custom"><i class="fas fa-water text-primary me-2"></i> Sumur & Biopori</div><div class="card-body"><div class="chart-wrapper"><canvas id="chartSumur"></canvas></div></div></div></div>
             <div class="col-md-4 mb-3"><div class="card card-custom"><div class="card-header-custom"><i class="fas fa-balance-scale text-info me-2"></i> Water Balance</div><div class="card-body p-2"><div class="wb-card"><div><i class="fas fa-calculator fa-3x text-primary mb-3"></i><h5 class="fw-bold text-primary">Kalkulasi Neraca Air</h5><p class="small text-muted px-3">Sedang dalam proses penghitungan tim ahli.</p><span class="badge bg-secondary">Dalam Pengembangan</span></div></div></div></div></div>
         </div>
 
-        <!-- TABEL LIST (YANG TADI HILANG KARENA ERROR JS DI ATASNYA) -->
         <div class="card card-custom">
             <div class="card-header-custom"><i class="fas fa-list text-dark me-2"></i> Riwayat Program Tahunan</div>
             <div class="table-responsive">
@@ -91,128 +83,146 @@
     <script src="database_planting.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
+        // INISIALISASI
         Chart.register(ChartDataLabels);
-
+        
         let totalT=0, totalR=0, totalS=0;
         let years=[], dataTrees=[], dataRorak=[], dataSumur=[], dataBiopori=[];
         let speciesTotal={};
 
-        // LOOP DATA
-        const sortedKeys = Object.keys(db_planting.years).sort(); 
-        
-        sortedKeys.forEach(key => {
-            const item = db_planting.years[key];
+        // CEK DATA DULU
+        if (typeof db_planting === 'undefined') {
+            alert("Database Error: File database_planting.js tidak terbaca. Pastikan file ada di folder yang sama.");
+        } else {
+            // LOOP DATA
+            const sortedKeys = Object.keys(db_planting.years).sort(); 
             
-            totalT += item.stats.trees;
-            totalR += item.stats.rorak;
-            
-            // Perbaikan Logika Biopori agar tidak NaN
-            let b = item.stats.biopori || 0;
-            let s = item.stats.sumur || 0;
-            totalS += (s + b);
+            sortedKeys.forEach(key => {
+                const item = db_planting.years[key];
+                
+                totalT += item.stats.trees;
+                totalR += item.stats.rorak;
+                
+                let b = item.stats.biopori || 0;
+                let s = item.stats.sumur || 0;
+                totalS += (s + b);
 
-            years.push(item.year);
-            dataTrees.push(item.stats.trees);
-            dataRorak.push(item.stats.rorak);
-            dataSumur.push(s);
-            dataBiopori.push(b);
+                years.push(item.year);
+                dataTrees.push(item.stats.trees);
+                dataRorak.push(item.stats.rorak);
+                dataSumur.push(s);
+                dataBiopori.push(b);
 
-            for (const [sp, val] of Object.entries(item.species)) {
-                if(sp !== "Tanaman Eksisting" && sp !== "Lainnya") {
-                     speciesTotal[sp] = (speciesTotal[sp] || 0) + val;
+                for (const [sp, val] of Object.entries(item.species)) {
+                    if(sp !== "Tanaman Eksisting" && sp !== "Lainnya") {
+                        speciesTotal[sp] = (speciesTotal[sp] || 0) + val;
+                    }
                 }
+            });
+
+            // UPDATE STATISTIK UI
+            document.getElementById('totalTrees').innerText = totalT.toLocaleString().replace(/,/g, ".");
+            document.getElementById('totalRorak').innerText = totalR.toLocaleString().replace(/,/g, ".");
+            document.getElementById('totalSumur').innerText = totalS.toLocaleString().replace(/,/g, ".");
+
+            // RENDER MAP
+            var map = L.map('map').setView([-7.808, 112.910], 13);
+            L.tileLayer('https://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}', { maxZoom: 20 }).addTo(map);
+
+            const iconTree = L.divIcon({html: '<div style="background:#2e7d32;width:10px;height:10px;border-radius:50%;border:1px solid white;"></div>', iconSize:[10,10]});
+            const iconRorak = L.divIcon({html: '<div style="background:#fbc02d;width:10px;height:10px;border-radius:50%;border:1px solid white;"></div>', iconSize:[10,10]});
+
+            // 1. Render 17 Blok Warna Warni (2024)
+            if(db_planting.polygons && db_planting.polygons.features) {
+                L.geoJSON(db_planting.polygons, {
+                    style: function(f) { 
+                        return { 
+                            color: f.properties.color || '#f1c40f', 
+                            fillColor: f.properties.color || '#f1c40f', 
+                            fillOpacity: 0.4, 
+                            weight: 2 
+                        }; 
+                    },
+                    onEachFeature: function(f, l) { l.bindPopup(`<b>${f.properties.name}</b>`); }
+                }).addTo(map);
             }
-        });
 
-        document.getElementById('totalTrees').innerText = totalT.toLocaleString().replace(/,/g, ".");
-        document.getElementById('totalRorak').innerText = totalR.toLocaleString().replace(/,/g, ".");
-        document.getElementById('totalSumur').innerText = totalS.toLocaleString().replace(/,/g, ".");
+            // 2. Render Polygon & Titik Tahunan
+            Object.values(db_planting.years).forEach(item => {
+                // Polygon
+                if (item.areaPolygon) {
+                    item.areaPolygon.forEach(poly => {
+                        L.polygon(poly, { color: '#f1c40f', fillColor: '#f1c40f', fillOpacity: 0.1, weight: 1 }).bindPopup(`<b>${item.location}</b>`).addTo(map);
+                    });
+                }
+                
+                // Points
+                if(item.points){
+                    item.points.forEach(pt => {
+                        let icon = pt[2].includes("Rorak") ? iconRorak : iconTree;
+                        L.marker([pt[0], pt[1]], {icon: icon}).addTo(map).bindPopup(`<b>${item.year}</b><br>${pt[2]}`);
+                    });
+                }
+            });
 
-        // MAP
-        var map = L.map('map').setView([-7.760, 112.920], 12);
-        L.tileLayer('https://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}', { maxZoom: 20 }).addTo(map);
+            // RENDER CHARTS
+            new Chart(document.getElementById('barChart'), {
+                type: 'bar',
+                data: { labels: years, datasets: [{ label: 'Pohon', data: dataTrees, backgroundColor: '#2e7d32', borderRadius:4 }] },
+                options: { maintainAspectRatio: false, plugins: { legend: {display:false}, datalabels: {color:'#333', anchor:'end', align:'top', font:{size:9}} }, scales: { y: {beginAtZero: true} } }
+            });
 
-        const iconTree = L.divIcon({html: '<div style="background:#2e7d32;width:10px;height:10px;border-radius:50%;border:1px solid white;"></div>'});
+            const sortedSpecies = Object.entries(speciesTotal).sort((a,b) => b[1] - a[1]);
+            const topSpecies = sortedSpecies.slice(0, 5);
+            const otherCount = sortedSpecies.slice(5).reduce((acc, curr) => acc + curr[1], 0);
+            let pieLabels = topSpecies.map(x => x[0]);
+            let pieData = topSpecies.map(x => x[1]);
+            if(otherCount > 0) { pieLabels.push("Lainnya"); pieData.push(otherCount); }
 
-        if(typeof db_planting.polygons !== 'undefined' && db_planting.polygons.features) {
-            L.geoJSON(db_planting.polygons, {
-                style: function(f) { return { color: f.properties.color || '#f1c40f', fillColor: f.properties.color || '#f1c40f', fillOpacity: 0.3, weight: 2 }; },
-                onEachFeature: function(f, l) { l.bindPopup(`<b>${f.properties.name}</b>`); }
-            }).addTo(map);
-        }
+            new Chart(document.getElementById('pieChart'), {
+                type: 'doughnut',
+                data: { labels: pieLabels, datasets: [{ data: pieData, backgroundColor: ['#1b5e20', '#2e7d32', '#43a047', '#66bb6a', '#81c784', '#b2dfdb'] }] },
+                options: { maintainAspectRatio: false, plugins: { legend: {position:'right', labels:{boxWidth:10}}, datalabels: {display:false} } }
+            });
 
-        Object.values(db_planting.years).forEach(item => {
-            if(item.points){
-                item.points.forEach(pt => {
-                    L.marker([pt[0], pt[1]], {icon: iconTree}).addTo(map).bindPopup(`<b>${item.year}</b><br>${item.location}`);
-                });
-            }
-            if (item.areaPolygon) {
-                L.polygon(item.areaPolygon, { color: '#f1c40f', fillColor: '#f1c40f', fillOpacity: 0.3, weight: 2 }).bindPopup(`<b>Area Konservasi ${item.year}</b>`).addTo(map);
-            }
-        });
-
-        // GRAFIK POHON
-        new Chart(document.getElementById('barChart'), {
-            type: 'bar',
-            data: { labels: years, datasets: [{ label: 'Pohon', data: dataTrees, backgroundColor: '#2e7d32', borderRadius:4 }] },
-            options: { maintainAspectRatio: false, plugins: { legend: {display:false}, datalabels: {color:'#333', anchor:'end', align:'top', font:{size:9}} }, scales: { y: {beginAtZero: true} } }
-        });
-
-        // GRAFIK PIE
-        const sortedSpecies = Object.entries(speciesTotal).sort((a,b) => b[1] - a[1]);
-        const topSpecies = sortedSpecies.slice(0, 5);
-        const otherCount = sortedSpecies.slice(5).reduce((acc, curr) => acc + curr[1], 0);
-        let pieLabels = topSpecies.map(x => x[0]);
-        let pieData = topSpecies.map(x => x[1]);
-        if(otherCount > 0) { pieLabels.push("Lainnya"); pieData.push(otherCount); }
-
-        new Chart(document.getElementById('pieChart'), {
-            type: 'doughnut',
-            data: { labels: pieLabels, datasets: [{ data: pieData, backgroundColor: ['#1b5e20', '#2e7d32', '#43a047', '#66bb6a', '#81c784', '#b2dfdb'] }] },
-            options: { maintainAspectRatio: false, plugins: { legend: {position:'right', labels:{boxWidth:10}}, datalabels: {display:false} } }
-        });
-
-        // GRAFIK RORAK (HILANGKAN TAHUN TERAKHIR/2025 JIKA DATA 0 AGAR RAPI)
-        let rorakYears = years.slice(0, -1); 
-        let rorakValues = dataRorak.slice(0, -1); 
-        
-        new Chart(document.getElementById('chartRorak'), {
-            type: 'bar',
-            data: { labels: rorakYears, datasets: [{ label: 'Rorak', data: rorakValues, backgroundColor: '#795548', borderRadius:4 }] },
-            options: { maintainAspectRatio: false, plugins: { legend:{display:false}, datalabels:{anchor:'end', align:'top', color:'#333'} } }
-        });
-
-        // GRAFIK SUMUR & BIOPORI (PERBAIKAN VARIABEL DI SINI)
-        new Chart(document.getElementById('chartSumur'), {
-            type: 'bar',
-            data: { 
-                labels: years, 
-                datasets: [
-                    { label: 'Sumur Resapan', data: dataSumur, backgroundColor: '#0277bd', borderRadius:4 }, // SUDAH DIPERBAIKI (sebelumnya sumurData)
-                    { label: 'Biopori', data: dataBiopori, backgroundColor: '#4fc3f7', borderRadius:4 } // SUDAH DIPERBAIKI (sebelumnya bioporiData)
-                    ]
-         },
-            options: { maintainAspectRatio: false, plugins: { datalabels:{display:false}, legend:{position:'bottom'} }, scales:{x:{stacked:true}, y:{stacked:true}} }
-        });
-
-        // TABLE
-        const tbody = document.getElementById('tableBody');
-        sortedKeys.reverse().forEach(key => {
-            const item = db_planting.years[key];
-            // Format tampilan teks sumur & biopori
-            let sipilLain = item.stats.biopori ? `Sumur: ${item.stats.sumur}, Biopori: ${item.stats.biopori}` : `Sumur: ${item.stats.sumur}`;
+            let rorakYears = years.slice(0, -1); 
+            let rorakValues = dataRorak.slice(0, -1); 
             
-             tbody.innerHTML += `
-            <tr onclick="window.location.href='planting_detail.html?id=${key}'">
-                <td class="ps-4 fw-bold">${item.year}</td>
-                <td>${item.location}</td>
-                <td><span class="badge badge-pill bg-success">${item.stats.trees.toLocaleString().replace(/,/g, ".")}</span></td>
-                <td><span class="badge badge-pill text-white" style="background:#795548">${item.stats.rorak}</span></td>
-                <td><span class="badge badge-pill bg-info text-dark">${sipilLain}</span></td>
-                <td><button class="btn btn-sm btn-outline-secondary rounded-pill px-3">Detail</button></td>
-            </tr>`;
-        });
+            new Chart(document.getElementById('chartRorak'), {
+                type: 'bar',
+                data: { labels: rorakYears, datasets: [{ label: 'Rorak', data: rorakValues, backgroundColor: '#795548', borderRadius:4 }] },
+                options: { maintainAspectRatio: false, plugins: { legend:{display:false}, datalabels:{anchor:'end', align:'top', color:'#333'} } }
+            });
+
+            new Chart(document.getElementById('chartSumur'), {
+                type: 'bar',
+                data: { 
+                    labels: years, 
+                    datasets: [
+                        { label: 'Sumur Resapan', data: dataSumur, backgroundColor: '#0277bd', borderRadius:4 },
+                        { label: 'Biopori', data: dataBiopori, backgroundColor: '#4fc3f7', borderRadius:4 } 
+                    ]
+                },
+                options: { maintainAspectRatio: false, plugins: { datalabels:{display:false}, legend:{position:'bottom'} }, scales:{x:{stacked:true}, y:{stacked:true}} }
+            });
+
+            // RENDER TABLE
+            const tbody = document.getElementById('tableBody');
+            sortedKeys.reverse().forEach(key => {
+                const item = db_planting.years[key];
+                let sipilLain = item.stats.biopori ? `Sumur: ${item.stats.sumur}, Biopori: ${item.stats.biopori}` : `Sumur: ${item.stats.sumur}`;
+                
+                tbody.innerHTML += `
+                <tr onclick="window.location.href='planting_detail.html?id=${key}'">
+                    <td class="ps-4 fw-bold">${item.year}</td>
+                    <td>${item.location}</td>
+                    <td><span class="badge badge-pill bg-success">${item.stats.trees.toLocaleString().replace(/,/g, ".")}</span></td>
+                    <td><span class="badge badge-pill text-white" style="background:#795548">${item.stats.rorak}</span></td>
+                    <td><span class="badge badge-pill bg-info text-dark">${sipilLain}</span></td>
+                    <td><button class="btn btn-sm btn-outline-secondary rounded-pill px-3">Detail</button></td>
+                </tr>`;
+            });
+        }
     </script>
 </body>
 </html>
