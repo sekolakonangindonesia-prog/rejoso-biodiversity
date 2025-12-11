@@ -174,17 +174,21 @@ const POLY_TEGAL_KARYONO = [
     [-7.81462, 112.91297], [-7.81460, 112.91305], [-7.81448, 112.91310], [-7.81442, 112.91306]
 ];
 
-// 6. Plot Dalam Petung (2022)
-const POLY_PLOT_PETUNG = [
+// 6. Plot Dalam Petung (2022) - Updated from new JSON
+const POLY_2022_PLOT_PETUNG = [
     [-7.814693, 112.927523], [-7.814690, 112.927990], [-7.814259, 112.927990], 
     [-7.814263, 112.927519], [-7.814693, 112.927523]
 ];
+// Keep old variable for backward compatibility if needed, but updated data uses new name
+const POLY_PLOT_PETUNG = POLY_2022_PLOT_PETUNG;
 
-// 7. Plot Galih Dalam (2022)
-const POLY_PLOT_GALIH = [
+
+// 7. Plot Galih Dalam (2022) - Updated from new JSON
+const POLY_2022_PLOT_GALIH = [
     [-7.808837, 112.911005], [-7.809100, 112.911005], [-7.809101, 112.911281],
     [-7.808840, 112.911275], [-7.808837, 112.911005]
 ];
+const POLY_PLOT_GALIH = POLY_2022_PLOT_GALIH;
 
 // 8. DATA DELINEASI 2024 (BARU)
 const POLY_2024_SUPINTO = [
@@ -234,7 +238,19 @@ const POLY_HUTAN_LINDUNG = [
     [-7.803668, 112.906313], [-7.803923, 112.906227], [-7.804305, 112.906399], [-7.804688, 112.906485]
 ];
 
-// Array Point Data 2021 (Diekstrak dari JSON)
+// 10. Typography Petung (Delineasi 2022)
+const POLY_2022_TYPO_PETUNG = [
+    [-7.8118907, 112.9276113], [-7.8115827, 112.9270373], [-7.8123237, 112.9256773], [-7.8138547, 112.9255603],
+    [-7.8151647, 112.9281453], [-7.8144517, 112.9288653], [-7.8123527, 112.9288453], [-7.8118907, 112.9276113]
+];
+
+// 11. Typography Galih (Delineasi 2022)
+const POLY_2022_TYPO_GALIH = [
+    [-7.808219, 112.911481], [-7.809298, 112.908808], [-7.814644, 112.909275], [-7.814953, 112.911377],
+    [-7.814799, 112.912363], [-7.812755, 112.912583], [-7.808219, 112.911481]
+];
+
+// Array Point Data 2021
 const POINTS_2021_SURVEY = [
     [-7.822741, 112.905788, "Alpukat"], [-7.806920, 112.909211, "Sawo Duren"], [-7.806136, 112.902091, "Sukun"],
     [-7.817353, 112.915786, "Alpukat"], [-7.817128, 112.914718, "Nangka"], [-7.808558, 112.909899, "Sukun"],
@@ -387,6 +403,40 @@ const POINTS_2021_SURVEY = [
     [-7.810068, 112.907426, "Sukun"]
 ];
 
+// 12. Array Point Data 2022 (Diekstrak dari JSON)
+const POINTS_2022_SURVEY = [
+    [-7.814316, 112.92754, "Kopi Robusta"], [-7.814361, 112.927745, "Kopi Robusta"], [-7.81451, 112.927654, "Kopi Robusta"],
+    [-7.814442, 112.927582, "Kopi Robusta"], [-7.814422, 112.927641, "Kopi Robusta"], [-7.814557, 112.927656, "Kopi Robusta"],
+    [-7.814465, 112.927682, "Kopi Robusta"], [-7.814322, 112.927738, "Kopi Robusta"], [-7.814407, 112.927661, "Kopi Robusta"],
+    [-7.81444, 112.927632, "Kopi Robusta"], [-7.814458, 112.927613, "Kopi Robusta"], [-7.814344, 112.927759, "Kopi Robusta"],
+    [-7.814326, 112.927714, "Kopi Robusta"], [-7.814362, 112.927743, "Kopi Robusta"], [-7.814622, 112.927581, "Kopi Robusta"],
+    [-7.814554, 112.927641, "Kopi Robusta"], [-7.814449, 112.927614, "Kopi Robusta"], [-7.814533, 112.92765, "Kopi Robusta"],
+    [-7.814524, 112.927729, "Kopi Robusta"], [-7.814521, 112.927655, "Kopi Robusta"], [-7.81452, 112.92769, "Kopi Robusta"],
+    [-7.814445, 112.927688, "Kopi Robusta"], [-7.814412, 112.927663, "Kopi Robusta"], [-7.814462, 112.927672, "Kopi Robusta"],
+    [-7.81441, 112.92778, "Kopi Robusta"], [-7.814413, 112.927606, "Kopi Robusta"], [-7.814385, 112.92766, "Kopi Robusta"],
+    [-7.814397, 112.927658, "Kopi Robusta"], [-7.814485, 112.927653, "Kopi Robusta"], [-7.814364, 112.927668, "Kopi Robusta"],
+    [-7.81444, 112.927617, "Kopi Robusta"], [-7.814396, 112.927685, "Kopi Robusta"], [-7.814372, 112.927763, "Kopi Robusta"],
+    [-7.814382, 112.927655, "Kopi Robusta"], [-7.814383, 112.927623, "Kopi Robusta"], [-7.814391, 112.927719, "Kopi Robusta"],
+    [-7.81433, 112.927714, "Kopi Robusta"], [-7.809043, 112.911077, "Kopi Robusta"], [-7.808955, 112.911144, "Kopi Robusta"],
+    [-7.808918, 112.911127, "Kopi Robusta"], [-7.808939, 112.911137, "Kopi Robusta"], [-7.809048, 112.911167, "Kopi Robusta"],
+    [-7.809057, 112.911155, "Kopi Robusta"], [-7.808942, 112.911003, "Kopi Robusta"], [-7.808877, 112.911211, "Kopi Robusta"],
+    [-7.808908, 112.911141, "Kopi Robusta"], [-7.808962, 112.91111, "Kopi Robusta"], [-7.809066, 112.911163, "Kopi Robusta"],
+    [-7.809017, 112.911281, "Kopi Robusta"], [-7.808935, 112.911083, "Kopi Robusta"], [-7.808905, 112.911181, "Kopi Robusta"],
+    [-7.809087, 112.911102, "Kopi Robusta"], [-7.808968, 112.911117, "Kopi Robusta"], [-7.809055, 112.911115, "Kopi Robusta"],
+    [-7.809139, 112.911145, "Kopi Robusta"], [-7.808958, 112.911107, "Kopi Robusta"], [-7.809037, 112.911213, "Kopi Robusta"],
+    [-7.809062, 112.91112, "Kopi Robusta"], [-7.809103, 112.911119, "Kopi Robusta"], [-7.809075, 112.911068, "Kopi Robusta"],
+    [-7.808956, 112.911074, "Kopi Robusta"], [-7.809009, 112.911129, "Kopi Robusta"], [-7.808904, 112.911058, "Kopi Robusta"],
+    [-7.808887, 112.911085, "Kopi Robusta"], [-7.808911, 112.911089, "Kopi Robusta"], [-7.809043, 112.911177, "Kopi Robusta"],
+    [-7.808934, 112.911139, "Kopi Robusta"], [-7.80892, 112.911088, "Kopi Robusta"], [-7.809007, 112.91116, "Kopi Robusta"],
+    [-7.809084, 112.911073, "Kopi Robusta"], [-7.808988, 112.911262, "Kopi Robusta"], [-7.809003, 112.911093, "Kopi Robusta"],
+    [-7.809015, 112.911033, "Kopi Robusta"], [-7.808871, 112.911088, "Kopi Robusta"], [-7.808913, 112.91112, "Kopi Robusta"],
+    [-7.808854, 112.911079, "Kopi Robusta"], [-7.808918, 112.911217, "Kopi Robusta"], [-7.80896, 112.911125, "Kopi Robusta"],
+    [-7.808948, 112.911085, "Kopi Robusta"], [-7.808985, 112.911062, "Kopi Robusta"], [-7.80907, 112.911068, "Kopi Robusta"],
+    [-7.808925, 112.911101, "Kopi Robusta"], [-7.80904, 112.910957, "Kopi Robusta"], [-7.80898, 112.91102, "Kopi Robusta"],
+    [-7.808892, 112.911194, "Kopi Robusta"], [-7.809063, 112.911156, "Kopi Robusta"], [-7.809082, 112.911102, "Kopi Robusta"],
+    [-7.80889, 112.911085, "Kopi Robusta"], [-7.808982, 112.911117, "Kopi Robusta"]
+];
+
 // ============================================================
 // DATA UTAMA
 // ============================================================
@@ -460,7 +510,7 @@ const db_planting = {
             photos: ["https://via.placeholder.com/400x300?text=Tanam+2023"]
         },
 
-        // --- TAHUN 2022 ---
+        // --- TAHUN 2022 (UPDATE DATA JSON BARU) ---
         "tanam_2022": {
             id: "tanam_2022",
             year: 2022,
@@ -469,17 +519,16 @@ const db_planting = {
             stats: { trees: 10000, rorak: 750, sumur: 20, biopori: 300 },
             species: { "Kopi Robusta": 9500, "Naungan": 500 },
             
-            points: [
-                [-7.814316, 112.92754, "Kopi Robusta"], [-7.814361, 112.927745, "Kopi Robusta"],
-                [-7.809043, 112.911077, "Kopi Robusta"], [-7.808955, 112.911144, "Kopi Robusta"]
-            ],
+            points: POINTS_2022_SURVEY,
 
-            // Polygon: Master Desa Galih + Master Petung + Plot Detail
+            // Polygon: Master Desa Galih + Master Petung + Delineasi Baru
             areaPolygon: [
-                POLY_DESA_GALIH,    // Background Desa (Konsisten)
-                POLY_PETUNG,        // Background Petung (Dikembalikan)
-                POLY_PLOT_PETUNG,   // Area Detail 1
-                POLY_PLOT_GALIH     // Area Detail 2
+                POLY_DESA_GALIH,        // Background Desa
+                POLY_PETUNG,            // Background Petung
+                POLY_2022_TYPO_PETUNG,  // Delineasi Petung (Baru)
+                POLY_2022_TYPO_GALIH,   // Delineasi Galih (Baru)
+                POLY_2022_PLOT_PETUNG,  // Plot Kecil Petung
+                POLY_2022_PLOT_GALIH    // Plot Kecil Galih
             ],
             photos: ["https://via.placeholder.com/400x300?text=Kopi+2022"]
         },
@@ -503,7 +552,7 @@ const db_planting = {
             year: 2021,
             location: "Program Konservasi Hutan Lindung",
             desc: "Rehabilitasi area Hutan Lindung dengan berbagai jenis tanaman buah dan tanaman konservasi.",
-            stats: { trees: 5000, rorak: 250, sumur: 10, biopori: 300 }, // Jumlah pohon disesuaikan real count
+            stats: { trees: 407, rorak: 250, sumur: 10, biopori: 300 }, 
             species: { 
                 "Alpukat": 105, 
                 "Nangka": 113, 
