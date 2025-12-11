@@ -126,40 +126,47 @@
             document.getElementById('totalSumur').innerText = totalS.toLocaleString().replace(/,/g, ".");
 
             // RENDER MAP
-            var map = L.map('map').setView([-7.808, 112.910], 13);
+            var map = L.map('map').setView([-7.810, 112.908], 14);
             L.tileLayer('https://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}', { maxZoom: 20 }).addTo(map);
 
-            const iconTree = L.divIcon({html: '<div style="background:#2e7d32;width:10px;height:10px;border-radius:50%;border:1px solid white;"></div>', iconSize:[10,10]});
-            const iconRorak = L.divIcon({html: '<div style="background:#fbc02d;width:10px;height:10px;border-radius:50%;border:1px solid white;"></div>', iconSize:[10,10]});
-
-            // 1. Render 17 Blok Warna Warni (2024)
-            if(db_planting.polygons && db_planting.polygons.features) {
-                L.geoJSON(db_planting.polygons, {
-                    style: function(f) { 
-                        return { 
-                            color: f.properties.color || '#f1c40f', 
-                            fillColor: f.properties.color || '#f1c40f', 
-                            fillOpacity: 0.4, 
-                            weight: 2 
-                        }; 
-                    },
-                    onEachFeature: function(f, l) { l.bindPopup(`<b>${f.properties.name}</b>`); }
-                }).addTo(map);
-            }
+            // Ikon
+            const iconTree = L.divIcon({html: '<div style="background:#2e7d32;width:10px;height:10px;border-radius:50%;border:1px solid white;"></div>', className:'', iconSize:[10,10]});
+            // Rorak Icon (Kuning/Oranye)
+            const iconRorak = L.divIcon({html: '<div style="background:#ff9800;width:12px;height:12px;border-radius:50%;border:2px solid white;"></div>', className:'', iconSize:[12,12]});
 
             // 2. Render Polygon & Titik Tahunan
             Object.values(db_planting.years).forEach(item => {
-                // Polygon
+                // Polygon Drawing Logic
                 if (item.areaPolygon) {
                     item.areaPolygon.forEach(poly => {
-                        L.polygon(poly, { color: '#f1c40f', fillColor: '#f1c40f', fillOpacity: 0.1, weight: 1 }).bindPopup(`<b>${item.location}</b>`).addTo(map);
+                        // Cek apakah ini format baru (2024) atau lama
+                        if (poly.coords && poly.color) {
+                            // FORMAT BARU (2024)
+                            L.polygon(poly.coords, { 
+                                color: poly.color, 
+                                fillColor: poly.color, 
+                                fillOpacity: 0.4, 
+                                weight: 2 
+                            }).bindPopup(`<b>${poly.name}</b>`).addTo(map);
+                        } else {
+                            // FORMAT LAMA (2021-2023)
+                            L.polygon(poly, { 
+                                color: '#f1c40f', 
+                                fillColor: '#f1c40f', 
+                                fillOpacity: 0.1, 
+                                weight: 1 
+                            }).bindPopup(`<b>${item.location}</b>`).addTo(map);
+                        }
                     });
                 }
                 
-                // Points
+                // Points Drawing Logic
                 if(item.points){
                     item.points.forEach(pt => {
-                        let icon = pt[2].includes("Rorak") ? iconRorak : iconTree;
+                        // Cek apakah titik ini Rorak (case insensitive)
+                        let isRorak = pt[2].toLowerCase().includes("rorak");
+                        let icon = isRorak ? iconRorak : iconTree;
+                        
                         L.marker([pt[0], pt[1]], {icon: icon}).addTo(map).bindPopup(`<b>${item.year}</b><br>${pt[2]}`);
                     });
                 }
