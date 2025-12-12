@@ -33,9 +33,9 @@
         .chart-wrapper { position: relative; width: 100%; height: 300px; }
         
         /* Styles untuk Tabel Replenished */
-        .replenish-box { background-color: #fff3e0; border: 1px solid #ffe0b2; padding: 10px; border-radius: 6px; margin-top: 5px; }
-        .replenish-val { font-weight: 800; color: #e65100; font-size: 1.1rem; }
-        .replenish-label { font-size: 0.75rem; color: #666; text-transform: uppercase; }
+        .replenish-box { background-color: #fff3e0; border: 1px solid #ffe0b2; padding: 8px; border-radius: 6px; margin-top: 5px; font-size: 0.85rem; }
+        .replenish-val { font-weight: 800; color: #e65100; }
+        .replenish-label { color: #666; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; }
 
         .table-hover tbody tr:hover { background-color: #e8f5e9; cursor: pointer; transform: scale(1.002); transition:0.2s; }
         .badge-pill { padding: 6px 12px; border-radius: 50px; font-weight: 600; font-size: 0.75rem; }
@@ -91,7 +91,7 @@
             </div>
         </div>
 
-        <!-- ROW 4: POSITIVE WATER IMPACT (UTAMA) -->
+        <!-- ROW 4: POSITIVE WATER IMPACT (CHART BAR GANDA) -->
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card card-custom border-primary">
@@ -99,7 +99,7 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-12 mb-3">
-                                <h6 class="text-center fw-bold text-secondary mb-3">Target SIPA vs Realisasi Infiltrasi (ML/Year)</h6>
+                                <h6 class="text-center fw-bold text-secondary mb-3">Balance (L/s) vs Performance (%)</h6>
                                 <div class="chart-wrapper" style="height: 400px;"><canvas id="wbChart"></canvas></div>
                             </div>
                         </div>
@@ -121,7 +121,7 @@
                             <th class="text-center">Rorak</th>
                             <th class="text-center">Sumur</th>
                             <th class="text-center">Biopori</th>
-                            <th class="text-end pe-4" style="min-width: 150px;">Replenished Water</th>
+                            <th class="text-end pe-4" style="min-width: 180px;">Replenished Water</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
@@ -134,69 +134,69 @@
     <!-- SCRIPT & DATA -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // --- 1. DATA PETA (KOORDINAT SAJA) ---
+        // --- 1. DATA PETA (KOORDINAT MASTER) ---
+        // Data master ini ditaruh disini agar tidak konflik dengan file eksternal
         const MASTER_DESA_GALIH = [[-7.808762, 112.896381], [-7.812848, 112.895910], [-7.818646, 112.899821], [-7.824179, 112.905970], [-7.825552, 112.912372], [-7.829724, 112.919683], [-7.808762, 112.896381]];
         const MASTER_HUTAN_LINDUNG = [[-7.804688, 112.906485], [-7.806219, 112.906227], [-7.810130, 112.905412], [-7.804688, 112.906485]];
         const MASTER_PETUNG = [[-7.796914, 112.919663], [-7.803634, 112.919162], [-7.808091, 112.918568], [-7.812625, 112.919209], [-7.829622, 112.920887], [-7.796914, 112.919663]];
 
+        // Polygon Delineasi 2024
         const DATA_2024_POLYGONS = [
             { name: "Hutan Lestari Supinto", color: "#006064", coords: [[-7.81659, 112.90507], [-7.81652, 112.90519], [-7.81659, 112.90507]] },
             { name: "Hutan lestari Karji", color: "#e65100", coords: [[-7.81367, 112.90254], [-7.81335, 112.90337], [-7.81367, 112.90254]] },
             { name: "Hutan Lestari Andari 01", color: "#ff5252", coords: [[-7.8151, 112.90525], [-7.81502, 112.9053], [-7.8151, 112.90525]] },
             { name: "Hutan Lestari Juman Tugu 02", color: "#ffea00", coords: [[-7.81609, 112.91223], [-7.81635, 112.91197], [-7.81609, 112.91223]] }
-            // (Data dipersingkat agar muat, tapi logika render tetap jalan untuk sampel)
         ];
 
-        // --- 2. DATA UTAMA (ANGKA & STATISTIK) ---
-        // Sesuai Request: Angka 2021-2023 manual, 2024 manual
+        // --- 2. DATABASE LOKAL (AGAR PETA TIDAK BERANTAKAN) ---
         const local_data = {
             "tanam_2021": {
                 id: "tanam_2021", year: 2021, location: "Program Konservasi Hutan Lindung",
-                // SS6: Tree 5000, Well 10, Biopore 300, Trench 250
                 water_inputs: { tree: 5000, well: 10, biopore: 300, trench: 250, water_access: 0 },
                 species: { "Alpukat": 105, "Nangka": 113, "Sukun": 67, "Lainnya": 70 },
-                method: "old", // Metode Lama
-                points: [[-7.822, 112.905, "Pohon"]], areaPolygon: [MASTER_HUTAN_LINDUNG]
+                method: "old", 
+                points: [[-7.822, 112.905, "Pohon"]], 
+                areaPolygon: [MASTER_HUTAN_LINDUNG] // Menggunakan koordinat master
             },
             "tanam_2022": {
                 id: "tanam_2022", year: 2022, location: "Program Konservasi Tahun 2022",
-                // SS1: Tree 10000, Well 12, Biopore 300, Trench 714
                 water_inputs: { tree: 10000, well: 12, biopore: 300, trench: 714, water_access: 0 },
                 species: { "Kopi Robusta": 9500, "Naungan": 500 },
-                method: "old", // Metode Lama
-                points: [[-7.814, 112.927, "Kopi"]], areaPolygon: [MASTER_PETUNG]
+                method: "old", 
+                points: [[-7.814, 112.927, "Kopi"]], 
+                areaPolygon: [MASTER_PETUNG] // Menggunakan koordinat master
             },
             "tanam_2023": {
                 id: "tanam_2023", year: 2023, location: "Program Konservasi AQUA Keboncandi 2023",
-                // SS2: Tree 5130, Well 5, Biopore 100, Trench 503
                 water_inputs: { tree: 5130, well: 5, biopore: 100, trench: 503, water_access: 0 },
                 species: { "Kopi Robusta": 4000, "Naungan": 1000 },
-                method: "old", // Metode Lama
-                points: [[-7.822, 112.905, "Kopi"]], areaPolygon: []
+                method: "old", 
+                points: [[-7.822, 112.905, "Kopi"]], 
+                areaPolygon: [] // Tidak ada polygon khusus
             },
             "tanam_2024": {
                 id: "tanam_2024", year: 2024, location: "Program Konservasi Tahun 2024",
-                // Request Baru: Tree 2000, Well 1, Trench 1500 (Rorak), Water Access 449.4
                 water_inputs: { tree: 2000, well: 1, biopore: 0, trench: 1500, water_access: 449.4 },
                 species: { "Kopi Robusta": 1000, "Durian": 300, "Alpukat": 200 },
-                method: "new", // Metode Baru (Konstanta)
-                points: [[-7.81636, 112.90502, "Rorak Supinto"]], areaPolygon: DATA_2024_POLYGONS
+                method: "new", 
+                points: [[-7.81636, 112.90502, "Rorak Supinto"]], 
+                areaPolygon: DATA_2024_POLYGONS // Menggunakan polygon warna-warni
             }
         };
 
-        // --- 3. LOGIKA PERHITUNGAN ---
-        const SIPA_TARGET_MLY = 2996; // 95 L/s
+        // --- 3. LOGIKA PERHITUNGAN WATER IMPACT ---
+        const SIPA_TARGET_MLY = 2996; 
         const VWB_CONST = 0.024953938;
         const RAIN_DAYS = 163;
         const F_INF = 3;
 
         // Volume Fisik (Untuk 2021-2023)
-        const VOL_WELL_OLD = 0.754; // m3 (D=0.8, T=1.5)
-        const VOL_TRENCH_OLD = 0.490; // m3 (1x0.7x0.7)
-        const VOL_BIO_OLD = 0.01; // m3 (10 Liter)
+        const VOL_WELL_OLD = 0.754; // m3
+        const VOL_TRENCH_OLD = 0.490; // m3
+        const VOL_BIO_OLD = 0.01; // m3
 
         // Konstanta Baru (Untuk 2024)
-        const CONST_TREE_2024 = 3750; // 1.500.000 / 400
+        const CONST_TREE_2024 = 3750;
         const CONST_WELL_2024 = 1100000;
         const CONST_TRENCH_2024 = 170000;
         
@@ -204,36 +204,32 @@
             let treeMLY = 0, wellMLY = 0, bioMLY = 0, trenchMLY = 0, accessMLY = 0;
 
             if (method === "old") {
-                // RUMUS LAMA (Fisik)
+                // Rumus Lama (Fisik)
                 treeMLY = (inputs.tree / 400) * VWB_CONST * 31.536 * 0.75;
                 wellMLY = inputs.well * (VOL_WELL_OLD * 1000) * F_INF * RAIN_DAYS / 1000000;
                 bioMLY = inputs.biopore * (VOL_BIO_OLD * 1000) * F_INF * RAIN_DAYS / 1000000;
                 trenchMLY = inputs.trench * (VOL_TRENCH_OLD * 1000) * F_INF * RAIN_DAYS / 1000000;
             } else {
-                // RUMUS BARU (Konstanta 2024)
+                // Rumus Baru 2024 (Konstanta)
                 treeMLY = inputs.tree * CONST_TREE_2024 / 1000000;
                 wellMLY = inputs.well * CONST_WELL_2024 / 1000000;
                 trenchMLY = inputs.trench * CONST_TRENCH_2024 / 1000000;
-                // Biopori 2024 tidak ada di data, anggap 0 atau rumus lama
                 bioMLY = 0; 
             }
 
-            // Water Access (Manual Input ML/Y)
             accessMLY = inputs.water_access || 0;
-
             let totalMLY = treeMLY + wellMLY + bioMLY + trenchMLY + accessMLY;
-            
-            // Konversi ke L/s (untuk Balance)
-            // 1 Tahun = 31.536.000 detik
+            // Konversi ke L/s (1 Tahun = 31.536.000 detik)
             let totalLS = (totalMLY * 1000000) / 31536000;
 
             return { totalMLY, totalLS };
         }
 
-        // --- 4. EKSEKUSI RENDER ---
+        // --- 4. EKSEKUSI DATA ---
         Chart.register(ChartDataLabels);
         let totalT=0, totalR=0, totalReplenish=0;
-        let years=[], dataTrees=[], dataRorak=[], dataSumur=[], dataBiopori=[], dataReplenished=[];
+        let years=[], dataTrees=[], dataRorak=[], dataSumur=[], dataBiopori=[];
+        let dataBalance=[], dataPerformance=[]; // Data untuk Chart Baru
         let speciesTotal={};
 
         const sortedKeys = Object.keys(local_data).sort(); 
@@ -253,7 +249,11 @@
             dataRorak.push(inp.trench);
             dataSumur.push(inp.well);
             dataBiopori.push(inp.biopore);
-            dataReplenished.push(impact.totalMLY.toFixed(1));
+            
+            // Data untuk Chart Ganda
+            dataBalance.push(impact.totalLS.toFixed(2));
+            let perform = (impact.totalLS / 95 * 100).toFixed(1); // Target 95 L/s
+            dataPerformance.push(perform);
 
             if(item.species){
                 for (const [sp, val] of Object.entries(item.species)) {
@@ -267,25 +267,27 @@
         document.getElementById('totalRorak').innerText = totalR.toLocaleString('id-ID');
         document.getElementById('totalReplenish').innerText = totalReplenish.toLocaleString('id-ID', {maximumFractionDigits:0});
 
-        // --- MAP RENDER (FIXED) ---
+        // --- MAP RENDER (LAYER TERATUR) ---
         var map = L.map('map').setView([-7.810, 112.908], 13);
         L.tileLayer('https://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}', { maxZoom: 20 }).addTo(map);
 
         const iconTree = L.divIcon({html: '<div style="background:#2e7d32;width:8px;height:8px;border-radius:50%;border:1px solid white;"></div>'});
         const iconRorak = L.divIcon({html: '<div style="background:#ff9800;width:10px;height:10px;border-radius:50%;border:1px solid white;"></div>'});
 
-        // Gambar Master (Background)
+        // 1. Gambar Master Terlebih Dahulu (Background)
         L.polygon(MASTER_DESA_GALIH, { color: 'gold', fillColor: 'transparent', weight: 2 }).bindPopup("Desa Galih").addTo(map);
         L.polygon(MASTER_PETUNG, { color: 'orange', fillColor: 'transparent', weight: 2 }).bindPopup("Desa Petung").addTo(map);
         L.polygon(MASTER_HUTAN_LINDUNG, { color: '#00e676', fillColor: '#00e676', fillOpacity: 0.1, weight: 1 }).bindPopup("Hutan Lindung").addTo(map);
 
-        // Gambar Detail (2024 Only for Colors, others standard)
+        // 2. Gambar Detail Layer
         Object.values(local_data).forEach(item => {
             if (item.areaPolygon) {
                 item.areaPolygon.forEach(poly => {
+                    // Cek jika polygon memiliki properti color (Tipe 2024)
                     if (poly.coords && poly.color) {
                         L.polygon(poly.coords, { color: poly.color, fillColor: poly.color, fillOpacity: 0.6, weight: 2 }).bindPopup(poly.name).addTo(map);
                     }
+                    // Abaikan polygon master jika ada di dalam array detail untuk menghindari tumpukan
                 });
             }
             if(item.points){
@@ -296,7 +298,7 @@
             }
         });
 
-        // CHARTS
+        // --- CHARTS ---
         new Chart(document.getElementById('barChart'), {
             type: 'bar',
             data: { labels: years, datasets: [{ label: 'Pohon', data: dataTrees, backgroundColor: '#2e7d32', borderRadius:4 }] },
@@ -326,26 +328,52 @@
             options: { maintainAspectRatio: false, plugins: { legend: { display: false } } }
         });
 
+        // --- NEW DOUBLE BAR CHART (BALANCE & PERFORMANCE) ---
         new Chart(document.getElementById('wbChart'), {
             type: 'bar',
             data: {
                 labels: years,
                 datasets: [
-                    { type: 'line', label: 'Batas SIPA (2.996 ML/Y)', data: Array(years.length).fill(SIPA_TARGET_MLY), borderColor: '#d32f2f', borderWidth: 2, borderDash: [5, 5], pointRadius: 0, datalabels: { display: false } },
-                    { label: 'Total Infiltrasi (ML/Y)', data: dataReplenished, backgroundColor: '#0288d1', borderRadius: 4 }
+                    { 
+                        label: 'Balance (L/s)', 
+                        data: dataBalance, 
+                        backgroundColor: '#d32f2f', // Merah
+                        borderRadius: 4
+                    },
+                    { 
+                        label: 'Performance (%)', 
+                        data: dataPerformance, 
+                        backgroundColor: '#fbc02d', // Kuning
+                        borderRadius: 4
+                    }
                 ]
             },
-            options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom' }, datalabels: { anchor: 'end', align: 'top', color: '#333', formatter: Math.round } }, scales: { y: { beginAtZero: true } } }
+            options: {
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' },
+                    datalabels: {
+                        anchor: 'end',
+                        align: 'top',
+                        color: '#333',
+                        font: { weight: 'bold' }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Nilai' }
+                    }
+                }
+            }
         });
 
-        // TABLE
+        // --- TABLE ---
         const tbody = document.getElementById('tableBody');
         sortedKeys.reverse().forEach(key => {
             const item = local_data[key];
             const inp = item.water_inputs;
             const impact = calculateImpact(inp, item.method);
-            
-            // Hitung Performance % (Total LS / 95 * 100)
             const performance = (impact.totalLS / 95 * 100).toFixed(1);
 
             tbody.innerHTML += `
@@ -357,15 +385,15 @@
                 <td class="text-center">${inp.well.toLocaleString()}</td>
                 <td class="text-center">${inp.biopore.toLocaleString()}</td>
                 <td class="text-end pe-4">
-                    <div class="fw-bold text-primary">${impact.totalMLY.toFixed(1)} ML/Y</div>
+                    <div class="fw-bold text-dark">${impact.totalMLY.toFixed(1)} <small class="text-muted fw-normal">ML/Y</small></div>
                     <div class="replenish-box mt-1">
-                        <div class="d-flex justify-content-between">
+                        <div class="d-flex justify-content-between mb-1 border-bottom pb-1">
                             <span class="replenish-label">Balance</span>
-                            <span class="replenish-val">${impact.totalLS.toFixed(2)} L/s</span>
+                            <span class="replenish-val text-danger">${impact.totalLS.toFixed(2)} <small>L/s</small></span>
                         </div>
                         <div class="d-flex justify-content-between">
                             <span class="replenish-label">Perform.</span>
-                            <span class="replenish-val">${performance}%</span>
+                            <span class="replenish-val text-warning">${performance}%</span>
                         </div>
                     </div>
                 </td>
