@@ -5,17 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Monitoring Penanaman - SIS KEHATI</title>
     
-    <!-- Library -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&display=swap" rel="stylesheet">
+    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 
     <style>
         body { font-family: 'Montserrat', sans-serif; background-color: #f0f2f5; padding-bottom: 50px; }
-        .hero-header { position: relative; background: #1b5e20; height: 250px; display: flex; align-items: center; justify-content: center; color: white; margin-bottom: 30px; border-bottom: 5px solid #2e7d32; }
+        .hero-header { position: relative; background: #1b5e20; height: 260px; display: flex; align-items: center; justify-content: center; color: white; margin-bottom: 30px; border-bottom: 5px solid #2e7d32; }
         .hero-content { position: relative; z-index: 2; text-align: center; }
         .btn-home { background: rgba(255,255,255,0.2); color: white; border: 1px solid white; border-radius: 50px; padding: 8px 20px; text-decoration: none; display:inline-block; margin-top:10px; transition:0.3s; }
         .btn-home:hover { background: white; color: #1b5e20; }
@@ -26,8 +26,7 @@
         
         .card-custom { border: none; border-radius: 8px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px; height: 100%; }
         .card-header-custom { background: white; padding: 15px; border-bottom: 1px solid #eee; font-weight: 700; color: #333; }
-        
-        #map { height: 500px; width: 100%; z-index: 1; border-radius: 0 0 8px 8px; }
+        #map { height: 480px; width: 100%; z-index: 1; border-radius: 0 0 8px 8px; }
         .chart-wrapper { position: relative; width: 100%; height: 300px; }
         
         .table-hover tbody tr:hover { background-color: #e8f5e9; cursor: pointer; transform: scale(1.002); transition:0.2s; }
@@ -80,22 +79,12 @@
 
         <!-- ROW 4: POSITIVE WATER IMPACT (UTAMA) -->
         <div class="row mb-4">
-            <!-- Grafik 1: SIPA vs Replenished -->
-            <div class="col-lg-6 mb-3">
-                <div class="card card-custom h-100">
-                    <div class="card-header-custom bg-light text-primary border-bottom border-primary"><i class="fas fa-tint text-primary me-2"></i> REPLENISHED WATER VS SIPA</div>
+            <div class="col-12">
+                <div class="card card-custom border-primary">
+                    <div class="card-header-custom bg-light text-primary border-bottom border-primary"><i class="fas fa-balance-scale text-primary me-2"></i> POSITIVE WATER IMPACT (TARGET vs REALISASI)</div>
                     <div class="card-body">
-                        <div class="chart-wrapper" style="height: 350px;"><canvas id="wbChart"></canvas></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Grafik 2: Balance & Performance (BARU) -->
-            <div class="col-lg-6 mb-3">
-                <div class="card card-custom h-100">
-                    <div class="card-header-custom bg-light text-success border-bottom border-success"><i class="fas fa-balance-scale text-success me-2"></i> BALANCE & PERFORMANCE</div>
-                    <div class="card-body">
-                        <div class="chart-wrapper" style="height: 350px;"><canvas id="bpChart"></canvas></div>
+                        <div class="chart-wrapper" style="height: 400px;"><canvas id="wbChart"></canvas></div>
+                        <div class="mt-3 text-center text-muted small">* Grafik Merah: Target SIPA (2.996 ML/Y) | Grafik Kuning: Replenished Water (Realisasi)</div>
                     </div>
                 </div>
             </div>
@@ -106,28 +95,19 @@
             <div class="card-header-custom"><i class="fas fa-list text-dark me-2"></i> Riwayat Program Tahunan</div>
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th class="ps-4">Tahun</th>
-                            <th>Program / Lokasi</th>
-                            <th class="text-center">Pohon</th>
-                            <th class="text-center">Rorak</th>
-                            <th class="text-center">Sumur</th>
-                            <th class="text-center">Biopori</th>
-                            <th class="text-end pe-4" style="min-width: 150px;">Total Infiltrasi</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
+                    <thead class="table-light"><tr><th class="ps-4">Tahun</th><th>Nama Program</th><th class="text-center">Pohon</th><th class="text-center">Rorak</th><th class="text-center">Sumur</th><th class="text-center">Biopori</th><th class="text-end pe-4">Total Infiltrasi</th><th>Aksi</th></tr></thead>
                     <tbody id="tableBody"></tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <!-- SCRIPT & DATA -->
+    <!-- SCRIPT -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // --- 1. DATA PETA (KOORDINAT MASTER) ---
+        // ==========================================
+        // 1. DATA KOORDINAT (LENGKAP DARI FILE AWAL)
+        // ==========================================
         const MASTER_DESA_GALIH = [[-7.808762, 112.896381], [-7.812848, 112.895910], [-7.818646, 112.899821], [-7.824179, 112.905970], [-7.825552, 112.912372], [-7.829724, 112.919683], [-7.808762, 112.896381]];
         const MASTER_HUTAN_LINDUNG = [[-7.804688, 112.906485], [-7.806219, 112.906227], [-7.810130, 112.905412], [-7.804688, 112.906485]];
         const MASTER_PETUNG = [[-7.796914, 112.919663], [-7.803634, 112.919162], [-7.808091, 112.918568], [-7.812625, 112.919209], [-7.829622, 112.920887], [-7.796914, 112.919663]];
@@ -140,13 +120,13 @@
              { name: "Hutan Lestari Juman Tugu 02", color: "#ffea00", coords: [[-7.81609, 112.91223], [-7.81635, 112.91197], [-7.81609, 112.91223]] }
         ];
 
-        // --- DATA TITIK SEBARAN (POINTS) YANG DIKEMBALIKAN ---
-        const POINTS_2021 = [[-7.8227, 112.9058, "Alpukat"], [-7.8069, 112.9092, "Sawo Duren"], [-7.8061, 112.9021, "Sukun"], [-7.8173, 112.9157, "Alpukat"], [-7.8171, 112.9147, "Nangka"]];
-        const POINTS_2022 = [[-7.8143, 112.9275, "Kopi Robusta"], [-7.8143, 112.9277, "Kopi Robusta"], [-7.8145, 112.9276, "Kopi Robusta"], [-7.8090, 112.9110, "Kopi Robusta"]];
+        // --- DATA TITIK SEBARAN ---
+        const POINTS_2021 = [[-7.8227, 112.9058, "Alpukat"], [-7.8069, 112.9092, "Sawo Duren"], [-7.8061, 112.9021, "Sukun"], [-7.8173, 112.9157, "Alpukat"]];
+        const POINTS_2022 = [[-7.8143, 112.9275, "Kopi Robusta"], [-7.8143, 112.9277, "Kopi Robusta"], [-7.8145, 112.9276, "Kopi Robusta"]];
         const POINTS_2023 = [[-7.8226, 112.9053, "Kopi Robusta"], [-7.8227, 112.9054, "Kopi Robusta"], [-7.8154, 112.9149, "Kopi Robusta"]];
         const POINTS_2024 = [[-7.8163, 112.9050, "Rorak Supinto"], [-7.8135, 112.9028, "Rorak Karji"], [-7.8159, 112.9050, "Rorak Andari"], [-7.8127, 112.9090, "Rorak Karono"]];
 
-        // --- 2. DATA UTAMA (ANGKA KUNCI MATI SESUAI EXCEL) ---
+        // --- 2. DATA UTAMA (ANGKA KUNCI MATI) ---
         const local_data = {
             "tanam_2021": {
                 id: "tanam_2021", year: 2021, location: "Program Konservasi Hutan Lindung",
@@ -157,13 +137,15 @@
             },
             "tanam_2022": {
                 id: "tanam_2022", year: 2022, location: "Program Konservasi Tahun 2022",
-                inputs: { tree: 10000, rorak: 750, well: 20, biopore: 300 },
+                // SS1 Excel: 714 Rorak.
+                inputs: { tree: 10000, rorak: 714, well: 20, biopore: 300 },
                 final_mly: 1146.6, balance_ls: 9.64, performance: 10.15,
                 species: { "Kopi Robusta": 9500, "Naungan": 500 },
                 points: POINTS_2022, areaPolygon: [MASTER_PETUNG]
             },
             "tanam_2023": {
                 id: "tanam_2023", year: 2023, location: "Program Konservasi AQUA Keboncandi 2023",
+                // SS2 Excel: 503 Rorak, 5130 Trees (agar total 22.130)
                 inputs: { tree: 5130, rorak: 503, well: 5, biopore: 100 },
                 final_mly: 739.8, balance_ls: 4.21, performance: 4.43,
                 species: { "Kopi Robusta": 4000, "Naungan": 1000 },
@@ -192,7 +174,6 @@
         let years=[], dataTrees=[], dataRorak=[], dataSumur=[], dataBiopori=[], dataReplenished=[], dataBalance=[], dataPerformance=[];
         let speciesTotal={};
 
-        // Process Data
         const sortedKeys = Object.keys(local_data).sort();
         sortedKeys.forEach(key => {
             const item = local_data[key];
@@ -218,7 +199,6 @@
             }
         });
 
-        // Update Text Stats
         document.getElementById('totalTrees').innerText = totalT.toLocaleString('id-ID');
         document.getElementById('totalRorak').innerText = totalR.toLocaleString('id-ID');
         document.getElementById('totalReplenish').innerText = totalReplenish.toLocaleString('id-ID', {maximumFractionDigits:0});
@@ -230,12 +210,12 @@
         const iconTree = L.divIcon({html: '<div style="background:#2e7d32;width:8px;height:8px;border-radius:50%;border:1px solid white;"></div>'});
         const iconRorak = L.divIcon({html: '<div style="background:#ff9800;width:10px;height:10px;border-radius:50%;border:1px solid white;"></div>'});
 
-        // 1. Gambar Master (Background Transparan)
-        L.polygon(MASTER_DESA_GALIH, { color: 'gold', fillColor: 'transparent', weight: 2, dashArray: '5, 5', opacity: 0.8 }).bindPopup("Batas Desa Galih").addTo(map);
+        // Gambar Master (Background Tanpa Garis Putus-putus)
+        L.polygon(MASTER_DESA_GALIH, { color: '#ffd600', fillColor: 'transparent', weight: 2, opacity: 0.8 }).bindPopup("Batas Desa Galih").addTo(map);
         L.polygon(MASTER_HUTAN_LINDUNG, { color: '#00e676', fillColor: '#00e676', fillOpacity: 0.1, weight: 1 }).bindPopup("Hutan Lindung").addTo(map);
-        L.polygon(MASTER_PETUNG, { color: '#ff9100', fillColor: 'transparent', weight: 2, dashArray: '5, 5' }).bindPopup("Batas Desa Petung").addTo(map);
+        L.polygon(MASTER_PETUNG, { color: '#ff9100', fillColor: 'transparent', weight: 2, opacity: 0.8 }).bindPopup("Batas Desa Petung").addTo(map);
 
-        // 2. Gambar Detail & Points
+        // Gambar Detail (Warna Warni)
         Object.values(local_data).forEach(item => {
             if (item.areaPolygon) {
                 item.areaPolygon.forEach(poly => {
@@ -253,25 +233,50 @@
             }
         });
 
-        // --- RENDER CHARTS ---
+        // --- RENDER CHARTS (DENGAN TULISAN PUTIH PADA BATANG GELAP) ---
+        
+        // 1. POHON (HIJAU) -> Teks Putih
         new Chart(document.getElementById('barChart'), {
             type: 'bar',
             data: { labels: years, datasets: [{ label: 'Pohon', data: dataTrees, backgroundColor: '#2e7d32', borderRadius:4 }] },
-            options: { maintainAspectRatio: false, plugins: { legend: {display:false} }, scales: { y: {beginAtZero: true} } }
+            options: { 
+                maintainAspectRatio: false, 
+                plugins: { 
+                    legend: {display:false}, 
+                    datalabels: { color: '#ffffff', anchor:'end', align:'top', font:{weight:'bold'} } 
+                }, 
+                scales: { y: {beginAtZero: true} } 
+            }
         });
 
+        // 2. RORAK (COKLAT) -> Teks Putih
         new Chart(document.getElementById('chartRorak'), {
             type: 'bar',
             data: { labels: years, datasets: [{ label: 'Rorak', data: dataRorak, backgroundColor: '#795548', borderRadius:4 }] },
-            options: { maintainAspectRatio: false, plugins: { legend:{display:false} } }
+            options: { 
+                maintainAspectRatio: false, 
+                plugins: { 
+                    legend:{display:false}, 
+                    datalabels: { color: '#ffffff', anchor:'end', align:'top', font:{weight:'bold'} } 
+                } 
+            }
         });
 
+        // 3. SUMUR & BIOPORI (BIRU) -> Teks Putih
         new Chart(document.getElementById('chartSumur'), {
             type: 'bar',
             data: { labels: years, datasets: [{ label: 'Sumur Resapan', data: dataSumur, backgroundColor: '#0277bd', borderRadius:4 }, { label: 'Biopori', data: dataBiopori, backgroundColor: '#4fc3f7', borderRadius:4 } ] },
-            options: { maintainAspectRatio: false, plugins: { legend:{position:'bottom'} }, scales:{x:{stacked:false}, y:{beginAtZero:true}} }
+            options: { 
+                maintainAspectRatio: false, 
+                plugins: { 
+                    legend:{position:'bottom'}, 
+                    datalabels: { color: '#ffffff', anchor:'end', align:'top', font:{weight:'bold'} } 
+                }, 
+                scales:{x:{stacked:false}, y:{beginAtZero:true}} 
+            }
         });
 
+        // 4. PIE CHART
         const topSpecies = Object.entries(speciesTotal).sort((a,b) => b[1] - a[1]).slice(0, 5);
         new Chart(document.getElementById('pieChart'), {
             type: 'doughnut',
@@ -279,33 +284,39 @@
             options: { maintainAspectRatio: false, plugins: { legend: { display: false } } }
         });
 
-        // --- CHART 1: WATER IMPACT (SIPA vs REPLENISHED) ---
+        // 5. DOUBLE BAR CHART (MERAH & KUNING)
+        // MERAH (SIPA) -> Teks Putih
+        // KUNING (REPLENISHED) -> Teks Hitam
         new Chart(document.getElementById('wbChart'), {
             type: 'bar',
             data: {
                 labels: years,
                 datasets: [
-                    { type: 'line', label: 'Batas SIPA (2.996 ML/Y)', data: Array(years.length).fill(SIPA_TARGET_MLY), borderColor: '#d32f2f', borderWidth: 2, borderDash: [5, 5], pointRadius: 0, datalabels: { display: false } },
-                    { label: 'Replenished Water (ML/Y)', data: dataReplenished, backgroundColor: '#0288d1', borderRadius: 4 }
+                    { 
+                        label: 'Target SIPA (2.996 ML/Y)', 
+                        data: Array(years.length).fill(SIPA_TARGET_MLY), 
+                        backgroundColor: '#d32f2f', // Merah
+                        borderRadius: 4,
+                        datalabels: { color: '#ffffff', anchor: 'center', align: 'center', formatter: Math.round } 
+                    },
+                    { 
+                        label: 'Replenished Water (ML/Y)', 
+                        data: dataReplenished, 
+                        backgroundColor: '#fbc02d', // Kuning
+                        borderRadius: 4,
+                        datalabels: { color: '#000000', anchor: 'end', align: 'top', formatter: Math.round }
+                    }
                 ]
             },
-            options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom' }, datalabels: { anchor: 'end', align: 'top', color: '#333', formatter: Math.round } }, scales: { y: { beginAtZero: true } } }
-        });
-
-        // --- CHART 2: BALANCE & PERFORMANCE (BARU - MERAH & KUNING) ---
-        new Chart(document.getElementById('bpChart'), {
-            type: 'bar',
-            data: {
-                labels: years,
-                datasets: [
-                    { label: 'Balance (L/s)', data: dataBalance, backgroundColor: '#d32f2f', borderRadius: 4 },
-                    { label: 'Performance (%)', data: dataPerformance, backgroundColor: '#fbc02d', borderRadius: 4 }
-                ]
-            },
-            options: { 
-                maintainAspectRatio: false, 
-                plugins: { legend: { position: 'bottom' }, datalabels: { anchor: 'end', align: 'top', color: '#333', font:{weight:'bold'} } }, 
-                scales: { y: { beginAtZero: true } } 
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' }
+                },
+                scales: {
+                    y: { beginAtZero: true, title: { display: true, text: 'Mega Liter / Tahun' } }
+                }
             }
         });
 
