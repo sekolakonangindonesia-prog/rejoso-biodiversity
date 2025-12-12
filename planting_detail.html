@@ -10,6 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&display=swap" rel="stylesheet">
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    
     <style>
         body { font-family: 'Montserrat', sans-serif; background-color: #f0f2f5; }
         .hero-header { 
@@ -17,6 +19,9 @@
             display: flex; align-items: center; justify-content: center; color: white; 
             margin-bottom: 30px; border-bottom: 5px solid #2e7d32;
         }
+        /* Fallback background color jika gambar tidak ada */
+        .hero-header { background-color: #1b5e20; }
+        
         .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); }
         .hero-content { position: relative; z-index: 2; text-align: center; }
         .logo-top { height: 50px; margin-bottom: 10px; }
@@ -24,8 +29,14 @@
         .stat-box { background: white; padding: 20px; border-radius: 10px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .val-num { font-size: 2.5rem; font-weight: 800; margin: 10px 0; }
         #miniMap { height: 350px; width: 100%; border-radius: 10px; }
-        .gallery-img { width: 100%; height: 200px; object-fit: cover; border-radius: 8px; }
-        .card { border: none; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-radius: 10px; }
+        .gallery-img { width: 100%; height: 200px; object-fit: cover; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        .gallery-img:hover { transform: scale(1.02); }
+        .card { border: none; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-radius: 10px; margin-bottom: 20px; }
+        
+        /* Table Styling untuk Rumus */
+        .table-formula th { background-color: #e8f5e9; font-size: 0.9rem; }
+        .table-formula td { font-size: 0.9rem; vertical-align: middle; }
+        .formula-text { font-family: 'Courier New', monospace; color: #d32f2f; font-weight: bold; font-size: 0.85rem; }
     </style>
 </head>
 <body>
@@ -41,83 +52,219 @@
     </div>
 
     <div class="container" style="margin-top: -50px; position: relative; z-index: 10;">
+        
+        <!-- STATS ROW (EXISTING) -->
         <div class="row mb-4">
             <div class="col-md-4"><div class="stat-box" style="border-top:4px solid #43a047"><i class="fas fa-tree text-success fa-2x"></i><div class="val-num text-success" id="valTrees">-</div><small>Pohon Ditanam</small></div></div>
             <div class="col-md-4"><div class="stat-box" style="border-top:4px solid #795548"><i class="fas fa-inbox text-warning fa-2x" style="color:#795548!important"></i><div class="val-num" style="color:#795548" id="valRorak">-</div><small>Rorak Terbangun</small></div></div>
             <div class="col-md-4"><div class="stat-box" style="border-top:4px solid #039be5"><i class="fas fa-water text-primary fa-2x"></i><div class="val-num text-primary" id="valSumur">-</div><small>Sumur & Biopori</small></div></div>
         </div>
 
+        <!-- MAP & SPECIES ROW (EXISTING) -->
         <div class="row">
             <div class="col-lg-7 mb-4"><div class="card p-3 h-100 fw-bold">Peta Sebaran<div id="miniMap" class="mt-2"></div></div></div>
-            <div class="col-lg-5 mb-4"><div class="card p-3 h-100 fw-bold">Komposisi Tanaman<canvas id="spChart" class="mt-2"></canvas><ul id="spList" class="list-group list-group-flush mt-3 fw-normal small"></ul></div></div>
+            <div class="col-lg-5 mb-4"><div class="card p-3 h-100 fw-bold">Komposisi Tanaman<div style="height: 250px;"><canvas id="spChart"></canvas></div><ul id="spList" class="list-group list-group-flush mt-3 fw-normal small"></ul></div></div>
         </div>
         
+        <!-- NEW SECTION: ANALISIS HIDROLOGI (REQUEST BARU) -->
+        <div class="card p-4 mb-4 border-start border-5 border-primary">
+            <h5 class="fw-bold mb-3"><i class="fas fa-calculator text-primary me-2"></i>Analisis & Perhitungan Infiltrasi Air (Detail Manual)</h5>
+            <div class="row">
+                <!-- Tabel Rumus -->
+                <div class="col-lg-8">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover table-formula mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Item Konservasi</th>
+                                    <th>Volume / Satuan</th>
+                                    <th>Rumus Kalkulasi (Sesuai Excel)</th>
+                                    <th class="text-end">Hasil (ML/Y)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="formulaTableBody">
+                                <!-- Diisi Javascript -->
+                            </tbody>
+                            <tfoot class="table-light fw-bold">
+                                <tr>
+                                    <td colspan="3" class="text-end">TOTAL REPLENISHED WATER</td>
+                                    <td class="text-end text-primary fs-5" id="totalInfiltrasiText">0 ML/Y</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <div class="alert alert-info mt-3 py-2 px-3 small mb-0">
+                        <i class="fas fa-info-circle me-1"></i> 
+                        <span id="formulaNote">Perhitungan berdasarkan data hidrologi tahun terkait.</span>
+                    </div>
+                </div>
+                
+                <!-- Grafik Batang Kontribusi -->
+                <div class="col-lg-4">
+                    <div class="card h-100 border-0 shadow-none">
+                        <div class="card-body p-0 d-flex flex-column justify-content-center">
+                            <h6 class="text-center fw-bold small text-muted mb-3">KONTRIBUSI INFILTRASI (ML/YEAR)</h6>
+                            <div style="height: 200px;">
+                                <canvas id="waterBarChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GALLERY ROW (EXISTING) -->
         <div class="card p-4 mb-5">
             <h6 class="fw-bold mb-3">Dokumentasi Lapangan</h6>
             <div class="row g-3" id="gallery"></div>
         </div>
     </div>
 
+    <!-- SCRIPT -->
     <script src="database_planting.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
+        // --- 1. KONSTANTA & FUNGSI HITUNG (SAMA PERSIS DENGAN PLANTING.HTML) ---
+        const VWB_CONST = 0.024953938;
+        const TIME_FACTOR = 31.536;
+
+        // Fungsi Format Angka
+        const fmt = (n) => n.toLocaleString('id-ID');
+        const fmtDec = (n) => n.toLocaleString('id-ID', {minimumFractionDigits:1, maximumFractionDigits:2});
+
+        function getWaterAnalysis(year, stats) {
+            let res = {
+                tree: { val: 0, formula: "", vol: "-" },
+                rorak: { val: 0, formula: "", vol: "-" },
+                sumur: { val: 0, formula: "", vol: "-" },
+                biopori: { val: 0, formula: "", vol: "-" }
+            };
+
+            if (year == 2021) {
+                // POHON
+                res.tree.val = (stats.trees / 400) * VWB_CONST * TIME_FACTOR * 0.75;
+                res.tree.formula = `(${fmt(stats.trees)}/400) * ${VWB_CONST.toFixed(5)} * ${TIME_FACTOR} * 75%`;
+                res.tree.vol = "Asumsi 400 phn/ha";
+
+                // SUMUR (16000L, 163 Hari)
+                res.sumur.val = (stats.sumur * 16000 * 3 * 163) / 1000000;
+                res.sumur.formula = `(${stats.sumur} * 16.000 * 3 * 163) / 1.000.000`;
+                res.sumur.vol = "16.000 Liter";
+
+                // RORAK (3687L, 130 Hari - Sesuai SS4 Formula Bar)
+                res.rorak.val = (stats.rorak * 3687 * 3 * 130) / 1000000;
+                res.rorak.formula = `(${stats.rorak} * 3.687 * 3 * 130) / 1.000.000`;
+                res.rorak.vol = "3.687 Liter";
+
+                // BIOPORI (Rasio 300 unit = 1.5)
+                res.biopori.val = (stats.biopori / 300) * 1.5;
+                res.biopori.formula = `(${stats.biopori} / 300 unit) * 1,5 ML`;
+                res.biopori.vol = "Std Biopori";
+            } 
+            else if (year == 2022) {
+                // POHON
+                res.tree.val = (stats.trees / 400) * VWB_CONST * TIME_FACTOR * 0.75;
+                res.tree.formula = `(${fmt(stats.trees)}/400) * ${VWB_CONST.toFixed(5)} * ${TIME_FACTOR} * 75%`;
+                res.tree.vol = "Asumsi 400 phn/ha";
+
+                // SUMUR (16000L, 163 Hari)
+                res.sumur.val = (stats.sumur * 16000 * 3 * 163) / 1000000;
+                res.sumur.formula = `(${stats.sumur} * 16.000 * 3 * 163) / 1.000.000`;
+                res.sumur.vol = "16.000 Liter";
+
+                // RORAK (735L, 163 Hari - SS5)
+                res.rorak.val = (stats.rorak * 735 * 3 * 163) / 1000000;
+                res.rorak.formula = `(${stats.rorak} * 735 * 3 * 163) / 1.000.000`;
+                res.rorak.vol = "735 Liter";
+
+                // BIOPORI (300 unit = 1.47)
+                res.biopori.val = (stats.biopori > 0) ? (stats.biopori / 300) * 1.47 : 0;
+                res.biopori.formula = stats.biopori > 0 ? `(${stats.biopori}/300) * 1,47` : "-";
+                res.biopori.vol = "Std Biopori";
+            }
+            else if (year == 2023) {
+                // POHON
+                res.tree.val = (stats.trees / 400) * VWB_CONST * TIME_FACTOR * 0.75;
+                res.tree.formula = `(${fmt(stats.trees)}/400) * ${VWB_CONST.toFixed(5)} * ${TIME_FACTOR} * 75%`;
+                res.tree.vol = "Asumsi 400 phn/ha";
+
+                // SUMUR (1177.5L, 163 Hari - SS7)
+                res.sumur.val = (stats.sumur * 1177.5 * 3 * 163) / 1000000;
+                res.sumur.formula = `(${stats.sumur} * 1.177,5 * 3 * 163) / 1 Juta`;
+                res.sumur.vol = "1.177,5 Liter";
+
+                // RORAK (490L, 163 Hari - SS7 Hitung Mundur)
+                res.rorak.val = (stats.rorak * 490 * 3 * 163) / 1000000;
+                res.rorak.formula = `(${stats.rorak} * 490 * 3 * 163) / 1.000.000`;
+                res.rorak.vol = "490 Liter";
+
+                // BIOPORI (100 unit = 1.8 - SS6)
+                res.biopori.val = (stats.biopori > 0) ? (stats.biopori / 100) * 1.8 : 0;
+                res.biopori.formula = stats.biopori > 0 ? `(${stats.biopori}/100) * 1,8` : "-";
+                res.biopori.vol = "Std Biopori";
+            }
+            else if (year == 2024) {
+                // POHON (Konstanta 1.5)
+                res.tree.val = (stats.trees / 400) * 1.5;
+                res.tree.formula = `(${fmt(stats.trees)} / 400) * 1,5 ML`;
+                res.tree.vol = "Konstanta 1,5 ML/Ha";
+
+                // SUMUR (Konstanta 1.1)
+                res.sumur.val = stats.sumur * 1.1;
+                res.sumur.formula = `${stats.sumur} Unit * 1,1 ML`;
+                res.sumur.vol = "Konstanta 1,1 ML";
+
+                // RORAK (Konstanta 0.17)
+                res.rorak.val = stats.rorak * 0.17;
+                res.rorak.formula = `${fmt(stats.rorak)} Unit * 0,17 ML`;
+                res.rorak.vol = "Konstanta 0,17 ML";
+
+                // BIOPORI (0)
+                res.biopori.val = 0;
+                res.biopori.formula = "-";
+                res.biopori.vol = "-";
+            }
+
+            return res;
+        }
+
+        // --- 2. LOGIKA UTAMA HALAMAN ---
         const id = new URLSearchParams(window.location.search).get('id');
         const data = db_planting.years[id];
 
         if(data) {
+            // A. Update Info Header & Stats (Existing)
             document.getElementById('pageTitle').innerText = "Program Tahun " + data.year;
             document.getElementById('pageDesc').innerText = data.location;
             document.getElementById('valTrees').innerText = data.stats.trees.toLocaleString();
             document.getElementById('valRorak').innerText = data.stats.rorak.toLocaleString();
-            
             let sumurText = data.stats.biopori > 0 ? `${data.stats.sumur} Sumur + ${data.stats.biopori} Biopori` : `${data.stats.sumur} Unit`;
             document.getElementById('valSumur').innerText = sumurText;
 
+            // B. Render Map (Existing)
             const map = L.map('miniMap').setView([-7.810, 112.908], 14);
             L.tileLayer('https://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}', { maxZoom: 20 }).addTo(map);
-            
-            // Definisikan Ikon
-            const iconTree = L.divIcon({html:'<div style="background:#2e7d32;width:12px;height:12px;border-radius:50%;border:2px solid white;"></div>', className: ''});
-            const iconRorak = L.divIcon({html:'<div style="background:#ff9800;width:12px;height:12px;border-radius:50%;border:2px solid white;"></div>', className: ''});
+            const iconTree = L.divIcon({html:'<div style="background:#2e7d32;width:12px;height:12px;border-radius:50%;border:2px solid white;"></div>'});
+            const iconRorak = L.divIcon({html:'<div style="background:#ff9800;width:12px;height:12px;border-radius:50%;border:2px solid white;"></div>'});
             
             let bounds = [];
-            
-            // Render Points
             data.points.forEach(pt => {
                 let isRorak = pt[2].toLowerCase().includes("rorak");
-                let icon = isRorak ? iconRorak : iconTree;
-                
-                L.marker([pt[0], pt[1]], {icon: icon}).addTo(map).bindPopup(pt[2]);
+                L.marker([pt[0], pt[1]], {icon: isRorak ? iconRorak : iconTree}).addTo(map).bindPopup(pt[2]);
                 bounds.push([pt[0], pt[1]]);
             });
 
-            // Render Polygon
             if(data.areaPolygon) {
                 let firstPoly = null;
                 data.areaPolygon.forEach(poly => {
-                    // Cek format baru (2024) atau lama
                     if (poly.coords && poly.color) {
-                        // 2024
-                        L.polygon(poly.coords, { 
-                            color: poly.color, 
-                            fillColor: poly.color, 
-                            fillOpacity: 0.4,
-                            weight: 2
-                        }).bindPopup(poly.name).addTo(map);
-                        if(!firstPoly) firstPoly = poly.coords; // Simpan untuk bounds
+                        L.polygon(poly.coords, { color: poly.color, fillColor: poly.color, fillOpacity: 0.4, weight: 2 }).bindPopup(poly.name).addTo(map);
+                        if(!firstPoly) firstPoly = poly.coords; 
                     } else {
-                        // Lama
-                        L.polygon(poly, { 
-                            color: '#f1c40f', 
-                            fillColor: '#f1c40f', 
-                            fillOpacity: 0.3,
-                            weight: 2
-                        }).addTo(map);
+                        L.polygon(poly, { color: '#f1c40f', fillColor: '#f1c40f', fillOpacity: 0.3, weight: 2 }).addTo(map);
                         if(!firstPoly) firstPoly = poly;
                     }
                 });
-
-                // Auto Zoom ke polygon pertama jika ada
                 if (firstPoly) {
                     const tempPoly = L.polygon(firstPoly);
                     map.fitBounds(tempPoly.getBounds());
@@ -126,19 +273,105 @@
                 }
             }
 
+            // C. Render Pie Chart (Existing)
             const labels = Object.keys(data.species);
             const vals = Object.values(data.species);
             new Chart(document.getElementById('spChart'), {
                 type: 'doughnut',
                 data: { labels: labels, datasets: [{data: vals, backgroundColor: ['#2e7d32','#43a047','#66bb6a','#81c784','#a5d6a7']}] },
-                options: { plugins: { legend: {position:'right'} } }
+                options: { 
+                    maintainAspectRatio: false,
+                    plugins: { legend: {display:false} } 
+                }
             });
-
             const list = document.getElementById('spList');
             labels.forEach((l,i) => list.innerHTML += `<li class="list-group-item d-flex justify-content-between">${l} <span>${vals[i]}</span></li>`);
 
             const gal = document.getElementById('gallery');
             data.photos.forEach(src => gal.innerHTML += `<div class="col-md-3 col-6"><img src="${src}" class="gallery-img"></div>`);
+
+            // --- D. LOGIKA BARU: HITUNG & TAMPILKAN RUMUS AIR ---
+            
+            const calc = getWaterAnalysis(data.year, data.stats);
+            const totalWater = calc.tree.val + calc.rorak.val + calc.sumur.val + calc.biopori.val;
+
+            // 1. Isi Tabel Rumus
+            const tbBody = document.getElementById('formulaTableBody');
+            
+            // Baris Pohon
+            tbBody.innerHTML += `
+                <tr>
+                    <td>Pohon / Vegetasi</td>
+                    <td>${calc.tree.vol}</td>
+                    <td class="formula-text">${calc.tree.formula}</td>
+                    <td class="text-end fw-bold">${fmtDec(calc.tree.val)}</td>
+                </tr>
+            `;
+            // Baris Rorak
+            tbBody.innerHTML += `
+                <tr>
+                    <td>Rorak (Trench)</td>
+                    <td>${calc.rorak.vol}</td>
+                    <td class="formula-text">${calc.rorak.formula}</td>
+                    <td class="text-end fw-bold">${fmtDec(calc.rorak.val)}</td>
+                </tr>
+            `;
+            // Baris Sumur
+            if (data.stats.sumur > 0) {
+                tbBody.innerHTML += `
+                    <tr>
+                        <td>Sumur Resapan</td>
+                        <td>${calc.sumur.vol}</td>
+                        <td class="formula-text">${calc.sumur.formula}</td>
+                        <td class="text-end fw-bold">${fmtDec(calc.sumur.val)}</td>
+                    </tr>
+                `;
+            }
+            // Baris Biopori
+            if (data.stats.biopori > 0) {
+                tbBody.innerHTML += `
+                    <tr>
+                        <td>Biopori</td>
+                        <td>${calc.biopori.vol}</td>
+                        <td class="formula-text">${calc.biopori.formula}</td>
+                        <td class="text-end fw-bold">${fmtDec(calc.biopori.val)}</td>
+                    </tr>
+                `;
+            }
+
+            document.getElementById('totalInfiltrasiText').innerText = fmtDec(totalWater) + " ML/Y";
+
+            // 2. Render Bar Chart Air
+            new Chart(document.getElementById('waterBarChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Pohon', 'Rorak', 'Sipil Teknis Lain'],
+                    datasets: [{
+                        label: 'Infiltrasi (ML/Y)',
+                        data: [calc.tree.val, calc.rorak.val, (calc.sumur.val + calc.biopori.val)],
+                        backgroundColor: ['#4caf50', '#795548', '#03a9f4'],
+                        borderRadius: 4,
+                        barPercentage: 0.6
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        datalabels: {
+                            color: '#333',
+                            anchor: 'end',
+                            align: 'top',
+                            formatter: (val) => val > 0 ? val.toFixed(1) : ''
+                        }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, grid: {display:false} },
+                        x: { grid: {display:false} }
+                    }
+                },
+                plugins: [ChartDataLabels]
+            });
         }
     </script>
 </body>
