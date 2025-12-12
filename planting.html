@@ -200,12 +200,13 @@
     
     <script>
         // ==========================================================
-        // KONFIGURASI RUMUS AIR 
+        // KONFIGURASI RUMUS AIR & SIPA
         // ==========================================================
         
-        const SIPA_LS = 95.00;        // Batas SIPA (Liter/detik) - Dari SS3
-        const TIME_FACTOR = 31.536;   // Faktor Konversi dari ML/Y ke L/s (31.536.000 / 1.000.000)
-        const SIPA_MLY = 2996;        // Batas SIPA dalam ML/Y (Untuk grafik garis batas)
+        // Konstanta SIPA
+        const SIPA_LS = 95.00;        // Batas SIPA dalam Liter/detik (Untuk perhitungan Performance)
+        const SIPA_MLY = 2996;        // Batas SIPA dalam ML/Year (Untuk garis grafik Replenished Water)
+        const TIME_FACTOR = 31.536;   // Faktor Konversi dari ML/Y ke L/s
 
         // 1. METODE LAMA (2021-2023): Berbasis Dimensi Baru
         const KOEFISIEN_LAMA = {
@@ -267,11 +268,11 @@
             totalInfiltrasiKumulatif += currentInfiltrasi;
 
             // 3. Kalkulasi Balance (L/s)
-            // Rumus SS1: (ML/Y * 1.000.000) / 31.536.000 => ML/Y / 31.536
+            // Rumus: (ML/Y) / 31.536
             let valBalance = currentInfiltrasi / TIME_FACTOR;
 
             // 4. Kalkulasi Performance (%)
-            // Rumus SS2: (Balance / SIPA) * 100
+            // Rumus: (Balance / SIPA 95.00) * 100
             let valPerformance = (valBalance / SIPA_LS) * 100;
 
             // Push Data ke Array
@@ -366,7 +367,7 @@
             options: { maintainAspectRatio: false, plugins: { legend:{position:'bottom'}, datalabels: { color: '#ffffff', font: { weight: 'bold' }, display: function(context) { return context.dataset.data[context.dataIndex] > 0; } } }, scales:{x:{stacked:false}, y:{beginAtZero:true}} }
         });
 
-        // GRAFIK 1: WB CHART (ML/Y)
+        // GRAFIK 1: WB CHART (SIPA = 2996 ML/Y)
         new Chart(document.getElementById('wbChart'), {
             type: 'bar',
             data: {
@@ -379,7 +380,7 @@
             options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom' }, datalabels: { anchor: 'end', align: 'top', color: '#333', formatter: Math.round } }, scales: { y: { beginAtZero: true } } }
         });
 
-        // GRAFIK 2: BP CHART (L/s & %)
+        // GRAFIK 2: BP CHART (SIPA = 95.00 L/s)
         new Chart(document.getElementById('bpChart'), {
             type: 'bar',
             data: {
@@ -396,9 +397,6 @@
         // RENDER TABEL (Dengan Kolom Tambahan)
         // ==========================================================
         const tbody = document.getElementById('tableBody');
-        
-        // Buat salinan array dan reverse untuk urutan tabel (terbaru di atas)
-        // Kita hitung ulang di loop render agar indexnya pas
         let reversedKeys = [...dbKeys].reverse();
 
         reversedKeys.forEach(key => {
