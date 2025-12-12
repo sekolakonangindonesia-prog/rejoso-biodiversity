@@ -18,7 +18,6 @@
     <style>
         body { font-family: 'Montserrat', sans-serif; background-color: #f0f2f5; padding-bottom: 50px; }
         
-        /* Header Styling */
         .hero-header { 
             position: relative; background: #1b5e20; height: 250px; 
             display: flex; align-items: center; justify-content: center; 
@@ -32,7 +31,6 @@
         }
         .btn-home:hover { background: white; color: #1b5e20; }
         
-        /* Stats Cards */
         .stat-card { 
             color: white; border-radius: 8px; padding: 20px; 
             box-shadow: 0 4px 10px rgba(0,0,0,0.1); min-height: 140px; 
@@ -43,7 +41,6 @@
         .bg-rorak { background: #5d4037; } 
         .bg-sumur { background: #0277bd; }
         
-        /* Generic Card Styling */
         .card-custom { 
             border: none; border-radius: 8px; background: white; 
             box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px; height: 100%; 
@@ -53,13 +50,9 @@
             font-weight: 700; color: #333; 
         }
         
-        /* Map Styling */
         #map { height: 500px; width: 100%; z-index: 1; border-radius: 0 0 8px 8px; }
-        
-        /* Chart Container */
         .chart-wrapper { position: relative; width: 100%; height: 300px; }
         
-        /* Table Styling */
         .table-hover tbody tr:hover { 
             background-color: #e8f5e9; cursor: pointer; 
             transform: scale(1.002); transition:0.2s; 
@@ -190,6 +183,8 @@
                             <th class="text-center">Sumur</th>
                             <th class="text-center">Biopori</th>
                             <th class="text-end pe-4" style="min-width: 150px;">Total Infiltrasi</th>
+                            <th class="text-end pe-4">Balance (L/s)</th>
+                            <th class="text-end pe-4">Perf. (%)</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
@@ -205,12 +200,14 @@
     
     <script>
         // ==========================================================
-        // KONFIGURASI RUMUS AIR (DUA METODE)
+        // KONFIGURASI RUMUS AIR 
         // ==========================================================
         
-        const SIPA_LIMIT = 2996; // Batas SIPA (ML/Year)
+        const SIPA_LS = 95.00;        // Batas SIPA (Liter/detik) - Dari SS3
+        const TIME_FACTOR = 31.536;   // Faktor Konversi dari ML/Y ke L/s (31.536.000 / 1.000.000)
+        const SIPA_MLY = 2996;        // Batas SIPA dalam ML/Y (Untuk grafik garis batas)
 
-        // 1. METODE LAMA (2021-2023): Berbasis Dimensi Baru x Hari Hujan (163)
+        // 1. METODE LAMA (2021-2023): Berbasis Dimensi Baru
         const KOEFISIEN_LAMA = {
             rorak: 0.2396,      // per unit (ML)
             pohon: 0.001475,    // per pohon (ML)
@@ -222,17 +219,8 @@
         const KONSTANTA_2024 = {
             rorak: 0.17,        // 170.000 Liter/Unit -> 0.17 ML
             sumur: 1.1,         // 1.100.000 Liter/Unit -> 1.1 ML
-            pohon_per_ha: 1.5,  // 1.500.000 Liter/Ha -> 1.5 ML/Ha
-            kerapatan_pohon: 400 // 400 pohon = 1 Ha
-        };
-
-        // Data Manual Balance & Performance (Sesuai Laporan)
-        const HISTORICAL_WATER_DATA = {
-            2021: { balance: 1.83, performance: 1.93 },
-            2022: { balance: 9.64, performance: 10.15 },
-            2023: { balance: 4.21, performance: 4.43 },
-            2024: { balance: 3.67, performance: 3.86 },
-            2025: { balance: 0, performance: 0 }
+            pohon_per_ha: 1.5,  // 1.5 ML/Ha
+            kerapatan_pohon: 400 
         };
 
         // ==========================================================
@@ -258,25 +246,18 @@
             totalT += s.trees;
             totalR += s.rorak;
 
-            // 2. Kalkulasi Rumus Air (SPLIT LOGIC)
+            // 2. Kalkulasi Replenished Water (ML/Y) - SPLIT LOGIC
             let currentInfiltrasi = 0;
 
             if (year === 2024) {
-                // --- LOGIKA 2024 (KONSTANTA) ---
-                // Pohon: (Jumlah / 400) * 1.5
+                // LOGIKA 2024
                 let valPohon = (s.trees / KONSTANTA_2024.kerapatan_pohon) * KONSTANTA_2024.pohon_per_ha;
-                // Rorak: Jumlah * 0.17
                 let valRorak = s.rorak * KONSTANTA_2024.rorak;
-                // Sumur: Jumlah * 1.1
                 let valSumur = s.sumur * KONSTANTA_2024.sumur;
-                
-                // Biopori: Anggap 0 atau pakai konstanta lama jika ada isinya
                 let valBiopori = s.biopori * KOEFISIEN_LAMA.biopori; 
-
                 currentInfiltrasi = valPohon + valRorak + valSumur + valBiopori;
-
             } else {
-                // --- LOGIKA LAMA (2021-2023) ---
+                // LOGIKA LAMA (2021-2023)
                 currentInfiltrasi = (s.trees * KOEFISIEN_LAMA.pohon) + 
                                     (s.rorak * KOEFISIEN_LAMA.rorak) + 
                                     (s.sumur * KOEFISIEN_LAMA.sumur) + 
@@ -285,6 +266,14 @@
 
             totalInfiltrasiKumulatif += currentInfiltrasi;
 
+            // 3. Kalkulasi Balance (L/s)
+            // Rumus SS1: (ML/Y * 1.000.000) / 31.536.000 => ML/Y / 31.536
+            let valBalance = currentInfiltrasi / TIME_FACTOR;
+
+            // 4. Kalkulasi Performance (%)
+            // Rumus SS2: (Balance / SIPA) * 100
+            let valPerformance = (valBalance / SIPA_LS) * 100;
+
             // Push Data ke Array
             years.push(year);
             dataTrees.push(s.trees);
@@ -292,10 +281,8 @@
             dataSumur.push(s.sumur);
             dataBiopori.push(s.biopori);
             dataReplenished.push(currentInfiltrasi);
-
-            let waterMeta = HISTORICAL_WATER_DATA[year] || { balance: 0, performance: 0 };
-            dataBalance.push(waterMeta.balance);
-            dataPerformance.push(waterMeta.performance);
+            dataBalance.push(valBalance);
+            dataPerformance.push(valPerformance);
 
             if(item.species) {
                 for (const [sp, val] of Object.entries(item.species)) {
@@ -379,46 +366,56 @@
             options: { maintainAspectRatio: false, plugins: { legend:{position:'bottom'}, datalabels: { color: '#ffffff', font: { weight: 'bold' }, display: function(context) { return context.dataset.data[context.dataIndex] > 0; } } }, scales:{x:{stacked:false}, y:{beginAtZero:true}} }
         });
 
+        // GRAFIK 1: WB CHART (ML/Y)
         new Chart(document.getElementById('wbChart'), {
             type: 'bar',
             data: {
                 labels: years,
                 datasets: [
-                    { type: 'line', label: 'Batas SIPA (2.996 ML/Y)', data: Array(years.length).fill(SIPA_LIMIT), borderColor: '#d32f2f', borderWidth: 2, borderDash: [5, 5], pointRadius: 0, datalabels: { display: false } },
+                    { type: 'line', label: 'Batas SIPA (2.996 ML/Y)', data: Array(years.length).fill(SIPA_MLY), borderColor: '#d32f2f', borderWidth: 2, borderDash: [5, 5], pointRadius: 0, datalabels: { display: false } },
                     { label: 'Replenished Water (ML/Y)', data: dataReplenished, backgroundColor: '#0288d1', borderRadius: 4 }
                 ]
             },
             options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom' }, datalabels: { anchor: 'end', align: 'top', color: '#333', formatter: Math.round } }, scales: { y: { beginAtZero: true } } }
         });
 
+        // GRAFIK 2: BP CHART (L/s & %)
         new Chart(document.getElementById('bpChart'), {
             type: 'bar',
             data: {
                 labels: years,
                 datasets: [
-                    { label: 'Balance (L/s)', data: dataBalance, backgroundColor: '#d32f2f', borderRadius: 4, datalabels: { color: '#ffffff' } },
-                    { label: 'Performance (%)', data: dataPerformance, backgroundColor: '#fbc02d', borderRadius: 4, datalabels: { color: '#000000' } }
+                    { label: 'Balance (L/s)', data: dataBalance, backgroundColor: '#d32f2f', borderRadius: 4, datalabels: { color: '#ffffff', formatter: (v) => v.toFixed(2) } },
+                    { label: 'Performance (%)', data: dataPerformance, backgroundColor: '#fbc02d', borderRadius: 4, datalabels: { color: '#000000', formatter: (v) => v.toFixed(1) + '%' } }
                 ]
             },
             options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom' }, datalabels: { anchor: 'center', align: 'center', font:{weight:'bold'} } }, scales: { y: { beginAtZero: true } } }
         });
 
         // ==========================================================
-        // RENDER TABEL
+        // RENDER TABEL (Dengan Kolom Tambahan)
         // ==========================================================
         const tbody = document.getElementById('tableBody');
-        dbKeys.reverse().forEach(key => {
+        
+        // Buat salinan array dan reverse untuk urutan tabel (terbaru di atas)
+        // Kita hitung ulang di loop render agar indexnya pas
+        let reversedKeys = [...dbKeys].reverse();
+
+        reversedKeys.forEach(key => {
             const item = db_planting.years[key];
             const s = item.stats;
             const year = item.year;
             
-            // Hitung ulang per baris untuk ditampilkan di tabel
-            let rowInfiltrasi = 0;
+            // Hitung ulang (sama seperti di atas)
+            let mly = 0;
             if (year === 2024) {
-                rowInfiltrasi = ((s.trees/400)*1.5) + (s.rorak*0.17) + (s.sumur*1.1) + (s.biopori*0.005);
+                mly = ((s.trees/400)*1.5) + (s.rorak*0.17) + (s.sumur*1.1) + (s.biopori*0.005);
             } else {
-                rowInfiltrasi = (s.trees*KOEFISIEN_LAMA.pohon) + (s.rorak*KOEFISIEN_LAMA.rorak) + (s.sumur*KOEFISIEN_LAMA.sumur) + (s.biopori*KOEFISIEN_LAMA.biopori);
+                mly = (s.trees*KOEFISIEN_LAMA.pohon) + (s.rorak*KOEFISIEN_LAMA.rorak) + (s.sumur*KOEFISIEN_LAMA.sumur) + (s.biopori*KOEFISIEN_LAMA.biopori);
             }
+            
+            let blc = mly / TIME_FACTOR;
+            let prf = (blc / SIPA_LS) * 100;
 
             tbody.innerHTML += `
             <tr>
@@ -428,7 +425,9 @@
                 <td class="text-center">${s.rorak.toLocaleString()}</td>
                 <td class="text-center">${s.sumur.toLocaleString()}</td>
                 <td class="text-center">${s.biopori.toLocaleString()}</td>
-                <td class="text-end pe-4 fw-bold text-primary">${rowInfiltrasi.toLocaleString(undefined, {minimumFractionDigits:1, maximumFractionDigits:1})} ML/Y</td>
+                <td class="text-end pe-4 fw-bold text-primary">${mly.toLocaleString(undefined, {minimumFractionDigits:1, maximumFractionDigits:1})} ML/Y</td>
+                <td class="text-end pe-4 text-danger fw-bold">${blc.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+                <td class="text-end pe-4 text-warning fw-bold">${prf.toLocaleString(undefined, {minimumFractionDigits:1, maximumFractionDigits:1})}%</td>
                 <td><button class="btn btn-sm btn-outline-secondary px-3" onclick="window.location.href='planting_detail.html?id=${key}'">Detail</button></td>
             </tr>`;
         });
