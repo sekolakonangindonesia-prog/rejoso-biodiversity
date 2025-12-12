@@ -3,366 +3,442 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cek Hitungan Manual (Offline) - SIS KEHATI</title>
+    <title>Monitoring Penanaman - SIS KEHATI</title>
     
+    <!-- Library -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js & Plugin Labels -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 
     <style>
-        body { font-family: 'Montserrat', sans-serif; background-color: #f8f9fa; padding-bottom: 50px; }
-        .hero-header { background: #1b5e20; color: white; padding: 30px 0; text-align: center; margin-bottom: 30px; border-bottom: 5px solid #ffca28; }
-        .card-custom { border: none; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); margin-bottom: 20px; }
-        .card-header-custom { background: white; padding: 15px; border-bottom: 1px solid #eee; font-weight: 700; }
+        body { font-family: 'Montserrat', sans-serif; background-color: #f0f2f5; padding-bottom: 50px; }
+        
+        /* Header Styling */
+        .hero-header { 
+            position: relative; background: #1b5e20; height: 250px; 
+            display: flex; align-items: center; justify-content: center; 
+            color: white; margin-bottom: 30px; border-bottom: 5px solid #2e7d32; 
+        }
+        .hero-content { position: relative; z-index: 2; text-align: center; }
+        .btn-home { 
+            background: rgba(255,255,255,0.2); color: white; border: 1px solid white; 
+            border-radius: 50px; padding: 8px 20px; text-decoration: none; 
+            display:inline-block; margin-top:10px; transition:0.3s; 
+        }
+        .btn-home:hover { background: white; color: #1b5e20; }
+        
+        /* Stats Cards */
+        .stat-card { 
+            color: white; border-radius: 8px; padding: 20px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); min-height: 140px; 
+            position:relative; overflow:hidden; 
+        }
+        .stat-val { font-size: 2.8rem; font-weight: 800; line-height: 1; margin-bottom: 5px; }
+        .bg-tree { background: #2e7d32; } 
+        .bg-rorak { background: #5d4037; } 
+        .bg-sumur { background: #0277bd; }
+        
+        /* Generic Card Styling */
+        .card-custom { 
+            border: none; border-radius: 8px; background: white; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px; height: 100%; 
+        }
+        .card-header-custom { 
+            background: white; padding: 15px; border-bottom: 1px solid #eee; 
+            font-weight: 700; color: #333; 
+        }
+        
+        /* Map Styling */
+        #map { height: 500px; width: 100%; z-index: 1; border-radius: 0 0 8px 8px; }
+        
+        /* Chart Container */
+        .chart-wrapper { position: relative; width: 100%; height: 300px; }
         
         /* Table Styling */
-        .table-custom thead th { background-color: #e3f2fd; vertical-align: middle; text-align: center; }
-        .table-custom td { vertical-align: middle; }
-        
-        /* Style Khusus Request */
-        .formula-text { 
-            font-family: 'Courier New', monospace; 
-            color: #d32f2f; /* Merah */
-            font-weight: bold; 
-            font-size: 0.9rem;
+        .table-hover tbody tr:hover { 
+            background-color: #e8f5e9; cursor: pointer; 
+            transform: scale(1.002); transition:0.2s; 
         }
-        .dimensi-detail {
-            font-size: 0.75rem;
-            color: #555;
-            background-color: #fff3e0;
-            padding: 4px;
-            border-radius: 4px;
-            margin-top: 5px;
-            display: inline-block;
-            border: 1px solid #ffe0b2;
-        }
-        .val-highlight { font-weight: 800; color: #0277bd; font-size: 1.1rem; }
-        
-        #map { height: 300px; width: 100%; border-radius: 4px; }
     </style>
 </head>
 <body>
 
     <div class="hero-header">
-        <h2 class="fw-bold">KALKULASI MANUAL (DATA & DIMENSI BARU)</h2>
-        <p class="mb-0">Sinkronisasi Dimensi Fisik dengan Perhitungan Infiltrasi</p>
+        <div class="hero-content">
+            <img src="logo-sk.png" style="height: 50px; margin-bottom: 10px;" onerror="this.style.display='none'">
+            <h2 class="fw-bold mb-0 text-uppercase">MONITORING PENANAMAN</h2>
+            <p class="mb-0 opacity-75">Sistem Informasi Sebaran Penanaman & Sipil Teknis</p>
+            <a href="index.html" class="btn-home"><i class="fas fa-arrow-left me-2"></i>Dashboard Utama</a>
+        </div>
     </div>
 
-    <div class="container">
+    <div class="container-fluid px-4" style="margin-top: -50px; position: relative; z-index: 10;">
         
-        <!-- ROW: RINGKASAN TOTAL (BOX BIRU) -->
-        <div class="row mb-4 justify-content-center">
-            <div class="col-md-6">
-                <div class="card card-custom p-4 text-center text-white" style="background-color: #0288d1;">
-                    <i class="fas fa-water fa-3x mb-2 opacity-50"></i>
-                    <h1 class="fw-bold display-4 mb-0" id="totalKumulatifDisplay">0</h1>
-                    <h5 class="fw-bold">TOTAL REPLENISHED WATER</h5>
-                    <small>(ML/Year Kumulatif)</small>
+        <!-- ROW 1: TOP STATS -->
+        <div class="row mb-4">
+            <div class="col-md-4 mb-2">
+                <div class="stat-card bg-tree">
+                    <div class="stat-header">Total Pohon</div>
+                    <div class="stat-val" id="totalTrees">0</div>
+                    <small>Data Real Database</small>
+                    <i class="fas fa-tree position-absolute end-0 bottom-0 m-3 opacity-25 fa-3x"></i>
+                </div>
+            </div>
+            <div class="col-md-4 mb-2">
+                <div class="stat-card bg-rorak">
+                    <div class="stat-header">Total Rorak</div>
+                    <div class="stat-val" id="totalRorak">0</div>
+                    <small>Unit Sipil Teknis</small>
+                    <i class="fas fa-inbox position-absolute end-0 bottom-0 m-3 opacity-25 fa-3x"></i>
+                </div>
+            </div>
+            <div class="col-md-4 mb-2">
+                <div class="stat-card bg-sumur">
+                    <div class="stat-header">Total Infiltrasi</div>
+                    <div class="stat-val" id="totalReplenish">0</div>
+                    <small>ML/Year (Hasil Kalkulasi Manual)</small>
+                    <i class="fas fa-water position-absolute end-0 bottom-0 m-3 opacity-25 fa-3x"></i>
                 </div>
             </div>
         </div>
 
-        <!-- ROW: GRAFIK (DI ATAS TABEL) -->
-        <div class="card card-custom mb-4">
-            <div class="card-header-custom"><i class="fas fa-chart-bar me-2"></i> REPLENISHED WATER VS SIPA</div>
-            <div class="card-body">
-                <div style="height: 300px; width: 100%;"><canvas id="wbChart"></canvas></div>
+        <!-- ROW 2: PETA & CHART KECIL -->
+        <div class="row mb-4">
+            <div class="col-lg-8 mb-3">
+                <div class="card card-custom h-100">
+                    <div class="card-header-custom d-flex justify-content-between">
+                        <span><i class="fas fa-map-marked-alt text-success me-2"></i> Peta Sebaran</span>
+                        <span class="badge bg-warning text-dark">Data Database</span>
+                    </div>
+                    <div class="card-body p-0">
+                        <div id="map"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 mb-3">
+                <div class="card card-custom mb-3" style="height: auto;">
+                    <div class="card-header-custom"><i class="fas fa-chart-bar text-success me-2"></i> Realisasi Pohon</div>
+                    <div class="card-body">
+                        <div class="chart-wrapper" style="height: 200px;"><canvas id="barChart"></canvas></div>
+                    </div>
+                </div>
+                <div class="card card-custom" style="height: auto;">
+                    <div class="card-header-custom"><i class="fas fa-chart-pie text-success me-2"></i> Komposisi Tanaman</div>
+                    <div class="card-body">
+                        <div class="chart-wrapper" style="height: 200px;"><canvas id="pieChart"></canvas></div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- ROW: TABEL DETIL PERHITUNGAN -->
-        <div class="card card-custom">
-            <div class="card-header-custom">
-                <span><i class="fas fa-calculator me-2"></i> Rincian Rumus & Hasil per Tahun</span>
+        <!-- ROW 3: GRAFIK SIPIL TEKNIS -->
+        <div class="row mb-4">
+            <div class="col-md-6 mb-3">
+                <div class="card card-custom">
+                    <div class="card-header-custom"><i class="fas fa-inbox text-warning me-2" style="color:#5d4037!important"></i> Pembuatan Rorak (Unit)</div>
+                    <div class="card-body"><div class="chart-wrapper"><canvas id="chartRorak"></canvas></div></div>
+                </div>
             </div>
+            <div class="col-md-6 mb-3">
+                <div class="card card-custom">
+                    <div class="card-header-custom"><i class="fas fa-water text-primary me-2"></i> Sumur Resapan & Biopori (Unit)</div>
+                    <div class="card-body"><div class="chart-wrapper"><canvas id="chartSumur"></canvas></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ROW 4: POSITIVE WATER IMPACT -->
+        <div class="row mb-4">
+            <div class="col-lg-6 mb-3">
+                <div class="card card-custom h-100">
+                    <div class="card-header-custom bg-light text-primary border-bottom border-primary">
+                        <i class="fas fa-tint text-primary me-2"></i> REPLENISHED WATER VS SIPA
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-wrapper" style="height: 350px;"><canvas id="wbChart"></canvas></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 mb-3">
+                <div class="card card-custom h-100">
+                    <div class="card-header-custom bg-light text-success border-bottom border-success">
+                        <i class="fas fa-balance-scale text-success me-2"></i> BALANCE & PERFORMANCE
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-wrapper" style="height: 350px;"><canvas id="bpChart"></canvas></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ROW 5: TABEL HISTORY -->
+        <div class="card card-custom mb-5">
+            <div class="card-header-custom"><i class="fas fa-list text-dark me-2"></i> Riwayat Program</div>
             <div class="table-responsive">
-                <table class="table table-bordered table-hover mb-0 table-custom">
-                    <thead>
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
                         <tr>
-                            <th style="width: 20%;">Item & Dimensi</th>
-                            <th style="width: 20%;">2021</th>
-                            <th style="width: 20%;">2022</th>
-                            <th style="width: 20%;">2023</th>
-                            <th style="width: 20%;">2024 (Konstanta)</th>
+                            <th class="ps-4">Tahun</th>
+                            <th>Program / Lokasi</th>
+                            <th class="text-center">Pohon</th>
+                            <th class="text-center">Rorak</th>
+                            <th class="text-center">Sumur</th>
+                            <th class="text-center">Biopori</th>
+                            <th class="text-end pe-4" style="min-width: 150px;">Total Infiltrasi</th>
+                            <th class="text-end pe-4">Balance (L/s)</th>
+                            <th class="text-end pe-4">Perf. (%)</th>
+                            <th>Aksi</th>
                         </tr>
                     </thead>
-                    <tbody id="manualTable">
-                        <!-- Diisi Javascript -->
-                    </tbody>
-                    <tfoot class="table-light">
-                        <tr class="text-center fw-bold">
-                            <td class="text-start">TOTAL PER TAHUN (ML/Y)</td>
-                            <td id="total2021" class="text-primary">-</td>
-                            <td id="total2022" class="text-primary">-</td>
-                            <td id="total2023" class="text-primary">-</td>
-                            <td id="total2024" class="text-primary">-</td>
-                        </tr>
-                    </tfoot>
+                    <tbody id="tableBody"></tbody>
                 </table>
             </div>
-            <div class="card-footer bg-light small text-muted">
-                * Perhitungan 2021-2023 menggunakan Rumus Volumetrik (Dimensi Baru). Tahun 2024 menggunakan Metode Konstanta Excel.
-            </div>
         </div>
-
-        <!-- AREA MAP (VISUALISASI SAJA - TIDAK DIUBAH) -->
-        <div class="card card-custom mt-4">
-            <div class="card-header-custom">Area Penanaman (Visualisasi)</div>
-            <div class="card-body p-0">
-                <div id="map"></div>
-            </div>
-        </div>
-
     </div>
 
+    <!-- LOAD DATABASE UTAMA -->
+    <script src="database_planting.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
     <script>
-        // =========================================================================
-        // 1. DATA INPUT (JUMLAH FISIK SESUAI TABEL)
-        // =========================================================================
-        const INPUT_DATA = {
-            2021: { tree: 5000, well: 10, biopore: 300, rorak: 250 },
-            2022: { tree: 10000, well: 12, biopore: 300, rorak: 714 },
-            2023: { tree: 5130, well: 5, biopore: 100, rorak: 503 },
-            2024: { tree: 2000, well: 1, biopore: 0, rorak: 630 }
-        };
+        // ==========================================================
+        // 1. KONFIGURASI PARAMETER (SIPA & KONSTANTA)
+        // ==========================================================
+        const SIPA_LS = 95.00;        // Batas SIPA L/s (untuk Performance)
+        const SIPA_MLY = 2996;        // Batas SIPA ML/Year (untuk Grafik)
+        const TIME_FACTOR = 31.536;   // Faktor 31.536
+        const VWB_CONST = 0.024953938;
 
-        // =========================================================================
-        // 2. DIMENSI & PARAMETER (YANG DISEPAKATI)
-        // =========================================================================
-        
-        // Sumur: Dia 0.8m, Tinggi 1.5m -> Vol = 754 Liter
-        const VOL_SUMUR_BARU = 754; 
-        
-        // Rorak: P 1m, L 0.7m, T 0.7m -> Vol = 490 Liter
-        const VOL_RORAK_BARU = 490;
+        // VOLUME FISIK BARU (Untuk Tahun 2021-2023)
+        // Sumur: Dia 0.8m, T 1.5m -> 754 Liter
+        const VOL_SUMUR_NEW = 754; 
+        // Rorak: P 1m, L 0.7m, T 0.7m -> 490 Liter
+        const VOL_RORAK_NEW = 490;
+        const RAIN_DAYS = 163; // Disepakati
 
-        // Parameter Lain
-        const RAIN_DAYS = 163; // Hari Hujan (Disepakati)
-        const FREQ_INF = 3;    // Frekuensi Pengisian
-        const VWB_VAL = 0.024953938;
-        const TIME_FACT = 31.536;
+        // ==========================================================
+        // 2. FUNGSI HITUNG MANUAL (HARDCODED LOGIC PER TAHUN)
+        // ==========================================================
+        function calculateWater(year, stats) {
+            let res = 0;
+            
+            if (year === 2024) {
+                // --- METODE KONSTANTA (2024) ---
+                // Pohon: (N/400) * 1.5
+                let t = (stats.trees / 400) * 1.5;
+                // Sumur: N * 1.1
+                let s = stats.sumur * 1.1;
+                // Rorak: N * 0.17
+                let r = stats.rorak * 0.17;
+                // Biopori: 0 (atau pakai konstanta lama)
+                let b = 0; 
+                res = t + s + r + b;
 
-        // =========================================================================
-        // 3. FUNGSI HITUNG (LOGIKA MESIN)
-        // =========================================================================
-        
-        function calculate(year) {
-            let d = INPUT_DATA[year];
-            let res = { tree:0, well:0, rorak:0, biopore:0, total:0 };
-
-            if(year === 2024) {
-                // --- METODE KONSTANTA (KHUSUS 2024) ---
-                res.tree = (d.tree / 400) * 1.5;      // 1.5 ML/Ha
-                res.well = d.well * 1.1;              // 1.1 ML/Unit
-                res.rorak = d.rorak * 0.17;           // 0.17 ML/Unit
-                res.biopore = 0;
             } else {
                 // --- METODE VOLUMETRIK (2021-2023) ---
+                // Menggunakan Dimensi Baru & Hari Hujan 163
                 
                 // Pohon: (N/400) * VWB * 31.536 * 75%
-                res.tree = (d.tree / 400) * VWB_VAL * TIME_FACT * 0.75;
+                let t = (stats.trees / 400) * VWB_CONST * TIME_FACTOR * 0.75;
 
-                // Sumur: (N * 754 * 3 * 163) / 1.000.000 (Pakai Volume Baru)
-                res.well = (d.well * VOL_SUMUR_BARU * FREQ_INF * RAIN_DAYS) / 1000000;
+                // Sumur: (N * 754 * 3 * 163) / 1.000.000
+                let s = (stats.sumur * VOL_SUMUR_NEW * 3 * RAIN_DAYS) / 1000000;
 
-                // Rorak: (N * 490 * 3 * 163) / 1.000.000 (Pakai Volume Baru)
-                res.rorak = (d.rorak * VOL_RORAK_BARU * FREQ_INF * RAIN_DAYS) / 1000000;
+                // Rorak: (N * 490 * 3 * 163) / 1.000.000
+                let r = (stats.rorak * VOL_RORAK_NEW * 3 * RAIN_DAYS) / 1000000;
 
                 // Biopori: (N / 300) * 1.5
-                if(d.biopore > 0) res.biopore = (d.biopore / 300) * 1.5;
-            }
+                let b = (stats.biopori / 300) * 1.5;
 
-            res.total = res.tree + res.well + res.rorak + res.biopore;
+                res = t + s + r + b;
+            }
             return res;
         }
 
-        // Hitung Semua Tahun
-        const RES_2021 = calculate(2021);
-        const RES_2022 = calculate(2022);
-        const RES_2023 = calculate(2023);
-        const RES_2024 = calculate(2024);
-
-        const TOTAL_KUMULATIF = RES_2021.total + RES_2022.total + RES_2023.total + RES_2024.total;
-
-        // =========================================================================
-        // 4. RENDER UI
-        // =========================================================================
+        // ==========================================================
+        // 3. PROSES DATA
+        // ==========================================================
+        Chart.register(ChartDataLabels);
         
-        // Helper Format
-        const fmt = (n) => n.toLocaleString('id-ID');
-        const fmtDec = (n) => n.toLocaleString('id-ID', {minimumFractionDigits:2, maximumFractionDigits:2});
+        let totalT = 0, totalR = 0, totalInfiltrasiKumulatif = 0;
+        let years = [];
+        let dataTrees = [], dataRorak = [], dataSumur = [], dataBiopori = [];
+        let dataReplenished = [], dataBalance = [], dataPerformance = [];
+        let speciesTotal = {};
 
-        // Update Total Atas
-        document.getElementById('totalKumulatifDisplay').innerText = fmtDec(TOTAL_KUMULATIF);
+        const dbKeys = Object.keys(db_planting.years).sort();
 
-        // Update Tabel Footer Total
-        document.getElementById('total2021').innerText = fmtDec(RES_2021.total);
-        document.getElementById('total2022').innerText = fmtDec(RES_2022.total);
-        document.getElementById('total2023').innerText = fmtDec(RES_2023.total);
-        document.getElementById('total2024').innerText = fmtDec(RES_2024.total);
+        dbKeys.forEach(key => {
+            const item = db_planting.years[key];
+            const s = item.stats;
+            const year = item.year;
 
-        // Render Isi Tabel
-        const tbody = document.getElementById('manualTable');
-        
-        // Baris Pohon
-        tbody.innerHTML += `
-            <tr>
-                <td>
-                    <strong>Pohon / Vegetasi</strong><br>
-                    <span class="dimensi-detail">Asumsi: 400 phn/Ha</span>
-                </td>
-                <td>
-                    ${fmt(INPUT_DATA[2021].tree)} Unit<br>
-                    <span class="formula-text">= ${fmtDec(RES_2021.tree)} ML</span>
-                </td>
-                <td>
-                    ${fmt(INPUT_DATA[2022].tree)} Unit<br>
-                    <span class="formula-text">= ${fmtDec(RES_2022.tree)} ML</span>
-                </td>
-                <td>
-                    ${fmt(INPUT_DATA[2023].tree)} Unit<br>
-                    <span class="formula-text">= ${fmtDec(RES_2023.tree)} ML</span>
-                </td>
-                <td>
-                    ${fmt(INPUT_DATA[2024].tree)} Unit<br>
-                    <span class="formula-text">= ${fmtDec(RES_2024.tree)} ML</span>
-                </td>
-            </tr>
-        `;
+            // Akumulasi Fisik
+            totalT += s.trees;
+            totalR += s.rorak;
 
-        // Baris Sumur Resapan (DENGAN DIMENSI BARU)
-        tbody.innerHTML += `
-            <tr>
-                <td>
-                    <strong>Sumur Resapan</strong><br>
-                    <span class="dimensi-detail">Dia 0.8m, T 1.5m (Vol 754L)</span>
-                </td>
-                <td>
-                    ${fmt(INPUT_DATA[2021].well)} Unit<br>
-                    <span class="formula-text">= ${fmtDec(RES_2021.well)} ML</span>
-                </td>
-                <td>
-                    ${fmt(INPUT_DATA[2022].well)} Unit<br>
-                    <span class="formula-text">= ${fmtDec(RES_2022.well)} ML</span>
-                </td>
-                <td>
-                    ${fmt(INPUT_DATA[2023].well)} Unit<br>
-                    <span class="formula-text">= ${fmtDec(RES_2023.well)} ML</span>
-                </td>
-                <td>
-                    ${fmt(INPUT_DATA[2024].well)} Unit<br>
-                    <span class="formula-text">= ${fmtDec(RES_2024.well)} ML</span><br>
-                    <small>(Konstanta 1.1)</small>
-                </td>
-            </tr>
-        `;
+            // Hitung Air (Manual)
+            let currentInfiltrasi = calculateWater(year, s);
+            totalInfiltrasiKumulatif += currentInfiltrasi;
 
-        // Baris Rorak (DENGAN DIMENSI BARU)
-        tbody.innerHTML += `
-            <tr>
-                <td>
-                    <strong>Rorak (Trench)</strong><br>
-                    <span class="dimensi-detail">1m x 0.7m x 0.7m (Vol 490L)</span>
-                </td>
-                <td>
-                    ${fmt(INPUT_DATA[2021].rorak)} Unit<br>
-                    <span class="formula-text">= ${fmtDec(RES_2021.rorak)} ML</span>
-                </td>
-                <td>
-                    ${fmt(INPUT_DATA[2022].rorak)} Unit<br>
-                    <span class="formula-text">= ${fmtDec(RES_2022.rorak)} ML</span>
-                </td>
-                <td>
-                    ${fmt(INPUT_DATA[2023].rorak)} Unit<br>
-                    <span class="formula-text">= ${fmtDec(RES_2023.rorak)} ML</span>
-                </td>
-                <td>
-                    ${fmt(INPUT_DATA[2024].rorak)} Unit<br>
-                    <span class="formula-text">= ${fmtDec(RES_2024.rorak)} ML</span><br>
-                    <small>(Konstanta 0.17)</small>
-                </td>
-            </tr>
-        `;
+            // Hitung Balance & Performance
+            let valBalance = currentInfiltrasi / TIME_FACTOR;
+            let valPerformance = (valBalance / SIPA_LS) * 100;
 
-        // Baris Biopori
-        tbody.innerHTML += `
-            <tr>
-                <td>
-                    <strong>Biopori</strong><br>
-                    <span class="dimensi-detail">Std (Rasio 300 unit = 1.5ML)</span>
-                </td>
-                <td>
-                    ${fmt(INPUT_DATA[2021].biopore)} Unit<br>
-                    <span class="formula-text">= ${fmtDec(RES_2021.biopore)} ML</span>
-                </td>
-                <td>
-                    ${fmt(INPUT_DATA[2022].biopore)} Unit<br>
-                    <span class="formula-text">= ${fmtDec(RES_2022.biopore)} ML</span>
-                </td>
-                <td>
-                    ${fmt(INPUT_DATA[2023].biopore)} Unit<br>
-                    <span class="formula-text">= ${fmtDec(RES_2023.biopore)} ML</span>
-                </td>
-                <td>
-                    -
-                </td>
-            </tr>
-        `;
+            // Push Array
+            years.push(year);
+            dataTrees.push(s.trees);
+            dataRorak.push(s.rorak);
+            dataSumur.push(s.sumur);
+            dataBiopori.push(s.biopori);
+            dataReplenished.push(currentInfiltrasi);
+            dataBalance.push(valBalance);
+            dataPerformance.push(valPerformance);
 
-        // =========================================================================
-        // 5. CHART JS
-        // =========================================================================
-        new Chart(document.getElementById('wbChart'), {
-            type: 'bar',
-            data: {
-                labels: [2021, 2022, 2023, 2024],
-                datasets: [
-                    { 
-                        type: 'line', 
-                        label: 'Batas SIPA (2.996 ML/Y)', 
-                        data: [2996, 2996, 2996, 2996], 
-                        borderColor: '#d32f2f', borderWidth: 2, borderDash: [5, 5], pointRadius: 0, 
-                        datalabels: { display: false } 
-                    },
-                    { 
-                        label: 'Replenished Water (ML/Y)', 
-                        data: [RES_2021.total, RES_2022.total, RES_2023.total, RES_2024.total], 
-                        backgroundColor: '#0288d1', borderRadius: 4,
-                        datalabels: { 
-                            color: 'white', 
-                            font:{weight:'bold'}, 
-                            anchor:'end', 
-                            align:'top', 
-                            color:'#333', 
-                            formatter: (v) => v.toFixed(2)
-                        }
-                    }
-                ]
-            },
-            options: { 
-                maintainAspectRatio: false, 
-                scales: { y: { beginAtZero: true } },
-                plugins: { legend: {position:'bottom'} }
+            // Species
+            if(item.species) {
+                for (const [sp, val] of Object.entries(item.species)) {
+                    speciesTotal[sp] = (speciesTotal[sp] || 0) + val;
+                }
             }
         });
 
-        // =========================================================================
-        // 6. MAP DUMMY (TIDAK DIUBAH)
-        // =========================================================================
-        var map = L.map('map').setView([-7.812, 112.905], 13);
-        L.tileLayer('https://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}', { maxZoom: 20 }).addTo(map);
-        const polyGalih = [
-            [-7.808762, 112.896381], [-7.812848, 112.895910], 
-            [-7.818646, 112.899821], [-7.824179, 112.905970], 
-            [-7.825552, 112.912372], [-7.829724, 112.919683], 
-            [-7.808762, 112.896381]
-        ];
-        L.polygon(polyGalih, { color: 'gold', fillColor: 'transparent', weight: 2, dashArray: '5, 5' }).addTo(map).bindPopup("Area Penanaman (Visual)");
+        // Update Kartu Atas
+        document.getElementById('totalTrees').innerText = totalT.toLocaleString('id-ID');
+        document.getElementById('totalRorak').innerText = totalR.toLocaleString('id-ID');
+        document.getElementById('totalReplenish').innerText = totalInfiltrasiKumulatif.toLocaleString('id-ID', {maximumFractionDigits:0});
 
+        // ==========================================================
+        // 4. RENDER PETA
+        // ==========================================================
+        var map = L.map('map'); 
+        L.tileLayer('https://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}', { maxZoom: 20 }).addTo(map);
+
+        const iconTree = L.divIcon({html: '<div style="background:#2e7d32;width:8px;height:8px;border-radius:50%;border:1px solid white;"></div>', className: ''});
+        const iconRorak = L.divIcon({html: '<div style="background:#ff9800;width:10px;height:10px;border-radius:50%;border:1px solid white;"></div>', className: ''});
+        var allFeatureGroup = L.featureGroup();
+
+        dbKeys.forEach(key => {
+            const item = db_planting.years[key];
+            if (item.areaPolygon) {
+                item.areaPolygon.forEach(poly => {
+                    if (poly.coords && poly.color) {
+                        allFeatureGroup.addLayer(L.polygon(poly.coords, { color: poly.color, fillColor: poly.color, fillOpacity: 0.5, weight: 1 }).bindPopup(`<b>${poly.name}</b><br>${item.year}`));
+                    } else {
+                        allFeatureGroup.addLayer(L.polygon(poly, { color: '#ffd600', fillColor: 'transparent', weight: 2, dashArray: '5, 5', opacity: 0.7 }).bindPopup(`Area Master (${item.year})`));
+                    }
+                });
+            }
+            if (item.points) {
+                item.points.forEach(pt => {
+                    let desc = pt[2] || "";
+                    let isRorak = desc.toLowerCase().includes("rorak");
+                    allFeatureGroup.addLayer(L.marker([pt[0], pt[1]], {icon: isRorak ? iconRorak : iconTree}).bindPopup(`${desc}<br>Tahun: ${item.year}`));
+                });
+            }
+        });
+
+        allFeatureGroup.addTo(map);
+        if (allFeatureGroup.getLayers().length > 0) {
+            map.fitBounds(allFeatureGroup.getBounds(), {padding: [50, 50]});
+        } else {
+            map.setView([-7.810, 112.908], 13);
+        }
+
+        // ==========================================================
+        // 5. RENDER GRAFIK
+        // ==========================================================
+        const whiteLabel = { color: '#ffffff', font: { weight: 'bold' }, anchor: 'center', align: 'center' };
+
+        new Chart(document.getElementById('barChart'), {
+            type: 'bar',
+            data: { labels: years, datasets: [{ label: 'Pohon', data: dataTrees, backgroundColor: '#2e7d32', borderRadius:4 }] },
+            options: { maintainAspectRatio: false, plugins: { legend: {display:false}, datalabels: whiteLabel }, scales: { y: {beginAtZero: true} } }
+        });
+
+        const topSpecies = Object.entries(speciesTotal).sort((a,b) => b[1] - a[1]).slice(0, 5);
+        new Chart(document.getElementById('pieChart'), {
+            type: 'doughnut',
+            data: { labels: topSpecies.map(x=>x[0]), datasets: [{ data: topSpecies.map(x=>x[1]), backgroundColor: ['#1b5e20', '#2e7d32', '#43a047', '#66bb6a', '#81c784'] }] },
+            options: { maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { color: '#fff', font: {size: 10} } } }
+        });
+
+        new Chart(document.getElementById('chartRorak'), {
+            type: 'bar',
+            data: { labels: years, datasets: [{ label: 'Rorak', data: dataRorak, backgroundColor: '#795548', borderRadius:4 }] },
+            options: { maintainAspectRatio: false, plugins: { legend:{display:false}, datalabels: whiteLabel } }
+        });
+
+        new Chart(document.getElementById('chartSumur'), {
+            type: 'bar',
+            data: { labels: years, datasets: [
+                { label: 'Sumur', data: dataSumur, backgroundColor: '#0277bd', borderRadius:4 }, 
+                { label: 'Biopori', data: dataBiopori, backgroundColor: '#4fc3f7', borderRadius:4 } 
+            ] },
+            options: { maintainAspectRatio: false, plugins: { legend:{position:'bottom'}, datalabels: { color: '#ffffff', font: { weight: 'bold' }, display: function(context) { return context.dataset.data[context.dataIndex] > 0; } } }, scales:{x:{stacked:false}, y:{beginAtZero:true}} }
+        });
+
+        // GRAFIK WB (Replenished vs SIPA)
+        new Chart(document.getElementById('wbChart'), {
+            type: 'bar',
+            data: {
+                labels: years,
+                datasets: [
+                    { type: 'line', label: 'Batas SIPA (2.996 ML/Y)', data: Array(years.length).fill(SIPA_MLY), borderColor: '#d32f2f', borderWidth: 2, borderDash: [5, 5], pointRadius: 0, datalabels: { display: false } },
+                    { label: 'Replenished Water (ML/Y)', data: dataReplenished, backgroundColor: '#0288d1', borderRadius: 4 }
+                ]
+            },
+            options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom' }, datalabels: { anchor: 'end', align: 'top', color: '#333', formatter: Math.round } }, scales: { y: { beginAtZero: true } } }
+        });
+
+        // GRAFIK BP (Balance & Performance)
+        new Chart(document.getElementById('bpChart'), {
+            type: 'bar',
+            data: {
+                labels: years,
+                datasets: [
+                    { label: 'Balance (L/s)', data: dataBalance, backgroundColor: '#d32f2f', borderRadius: 4, datalabels: { color: '#ffffff', formatter: (v) => v.toFixed(2) } },
+                    { label: 'Performance (%)', data: dataPerformance, backgroundColor: '#fbc02d', borderRadius: 4, datalabels: { color: '#000000', formatter: (v) => v.toFixed(1) + '%' } }
+                ]
+            },
+            options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom' }, datalabels: { anchor: 'center', align: 'center', font:{weight:'bold'} } }, scales: { y: { beginAtZero: true } } }
+        });
+
+        // ==========================================================
+        // 6. RENDER TABEL
+        // ==========================================================
+        const tbody = document.getElementById('tableBody');
+        let reversedKeys = [...dbKeys].reverse();
+
+        reversedKeys.forEach(key => {
+            const item = db_planting.years[key];
+            const s = item.stats;
+            const year = item.year;
+            
+            // Hitung Ulang per Baris
+            let mly = calculateWater(year, s);
+            let blc = mly / TIME_FACTOR;
+            let prf = (blc / SIPA_LS) * 100;
+
+            tbody.innerHTML += `
+            <tr>
+                <td class="ps-4 fw-bold">${year}</td>
+                <td>${item.location}</td>
+                <td class="text-center">${s.trees.toLocaleString()}</td>
+                <td class="text-center">${s.rorak.toLocaleString()}</td>
+                <td class="text-center">${s.sumur.toLocaleString()}</td>
+                <td class="text-center">${s.biopori.toLocaleString()}</td>
+                <td class="text-end pe-4 fw-bold text-primary">${mly.toLocaleString(undefined, {minimumFractionDigits:1, maximumFractionDigits:1})} ML/Y</td>
+                <td class="text-end pe-4 text-danger fw-bold">${blc.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+                <td class="text-end pe-4 text-warning fw-bold">${prf.toLocaleString(undefined, {minimumFractionDigits:1, maximumFractionDigits:1})}%</td>
+                <td><button class="btn btn-sm btn-outline-secondary px-3" onclick="window.location.href='planting_detail.html?id=${key}'">Detail</button></td>
+            </tr>`;
+        });
     </script>
 </body>
 </html>
