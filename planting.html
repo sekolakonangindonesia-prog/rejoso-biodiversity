@@ -99,9 +99,9 @@
             </div>
             <div class="col-md-4 mb-2">
                 <div class="stat-card bg-sumur">
-                    <div class="stat-header">Sumur & Biopori</div>
-                    <div class="stat-val" id="totalSumurBiopori">0</div>
-                    <small>Unit Konservasi Air</small>
+                    <div class="stat-header">Total Infiltrasi</div>
+                    <div class="stat-val" id="totalReplenish">0</div>
+                    <small>ML/Year (Hasil Kalkulasi)</small>
                     <i class="fas fa-water position-absolute end-0 bottom-0 m-3 opacity-25 fa-3x"></i>
                 </div>
             </div>
@@ -109,7 +109,6 @@
 
         <!-- ROW 2: PETA & CHART KECIL -->
         <div class="row mb-4">
-            <!-- Kolom Peta -->
             <div class="col-lg-8 mb-3">
                 <div class="card card-custom h-100">
                     <div class="card-header-custom d-flex justify-content-between">
@@ -121,23 +120,17 @@
                     </div>
                 </div>
             </div>
-            
-            <!-- Kolom Grafik Ringkasan -->
             <div class="col-lg-4 mb-3">
                 <div class="card card-custom mb-3" style="height: auto;">
                     <div class="card-header-custom"><i class="fas fa-chart-bar text-success me-2"></i> Realisasi Pohon</div>
                     <div class="card-body">
-                        <div class="chart-wrapper" style="height: 200px;">
-                            <canvas id="barChart"></canvas>
-                        </div>
+                        <div class="chart-wrapper" style="height: 200px;"><canvas id="barChart"></canvas></div>
                     </div>
                 </div>
                 <div class="card card-custom" style="height: auto;">
                     <div class="card-header-custom"><i class="fas fa-chart-pie text-success me-2"></i> Komposisi Tanaman</div>
                     <div class="card-body">
-                        <div class="chart-wrapper" style="height: 200px;">
-                            <canvas id="pieChart"></canvas>
-                        </div>
+                        <div class="chart-wrapper" style="height: 200px;"><canvas id="pieChart"></canvas></div>
                     </div>
                 </div>
             </div>
@@ -148,16 +141,39 @@
             <div class="col-md-6 mb-3">
                 <div class="card card-custom">
                     <div class="card-header-custom"><i class="fas fa-inbox text-warning me-2" style="color:#5d4037!important"></i> Pembuatan Rorak (Unit)</div>
-                    <div class="card-body">
-                        <div class="chart-wrapper"><canvas id="chartRorak"></canvas></div>
-                    </div>
+                    <div class="card-body"><div class="chart-wrapper"><canvas id="chartRorak"></canvas></div></div>
                 </div>
             </div>
             <div class="col-md-6 mb-3">
                 <div class="card card-custom">
                     <div class="card-header-custom"><i class="fas fa-water text-primary me-2"></i> Sumur Resapan & Biopori (Unit)</div>
+                    <div class="card-body"><div class="chart-wrapper"><canvas id="chartSumur"></canvas></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ROW 4: POSITIVE WATER IMPACT (GRAFIK YANG HILANG DIKEMBALIKAN) -->
+        <div class="row mb-4">
+            <!-- Grafik 1: SIPA vs Replenished -->
+            <div class="col-lg-6 mb-3">
+                <div class="card card-custom h-100">
+                    <div class="card-header-custom bg-light text-primary border-bottom border-primary">
+                        <i class="fas fa-tint text-primary me-2"></i> REPLENISHED WATER VS SIPA
+                    </div>
                     <div class="card-body">
-                        <div class="chart-wrapper"><canvas id="chartSumur"></canvas></div>
+                        <div class="chart-wrapper" style="height: 350px;"><canvas id="wbChart"></canvas></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grafik 2: Balance & Performance -->
+            <div class="col-lg-6 mb-3">
+                <div class="card card-custom h-100">
+                    <div class="card-header-custom bg-light text-success border-bottom border-success">
+                        <i class="fas fa-balance-scale text-success me-2"></i> BALANCE & PERFORMANCE
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-wrapper" style="height: 350px;"><canvas id="bpChart"></canvas></div>
                     </div>
                 </div>
             </div>
@@ -165,7 +181,7 @@
 
         <!-- ROW 5: TABEL HISTORY -->
         <div class="card card-custom mb-5">
-            <div class="card-header-custom"><i class="fas fa-list text-dark me-2"></i> Riwayat Program (Sesuai Database)</div>
+            <div class="card-header-custom"><i class="fas fa-list text-dark me-2"></i> Riwayat Program</div>
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
                     <thead class="table-light">
@@ -176,6 +192,7 @@
                             <th class="text-center">Rorak</th>
                             <th class="text-center">Sumur</th>
                             <th class="text-center">Biopori</th>
+                            <th class="text-end pe-4" style="min-width: 150px;">Total Infiltrasi</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
@@ -190,166 +207,145 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
     <script>
-        // --- 1. INISIALISASI VARIABEL ---
+        // --- 1. RUMUS & KOEFISIEN AIR (KONFIGURASI) ---
+        // Ini adalah "Rumus Pengali" yang Anda maksud.
+        // Angka ini akan dikalikan dengan jumlah fisik dari database.
+        const SIPA_LIMIT = 2996; // Batas SIPA (ML/Year)
+        
+        const KOEFISIEN_AIR = {
+            rorak: 1.44,      // 1 Unit Rorak = 1.44 ML/Year
+            pohon: 0.007,     // 1 Pohon = 0.007 ML/Year
+            sumur: 1.5,       // 1 Sumur = 1.5 ML/Year
+            biopori: 0.02     // 1 Biopori = 0.02 ML/Year
+        };
+
+        // Data Manual untuk Balance & Performance (Karena ini biasanya hasil kajian hidrologi khusus)
+        // Jika tidak ada di sini, nanti bisa dihitung kasar, tapi lebih aman pakai data historis Anda.
+        const HISTORICAL_WATER_DATA = {
+            2021: { balance: 1.83, performance: 1.93 },
+            2022: { balance: 9.64, performance: 10.15 },
+            2023: { balance: 4.21, performance: 4.43 },
+            2024: { balance: 3.67, performance: 3.86 },
+            2025: { balance: 0, performance: 0 }
+        };
+
+        // --- 2. INISIALISASI VARIABEL ---
         Chart.register(ChartDataLabels);
         
-        let totalT = 0, totalR = 0, totalSB = 0;
+        let totalT = 0, totalR = 0, totalInfiltrasiKumulatif = 0;
         let years = [];
         let dataTrees = [], dataRorak = [], dataSumur = [], dataBiopori = [];
+        let dataReplenished = [], dataBalance = [], dataPerformance = [];
         let speciesTotal = {};
 
-        // Ambil data tahun dari database dan urutkan
         const dbKeys = Object.keys(db_planting.years).sort();
 
-        // --- 2. LOOP DATA DARI DATABASE (BUKAN HARDCODE) ---
+        // --- 3. LOOP & KALKULASI DATA DARI DATABASE ---
         dbKeys.forEach(key => {
             const item = db_planting.years[key];
-            const s = item.stats; // Mengambil object 'stats' dari DB
+            const s = item.stats; // Ambil jumlah fisik dari DB
 
-            // Akumulasi Total
+            // 3.A. Kalkulasi Fisik
             totalT += s.trees;
             totalR += s.rorak;
-            totalSB += (s.sumur + s.biopori);
+            
+            // 3.B. Kalkulasi Rumus Air (Disini Rumusnya Bekerja!)
+            // Total Infiltrasi (MLY) = (Pohon * K_P) + (Rorak * K_R) + (Sumur * K_S) + (Biopori * K_B)
+            let currentInfiltrasi = (s.trees * KOEFISIEN_AIR.pohon) + 
+                                    (s.rorak * KOEFISIEN_AIR.rorak) + 
+                                    (s.sumur * KOEFISIEN_AIR.sumur) + 
+                                    (s.biopori * KOEFISIEN_AIR.biopori);
+            
+            totalInfiltrasiKumulatif += currentInfiltrasi;
 
-            // Data untuk Chart
+            // Simpan ke Array untuk Grafik
             years.push(item.year);
             dataTrees.push(s.trees);
             dataRorak.push(s.rorak);
             dataSumur.push(s.sumur);
             dataBiopori.push(s.biopori);
+            
+            // Simpan Data Air Hasil Hitung
+            dataReplenished.push(currentInfiltrasi);
 
-            // Data Species
+            // Ambil Data Balance & Perf dari Lookup (atau 0 jika belum ada)
+            let waterMeta = HISTORICAL_WATER_DATA[item.year] || { balance: 0, performance: 0 };
+            dataBalance.push(waterMeta.balance);
+            dataPerformance.push(waterMeta.performance);
+
+            // Akumulasi Spesies
             if(item.species) {
                 for (const [sp, val] of Object.entries(item.species)) {
-                    // Filter "Lainnya" atau "Naungan" jika ingin fokus ke tanaman utama, 
-                    // tapi instruksi Anda adalah sesuai database, jadi kita masukkan semua.
                     speciesTotal[sp] = (speciesTotal[sp] || 0) + val;
                 }
             }
         });
 
-        // --- 3. UPDATE STATISTIK KARTU ATAS ---
+        // --- 4. UPDATE KARTU ATAS ---
         document.getElementById('totalTrees').innerText = totalT.toLocaleString('id-ID');
         document.getElementById('totalRorak').innerText = totalR.toLocaleString('id-ID');
-        document.getElementById('totalSumurBiopori').innerText = totalSB.toLocaleString('id-ID');
+        // Tampilkan Total Infiltrasi hasil hitung rumus
+        document.getElementById('totalReplenish').innerText = totalInfiltrasiKumulatif.toLocaleString('id-ID', {maximumFractionDigits:0});
 
-        // --- 4. RENDER PETA (DARI DATABASE) ---
-        var map = L.map('map'); // Tidak setView manual, nanti pakai fitBounds
+        // --- 5. RENDER PETA (SAMA SEPERTI SEBELUMNYA - SUDAH BENAR) ---
+        var map = L.map('map'); 
         L.tileLayer('https://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}', { maxZoom: 20 }).addTo(map);
 
-        // Definisi Ikon
         const iconTree = L.divIcon({html: '<div style="background:#2e7d32;width:8px;height:8px;border-radius:50%;border:1px solid white;"></div>', className: ''});
         const iconRorak = L.divIcon({html: '<div style="background:#ff9800;width:10px;height:10px;border-radius:50%;border:1px solid white;"></div>', className: ''});
-
-        // Grup untuk menampung semua layer agar bisa auto-zoom
         var allFeatureGroup = L.featureGroup();
 
-        // Loop lagi untuk Peta
         dbKeys.forEach(key => {
             const item = db_planting.years[key];
-
-            // A. Render Polygon
             if (item.areaPolygon) {
                 item.areaPolygon.forEach(poly => {
-                    // Cek Tipe Polygon (Format Baru vs Lama)
                     if (poly.coords && poly.color) {
-                        // Format 2024 (Object dengan warna)
-                        const p = L.polygon(poly.coords, { 
-                            color: poly.color, 
-                            fillColor: poly.color, 
-                            fillOpacity: 0.5, 
-                            weight: 1 
-                        }).bindPopup(`<b>${poly.name}</b><br>${item.year}`);
-                        allFeatureGroup.addLayer(p);
+                        allFeatureGroup.addLayer(L.polygon(poly.coords, { color: poly.color, fillColor: poly.color, fillOpacity: 0.5, weight: 1 }).bindPopup(`<b>${poly.name}</b><br>${item.year}`));
                     } else {
-                        // Format Lama (Array Koordinat langsung) - Biasanya Polygon Desa / Master
-                        // Kita buat transparan (dash array) agar tidak menutupi area tanam spesifik
-                        const p = L.polygon(poly, { 
-                            color: '#ffd600', 
-                            fillColor: 'transparent', 
-                            weight: 2, 
-                            dashArray: '5, 5',
-                            opacity: 0.7
-                        }).bindPopup(`Area Master (${item.year})`);
-                        allFeatureGroup.addLayer(p);
+                        allFeatureGroup.addLayer(L.polygon(poly, { color: '#ffd600', fillColor: 'transparent', weight: 2, dashArray: '5, 5', opacity: 0.7 }).bindPopup(`Area Master (${item.year})`));
                     }
                 });
             }
-
-            // B. Render Points
             if (item.points) {
                 item.points.forEach(pt => {
                     let desc = pt[2] || "";
                     let isRorak = desc.toLowerCase().includes("rorak");
-                    
-                    const m = L.marker([pt[0], pt[1]], {
-                        icon: isRorak ? iconRorak : iconTree
-                    }).bindPopup(`${desc}<br>Tahun: ${item.year}`);
-                    
-                    allFeatureGroup.addLayer(m);
+                    allFeatureGroup.addLayer(L.marker([pt[0], pt[1]], {icon: isRorak ? iconRorak : iconTree}).bindPopup(`${desc}<br>Tahun: ${item.year}`));
                 });
             }
         });
 
-        // Tambahkan semua layer ke map dan sesuaikan zoom
         allFeatureGroup.addTo(map);
         if (allFeatureGroup.getLayers().length > 0) {
             map.fitBounds(allFeatureGroup.getBounds(), {padding: [50, 50]});
         } else {
-            // Fallback jika database kosong
             map.setView([-7.810, 112.908], 13);
         }
 
-
-        // --- 5. RENDER CHART (LABEL PUTIH) ---
+        // --- 6. RENDER GRAFIK (TERMASUK GRAFIK AIR YANG HILANG) ---
         
-        // Konfigurasi Label Putih
-        const whiteLabel = {
-            color: '#ffffff',
-            font: { weight: 'bold' },
-            anchor: 'center',
-            align: 'center'
-        };
+        const whiteLabel = { color: '#ffffff', font: { weight: 'bold' }, anchor: 'center', align: 'center' };
 
         // Chart Pohon
         new Chart(document.getElementById('barChart'), {
             type: 'bar',
             data: { labels: years, datasets: [{ label: 'Pohon', data: dataTrees, backgroundColor: '#2e7d32', borderRadius:4 }] },
-            options: { 
-                maintainAspectRatio: false, 
-                plugins: { 
-                    legend: {display:false},
-                    datalabels: whiteLabel
-                }, 
-                scales: { y: {beginAtZero: true} } 
-            }
+            options: { maintainAspectRatio: false, plugins: { legend: {display:false}, datalabels: whiteLabel }, scales: { y: {beginAtZero: true} } }
         });
 
-        // Chart Pie Komposisi
+        // Chart Pie
         const topSpecies = Object.entries(speciesTotal).sort((a,b) => b[1] - a[1]).slice(0, 5);
         new Chart(document.getElementById('pieChart'), {
             type: 'doughnut',
             data: { labels: topSpecies.map(x=>x[0]), datasets: [{ data: topSpecies.map(x=>x[1]), backgroundColor: ['#1b5e20', '#2e7d32', '#43a047', '#66bb6a', '#81c784'] }] },
-            options: { 
-                maintainAspectRatio: false, 
-                plugins: { 
-                    legend: { display: false },
-                    datalabels: { color: '#fff', font: {size: 10} }
-                } 
-            }
+            options: { maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { color: '#fff', font: {size: 10} } } }
         });
 
         // Chart Rorak
         new Chart(document.getElementById('chartRorak'), {
             type: 'bar',
             data: { labels: years, datasets: [{ label: 'Rorak', data: dataRorak, backgroundColor: '#795548', borderRadius:4 }] },
-            options: { 
-                maintainAspectRatio: false, 
-                plugins: { 
-                    legend:{display:false},
-                    datalabels: whiteLabel
-                } 
-            }
+            options: { maintainAspectRatio: false, plugins: { legend:{display:false}, datalabels: whiteLabel } }
         });
 
         // Chart Sumur & Biopori
@@ -359,26 +355,54 @@
                 { label: 'Sumur', data: dataSumur, backgroundColor: '#0277bd', borderRadius:4 }, 
                 { label: 'Biopori', data: dataBiopori, backgroundColor: '#4fc3f7', borderRadius:4 } 
             ] },
+            options: { maintainAspectRatio: false, plugins: { legend:{position:'bottom'}, datalabels: { color: '#ffffff', font: { weight: 'bold' }, display: function(context) { return context.dataset.data[context.dataIndex] > 0; } } }, scales:{x:{stacked:false}, y:{beginAtZero:true}} }
+        });
+
+        // --- GRAFIK AIR 1: WB CHART (Dikembalikan) ---
+        new Chart(document.getElementById('wbChart'), {
+            type: 'bar',
+            data: {
+                labels: years,
+                datasets: [
+                    { type: 'line', label: 'Batas SIPA (2.996 ML/Y)', data: Array(years.length).fill(SIPA_LIMIT), borderColor: '#d32f2f', borderWidth: 2, borderDash: [5, 5], pointRadius: 0, datalabels: { display: false } },
+                    { label: 'Replenished Water (ML/Y)', data: dataReplenished, backgroundColor: '#0288d1', borderRadius: 4 }
+                ]
+            },
             options: { 
                 maintainAspectRatio: false, 
                 plugins: { 
-                    legend:{position:'bottom'},
-                    datalabels: {
-                        color: '#ffffff',
-                        font: { weight: 'bold' },
-                        display: function(context) { return context.dataset.data[context.dataIndex] > 0; }
-                    }
+                    legend: { position: 'bottom' }, 
+                    datalabels: { anchor: 'end', align: 'top', color: '#333', formatter: Math.round } 
                 }, 
-                scales:{x:{stacked:false}, y:{beginAtZero:true}} 
+                scales: { y: { beginAtZero: true } } 
             }
         });
 
-        // --- 6. RENDER TABEL (DARI DATABASE) ---
+        // --- GRAFIK AIR 2: BP CHART (Dikembalikan) ---
+        new Chart(document.getElementById('bpChart'), {
+            type: 'bar',
+            data: {
+                labels: years,
+                datasets: [
+                    { label: 'Balance (L/s)', data: dataBalance, backgroundColor: '#d32f2f', borderRadius: 4, datalabels: { color: '#ffffff' } },
+                    { label: 'Performance (%)', data: dataPerformance, backgroundColor: '#fbc02d', borderRadius: 4, datalabels: { color: '#000000' } }
+                ]
+            },
+            options: { 
+                maintainAspectRatio: false, 
+                plugins: { legend: { position: 'bottom' }, datalabels: { anchor: 'center', align: 'center', font:{weight:'bold'} } }, 
+                scales: { y: { beginAtZero: true } } 
+            }
+        });
+
+        // --- 7. RENDER TABEL ---
         const tbody = document.getElementById('tableBody');
-        // Reverse agar tahun terbaru di atas
-        dbKeys.reverse().forEach(key => {
+        dbKeys.reverse().forEach((key, index) => {
             const item = db_planting.years[key];
             const s = item.stats;
+            // Kita ambil nilai MLY yang sudah dihitung (index array terbalik karena reverse)
+            // Agar aman, hitung ulang saja di sini
+            let mly = (s.trees * KOEFISIEN_AIR.pohon) + (s.rorak * KOEFISIEN_AIR.rorak) + (s.sumur * KOEFISIEN_AIR.sumur) + (s.biopori * KOEFISIEN_AIR.biopori);
             
             tbody.innerHTML += `
             <tr>
@@ -388,6 +412,7 @@
                 <td class="text-center">${s.rorak.toLocaleString()}</td>
                 <td class="text-center">${s.sumur.toLocaleString()}</td>
                 <td class="text-center">${s.biopori.toLocaleString()}</td>
+                <td class="text-end pe-4 fw-bold text-primary">${mly.toLocaleString(undefined, {minimumFractionDigits:1, maximumFractionDigits:1})} ML/Y</td>
                 <td><button class="btn btn-sm btn-outline-secondary px-3" onclick="window.location.href='planting_detail.html?id=${key}'">Detail</button></td>
             </tr>`;
         });
