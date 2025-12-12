@@ -125,54 +125,21 @@
     </div>
 
     <!-- SCRIPT & DATA -->
-    var map = L.map('map').setView([-7.810, 112.908], 13);
-        L.tileLayer('https://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}', { maxZoom: 20 }).addTo(map);
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // --- 1. DATA PETA (KOORDINAT MASTER) ---
+        const MASTER_DESA_GALIH = [[-7.808762, 112.896381], [-7.812848, 112.895910], [-7.818646, 112.899821], [-7.824179, 112.905970], [-7.825552, 112.912372], [-7.829724, 112.919683], [-7.808762, 112.896381]];
+        const MASTER_HUTAN_LINDUNG = [[-7.804688, 112.906485], [-7.806219, 112.906227], [-7.810130, 112.905412], [-7.804688, 112.906485]];
+        const MASTER_PETUNG = [[-7.796914, 112.919663], [-7.803634, 112.919162], [-7.808091, 112.918568], [-7.812625, 112.919209], [-7.829622, 112.920887], [-7.796914, 112.919663]];
 
-        const iconTree = L.divIcon({html: '<div style="background:#2e7d32;width:8px;height:8px;border-radius:50%;border:1px solid white;"></div>'});
-        const iconRorak = L.divIcon({html: '<div style="background:#ff9800;width:8px;height:8px;border-radius:50%;border:1px solid white;"></div>'});
+        const DATA_2024_POLYGONS = [
+             { name: "Hutan Lestari Supinto", color: "#006064", coords: [[-7.81659, 112.90507], [-7.81652, 112.90519], [-7.81659, 112.90507]] }, 
+             { name: "Hutan lestari Karji", color: "#e65100", coords: [[-7.81367, 112.90254], [-7.81335, 112.90337], [-7.81367, 112.90254]] },
+             { name: "Hutan Lestari Andari 01", color: "#ff5252", coords: [[-7.8151, 112.90525], [-7.81502, 112.9053], [-7.8151, 112.90525]] },
+             { name: "Hutan Lestari Pecaton", color: "#0f9d58", coords: [[-7.82163, 112.906], [-7.8211, 112.90539], [-7.82163, 112.906]] },
+             { name: "Hutan Lestari Juman Tugu 02", color: "#ffea00", coords: [[-7.81609, 112.91223], [-7.81635, 112.91197], [-7.81609, 112.91223]] }
+        ];
 
-        // A. Gambar Background Master (Sekali saja agar tidak numpuk)
-        // Menggunakan variabel global dari database_planting.js
-        if(typeof POLY_DESA_GALIH !== 'undefined') {
-            L.polygon(POLY_DESA_GALIH, { color: 'gold', fillColor: 'transparent', weight: 2 }).bindPopup("Batas Desa Galih").addTo(map);
-        }
-        if(typeof POLY_PETUNG !== 'undefined') {
-            L.polygon(POLY_PETUNG, { color: 'orange', fillColor: 'transparent', weight: 2 }).bindPopup("Batas Desa Petung").addTo(map);
-        }
-
-        // B. Loop Data Tahunan
-        Object.values(db_planting.years).forEach(item => {
-            // Render Polygon Detail
-            if (item.areaPolygon) {
-                item.areaPolygon.forEach(poly => {
-                    // Cek Tipe 1: Polygon dengan warna (Format Data 2024)
-                    if (poly.coords && poly.color) {
-                        L.polygon(poly.coords, { color: poly.color, fillColor: poly.color, fillOpacity: 0.6, weight: 1 }).bindPopup(poly.name).addTo(map);
-                    } 
-                    // Cek Tipe 2: Array Koordinat Biasa (Format Data Lama)
-                    else if (Array.isArray(poly)) {
-                        // FILTER PENTING: Jangan gambar ulang Master Polygon (Desa Galih/Petung)
-                        // Kita filter berdasarkan panjang array. Master polygon biasanya panjangnya > 60 titik.
-                        // Detail area tanam biasanya lebih kecil.
-                        if (poly.length < 60) { 
-                            L.polygon(poly, { color: '#00e676', fillColor: '#69f0ae', fillOpacity: 0.4, weight: 1 }).addTo(map);
-                        }
-                    }
-                });
-            }
-
-            // Render Titik (Marker)
-            if(item.points){
-                item.points.forEach(pt => {
-                    // Cek validitas koordinat
-                    if(pt[0] && pt[1]) {
-                        let desc = pt[2] || "";
-                        let isRorak = desc.toLowerCase().includes("rorak");
-                        L.marker([pt[0], pt[1]], {icon: isRorak ? iconRorak : iconTree}).addTo(map);
-                    }
-                });
-            }
-        });
         // --- DATA TITIK SEBARAN (POINTS) YANG DIKEMBALIKAN ---
         const POINTS_2021 = [[-7.8227, 112.9058, "Alpukat"], [-7.8069, 112.9092, "Sawo Duren"], [-7.8061, 112.9021, "Sukun"], [-7.8173, 112.9157, "Alpukat"], [-7.8171, 112.9147, "Nangka"]];
         const POINTS_2022 = [[-7.8143, 112.9275, "Kopi Robusta"], [-7.8143, 112.9277, "Kopi Robusta"], [-7.8145, 112.9276, "Kopi Robusta"], [-7.8090, 112.9110, "Kopi Robusta"]];
