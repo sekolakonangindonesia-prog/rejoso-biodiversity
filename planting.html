@@ -71,7 +71,7 @@
     <div class="hero-header">
         <div class="hero-content">
             <img src="logo-sk.png" style="height: 50px; margin-bottom: 10px;" onerror="this.style.display='none'">
-            <h2 class="fw-bold mb-0 text-uppercase">Monitoring Penanaman</h2>
+            <h2 class="fw-bold mb-0 text-uppercase">MONITORING PENANAMAN</h2>
             <p class="mb-0 opacity-75">Sistem Informasi Sebaran Penanaman & Sipil Teknis</p>
             <a href="index.html" class="btn-home"><i class="fas fa-arrow-left me-2"></i>Dashboard Utama</a>
         </div>
@@ -152,9 +152,8 @@
             </div>
         </div>
 
-        <!-- ROW 4: POSITIVE WATER IMPACT (GRAFIK YANG HILANG DIKEMBALIKAN) -->
+        <!-- ROW 4: POSITIVE WATER IMPACT -->
         <div class="row mb-4">
-            <!-- Grafik 1: SIPA vs Replenished -->
             <div class="col-lg-6 mb-3">
                 <div class="card card-custom h-100">
                     <div class="card-header-custom bg-light text-primary border-bottom border-primary">
@@ -165,8 +164,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Grafik 2: Balance & Performance -->
             <div class="col-lg-6 mb-3">
                 <div class="card card-custom h-100">
                     <div class="card-header-custom bg-light text-success border-bottom border-success">
@@ -207,20 +204,29 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
     <script>
-        // --- 1. RUMUS & KOEFISIEN AIR (KONFIGURASI) ---
-        // Ini adalah "Rumus Pengali" yang Anda maksud.
-        // Angka ini akan dikalikan dengan jumlah fisik dari database.
-        const SIPA_LIMIT = 2996; // Batas SIPA (ML/Year)
+        // ==========================================================
+        // KONFIGURASI RUMUS AIR (DUA METODE)
+        // ==========================================================
         
-        const KOEFISIEN_AIR = {
-            rorak: 1.44,      // 1 Unit Rorak = 1.44 ML/Year
-            pohon: 0.007,     // 1 Pohon = 0.007 ML/Year
-            sumur: 1.5,       // 1 Sumur = 1.5 ML/Year
-            biopori: 0.02     // 1 Biopori = 0.02 ML/Year
+        const SIPA_LIMIT = 2996; // Batas SIPA (ML/Year)
+
+        // 1. METODE LAMA (2021-2023): Berbasis Dimensi Baru x Hari Hujan (163)
+        const KOEFISIEN_LAMA = {
+            rorak: 0.2396,      // per unit (ML)
+            pohon: 0.001475,    // per pohon (ML)
+            sumur: 0.3687,      // per unit (ML)
+            biopori: 0.005      // per unit (ML)
         };
 
-        // Data Manual untuk Balance & Performance (Karena ini biasanya hasil kajian hidrologi khusus)
-        // Jika tidak ada di sini, nanti bisa dihitung kasar, tapi lebih aman pakai data historis Anda.
+        // 2. METODE BARU (2024 dst): Berbasis Konstanta Excel
+        const KONSTANTA_2024 = {
+            rorak: 0.17,        // 170.000 Liter/Unit -> 0.17 ML
+            sumur: 1.1,         // 1.100.000 Liter/Unit -> 1.1 ML
+            pohon_per_ha: 1.5,  // 1.500.000 Liter/Ha -> 1.5 ML/Ha
+            kerapatan_pohon: 400 // 400 pohon = 1 Ha
+        };
+
+        // Data Manual Balance & Performance (Sesuai Laporan)
         const HISTORICAL_WATER_DATA = {
             2021: { balance: 1.83, performance: 1.93 },
             2022: { balance: 9.64, performance: 10.15 },
@@ -229,7 +235,9 @@
             2025: { balance: 0, performance: 0 }
         };
 
-        // --- 2. INISIALISASI VARIABEL ---
+        // ==========================================================
+        // PROSES DATA
+        // ==========================================================
         Chart.register(ChartDataLabels);
         
         let totalT = 0, totalR = 0, totalInfiltrasiKumulatif = 0;
@@ -240,40 +248,55 @@
 
         const dbKeys = Object.keys(db_planting.years).sort();
 
-        // --- 3. LOOP & KALKULASI DATA DARI DATABASE ---
+        // Loop Calculation
         dbKeys.forEach(key => {
             const item = db_planting.years[key];
-            const s = item.stats; // Ambil jumlah fisik dari DB
+            const s = item.stats;
+            const year = item.year;
 
-            // 3.A. Kalkulasi Fisik
+            // 1. Akumulasi Fisik
             totalT += s.trees;
             totalR += s.rorak;
-            
-            // 3.B. Kalkulasi Rumus Air (Disini Rumusnya Bekerja!)
-            // Total Infiltrasi (MLY) = (Pohon * K_P) + (Rorak * K_R) + (Sumur * K_S) + (Biopori * K_B)
-            let currentInfiltrasi = (s.trees * KOEFISIEN_AIR.pohon) + 
-                                    (s.rorak * KOEFISIEN_AIR.rorak) + 
-                                    (s.sumur * KOEFISIEN_AIR.sumur) + 
-                                    (s.biopori * KOEFISIEN_AIR.biopori);
-            
+
+            // 2. Kalkulasi Rumus Air (SPLIT LOGIC)
+            let currentInfiltrasi = 0;
+
+            if (year === 2024) {
+                // --- LOGIKA 2024 (KONSTANTA) ---
+                // Pohon: (Jumlah / 400) * 1.5
+                let valPohon = (s.trees / KONSTANTA_2024.kerapatan_pohon) * KONSTANTA_2024.pohon_per_ha;
+                // Rorak: Jumlah * 0.17
+                let valRorak = s.rorak * KONSTANTA_2024.rorak;
+                // Sumur: Jumlah * 1.1
+                let valSumur = s.sumur * KONSTANTA_2024.sumur;
+                
+                // Biopori: Anggap 0 atau pakai konstanta lama jika ada isinya
+                let valBiopori = s.biopori * KOEFISIEN_LAMA.biopori; 
+
+                currentInfiltrasi = valPohon + valRorak + valSumur + valBiopori;
+
+            } else {
+                // --- LOGIKA LAMA (2021-2023) ---
+                currentInfiltrasi = (s.trees * KOEFISIEN_LAMA.pohon) + 
+                                    (s.rorak * KOEFISIEN_LAMA.rorak) + 
+                                    (s.sumur * KOEFISIEN_LAMA.sumur) + 
+                                    (s.biopori * KOEFISIEN_LAMA.biopori);
+            }
+
             totalInfiltrasiKumulatif += currentInfiltrasi;
 
-            // Simpan ke Array untuk Grafik
-            years.push(item.year);
+            // Push Data ke Array
+            years.push(year);
             dataTrees.push(s.trees);
             dataRorak.push(s.rorak);
             dataSumur.push(s.sumur);
             dataBiopori.push(s.biopori);
-            
-            // Simpan Data Air Hasil Hitung
             dataReplenished.push(currentInfiltrasi);
 
-            // Ambil Data Balance & Perf dari Lookup (atau 0 jika belum ada)
-            let waterMeta = HISTORICAL_WATER_DATA[item.year] || { balance: 0, performance: 0 };
+            let waterMeta = HISTORICAL_WATER_DATA[year] || { balance: 0, performance: 0 };
             dataBalance.push(waterMeta.balance);
             dataPerformance.push(waterMeta.performance);
 
-            // Akumulasi Spesies
             if(item.species) {
                 for (const [sp, val] of Object.entries(item.species)) {
                     speciesTotal[sp] = (speciesTotal[sp] || 0) + val;
@@ -281,13 +304,14 @@
             }
         });
 
-        // --- 4. UPDATE KARTU ATAS ---
+        // Update Kartu Atas
         document.getElementById('totalTrees').innerText = totalT.toLocaleString('id-ID');
         document.getElementById('totalRorak').innerText = totalR.toLocaleString('id-ID');
-        // Tampilkan Total Infiltrasi hasil hitung rumus
         document.getElementById('totalReplenish').innerText = totalInfiltrasiKumulatif.toLocaleString('id-ID', {maximumFractionDigits:0});
 
-        // --- 5. RENDER PETA (SAMA SEPERTI SEBELUMNYA - SUDAH BENAR) ---
+        // ==========================================================
+        // RENDER PETA
+        // ==========================================================
         var map = L.map('map'); 
         L.tileLayer('https://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}', { maxZoom: 20 }).addTo(map);
 
@@ -322,18 +346,17 @@
             map.setView([-7.810, 112.908], 13);
         }
 
-        // --- 6. RENDER GRAFIK (TERMASUK GRAFIK AIR YANG HILANG) ---
-        
+        // ==========================================================
+        // RENDER GRAFIK
+        // ==========================================================
         const whiteLabel = { color: '#ffffff', font: { weight: 'bold' }, anchor: 'center', align: 'center' };
 
-        // Chart Pohon
         new Chart(document.getElementById('barChart'), {
             type: 'bar',
             data: { labels: years, datasets: [{ label: 'Pohon', data: dataTrees, backgroundColor: '#2e7d32', borderRadius:4 }] },
             options: { maintainAspectRatio: false, plugins: { legend: {display:false}, datalabels: whiteLabel }, scales: { y: {beginAtZero: true} } }
         });
 
-        // Chart Pie
         const topSpecies = Object.entries(speciesTotal).sort((a,b) => b[1] - a[1]).slice(0, 5);
         new Chart(document.getElementById('pieChart'), {
             type: 'doughnut',
@@ -341,14 +364,12 @@
             options: { maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { color: '#fff', font: {size: 10} } } }
         });
 
-        // Chart Rorak
         new Chart(document.getElementById('chartRorak'), {
             type: 'bar',
             data: { labels: years, datasets: [{ label: 'Rorak', data: dataRorak, backgroundColor: '#795548', borderRadius:4 }] },
             options: { maintainAspectRatio: false, plugins: { legend:{display:false}, datalabels: whiteLabel } }
         });
 
-        // Chart Sumur & Biopori
         new Chart(document.getElementById('chartSumur'), {
             type: 'bar',
             data: { labels: years, datasets: [
@@ -358,7 +379,6 @@
             options: { maintainAspectRatio: false, plugins: { legend:{position:'bottom'}, datalabels: { color: '#ffffff', font: { weight: 'bold' }, display: function(context) { return context.dataset.data[context.dataIndex] > 0; } } }, scales:{x:{stacked:false}, y:{beginAtZero:true}} }
         });
 
-        // --- GRAFIK AIR 1: WB CHART (Dikembalikan) ---
         new Chart(document.getElementById('wbChart'), {
             type: 'bar',
             data: {
@@ -368,17 +388,9 @@
                     { label: 'Replenished Water (ML/Y)', data: dataReplenished, backgroundColor: '#0288d1', borderRadius: 4 }
                 ]
             },
-            options: { 
-                maintainAspectRatio: false, 
-                plugins: { 
-                    legend: { position: 'bottom' }, 
-                    datalabels: { anchor: 'end', align: 'top', color: '#333', formatter: Math.round } 
-                }, 
-                scales: { y: { beginAtZero: true } } 
-            }
+            options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom' }, datalabels: { anchor: 'end', align: 'top', color: '#333', formatter: Math.round } }, scales: { y: { beginAtZero: true } } }
         });
 
-        // --- GRAFIK AIR 2: BP CHART (Dikembalikan) ---
         new Chart(document.getElementById('bpChart'), {
             type: 'bar',
             data: {
@@ -388,35 +400,38 @@
                     { label: 'Performance (%)', data: dataPerformance, backgroundColor: '#fbc02d', borderRadius: 4, datalabels: { color: '#000000' } }
                 ]
             },
-            options: { 
-                maintainAspectRatio: false, 
-                plugins: { legend: { position: 'bottom' }, datalabels: { anchor: 'center', align: 'center', font:{weight:'bold'} } }, 
-                scales: { y: { beginAtZero: true } } 
-            }
+            options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom' }, datalabels: { anchor: 'center', align: 'center', font:{weight:'bold'} } }, scales: { y: { beginAtZero: true } } }
         });
 
-        // --- 7. RENDER TABEL ---
+        // ==========================================================
+        // RENDER TABEL
+        // ==========================================================
         const tbody = document.getElementById('tableBody');
-        dbKeys.reverse().forEach((key, index) => {
+        dbKeys.reverse().forEach(key => {
             const item = db_planting.years[key];
             const s = item.stats;
-            // Kita ambil nilai MLY yang sudah dihitung (index array terbalik karena reverse)
-            // Agar aman, hitung ulang saja di sini
-            let mly = (s.trees * KOEFISIEN_AIR.pohon) + (s.rorak * KOEFISIEN_AIR.rorak) + (s.sumur * KOEFISIEN_AIR.sumur) + (s.biopori * KOEFISIEN_AIR.biopori);
+            const year = item.year;
             
+            // Hitung ulang per baris untuk ditampilkan di tabel
+            let rowInfiltrasi = 0;
+            if (year === 2024) {
+                rowInfiltrasi = ((s.trees/400)*1.5) + (s.rorak*0.17) + (s.sumur*1.1) + (s.biopori*0.005);
+            } else {
+                rowInfiltrasi = (s.trees*KOEFISIEN_LAMA.pohon) + (s.rorak*KOEFISIEN_LAMA.rorak) + (s.sumur*KOEFISIEN_LAMA.sumur) + (s.biopori*KOEFISIEN_LAMA.biopori);
+            }
+
             tbody.innerHTML += `
             <tr>
-                <td class="ps-4 fw-bold">${item.year}</td>
+                <td class="ps-4 fw-bold">${year}</td>
                 <td>${item.location}</td>
                 <td class="text-center">${s.trees.toLocaleString()}</td>
                 <td class="text-center">${s.rorak.toLocaleString()}</td>
                 <td class="text-center">${s.sumur.toLocaleString()}</td>
                 <td class="text-center">${s.biopori.toLocaleString()}</td>
-                <td class="text-end pe-4 fw-bold text-primary">${mly.toLocaleString(undefined, {minimumFractionDigits:1, maximumFractionDigits:1})} ML/Y</td>
+                <td class="text-end pe-4 fw-bold text-primary">${rowInfiltrasi.toLocaleString(undefined, {minimumFractionDigits:1, maximumFractionDigits:1})} ML/Y</td>
                 <td><button class="btn btn-sm btn-outline-secondary px-3" onclick="window.location.href='planting_detail.html?id=${key}'">Detail</button></td>
             </tr>`;
         });
-
     </script>
 </body>
 </html>
