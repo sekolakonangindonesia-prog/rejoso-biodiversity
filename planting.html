@@ -129,69 +129,12 @@
         </div>
     </div>
 
+    <!-- PENTING: Memanggil Database Eksternal -->
+    <script src="database_planting.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
     <script>
-        // --- 1. DATA KOORDINAT (MASTER & DETAIL) ---
-        // Master Desa Galih (Background)
-        const MASTER_DESA_GALIH = [[-7.808762, 112.896381], [-7.812848, 112.895910], [-7.818646, 112.899821], [-7.824179, 112.905970], [-7.825552, 112.912372], [-7.829724, 112.919683], [-7.808762, 112.896381]];
-        // Master Hutan Lindung
-        const MASTER_HUTAN_LINDUNG = [[-7.804688, 112.906485], [-7.806219, 112.906227], [-7.810130, 112.905412], [-7.804688, 112.906485]];
-        // Master Petung
-        const MASTER_PETUNG = [[-7.796914, 112.919663], [-7.803634, 112.919162], [-7.808091, 112.918568], [-7.812625, 112.919209], [-7.829622, 112.920887], [-7.796914, 112.919663]];
-
-        // Delineasi 2024 (17 Lokasi - Sampel Warna Warni)
-        const DATA_2024_POLYGONS = [
-            { name: "Hutan Lestari Supinto", color: "#006064", coords: [[-7.81659, 112.90507], [-7.81652, 112.90519], [-7.81659, 112.90507]] },
-            { name: "Hutan lestari Karji", color: "#e65100", coords: [[-7.81367, 112.90254], [-7.81335, 112.90337], [-7.81367, 112.90254]] },
-            { name: "Hutan Lestari Andari 01", color: "#ff5252", coords: [[-7.8151, 112.90525], [-7.81502, 112.9053], [-7.8151, 112.90525]] },
-            { name: "Hutan Lestari Juman Tugu 02", color: "#ffea00", coords: [[-7.81609, 112.91223], [-7.81635, 112.91197], [-7.81609, 112.91223]] }
-            // ... (Koordinat lainnya disingkat agar muat, tapi logikanya sama)
-        ];
-
-        // --- 2. DATABASE UTAMA (ANGKA & STATISTIK) ---
-        const db_planting = {
-            years: {
-                "tanam_2021": {
-                    id: "tanam_2021", year: 2021, location: "Program Konservasi Hutan Lindung",
-                    water_inputs: { tree: 5000, well: 10, biopore: 300, trench: 250, water_access: 0 },
-                    species: { "Alpukat": 105, "Nangka": 113, "Sukun": 67, "Lainnya": 70 },
-                    points: [[-7.822, 112.905, "Pohon"]], 
-                    areaPolygon: [MASTER_HUTAN_LINDUNG]
-                },
-                "tanam_2022": {
-                    id: "tanam_2022", year: 2022, location: "Program Konservasi Tahun 2022",
-                    water_inputs: { tree: 10000, well: 20, biopore: 300, trench: 750, water_access: 0 },
-                    species: { "Kopi Robusta": 9500, "Naungan": 500 },
-                    points: [], 
-                    areaPolygon: [MASTER_PETUNG]
-                },
-                "tanam_2023": {
-                    id: "tanam_2023", year: 2023, location: "Program Konservasi AQUA Keboncandi 2023",
-                    // DATA FIX: Sumur Resapan = 5
-                    water_inputs: { tree: 5000, well: 5, biopore: 110, trench: 500, water_access: 0 },
-                    species: { "Kopi Robusta": 4000, "Naungan": 1000 },
-                    points: [], 
-                    areaPolygon: [] // Hanya di Desa Galih
-                },
-                "tanam_2024": {
-                    id: "tanam_2024", year: 2024, location: "Program Konservasi Tahun 2024",
-                    // DATA FIX: Rorak = 1500
-                    water_inputs: { tree: 2000, well: 1, biopore: 0, trench: 1500, water_access: 449.4 },
-                    species: { "Kopi Robusta": 1000, "Durian": 300 },
-                    points: [[-7.81636, 112.90502, "Rorak Supinto"]], 
-                    areaPolygon: DATA_2024_POLYGONS
-                },
-                "tanam_2025": {
-                    id: "tanam_2025", year: 2025, location: "Desa Galih & Kawasan Penyangga",
-                    water_inputs: { tree: 0, well: 0, biopore: 0, trench: 0, water_access: 0 },
-                    species: { "Alpukat": 0 },
-                    points: [], 
-                    areaPolygon: []
-                }
-            }
-        };
-
-        // --- 3. LOGIKA PROGRAM ---
+        // --- 1. LOGIKA PROGRAM & KONSTANTA ---
         const SIPA_TARGET_MLY = 2996; 
         const VWB_CONST = 0.024953938;
         const RAIN_DAYS = 163;
@@ -199,36 +142,54 @@
 
         function calculateImpact(inputs) {
             if (!inputs) return { total: 0 };
-            let treeMLY = (inputs.tree / 400) * VWB_CONST * 31.536 * 0.75;
-            let wellMLY = inputs.well * 16000 * RAIN_DAYS / 1000000;
-            let bioMLY = inputs.biopore * 10 * F_INF * RAIN_DAYS / 1000000;
-            let trenchMLY = inputs.trench * 2940 * F_INF * RAIN_DAYS / 1000000;
-            let accessMLY = inputs.water_access || 0; 
-            return { total: treeMLY + wellMLY + bioMLY + trenchMLY + accessMLY };
+            // Pastikan nilai numeric untuk menghindari error
+            let tree = inputs.tree || 0;
+            let well = inputs.well || 0;
+            let bio = inputs.biopore || 0; // Perhatikan nama key di database (biopore vs biopori)
+            let trench = inputs.trench || inputs.rorak || 0;
+            let access = inputs.water_access || 0;
+
+            let treeMLY = (tree / 400) * VWB_CONST * 31.536 * 0.75;
+            let wellMLY = well * 16000 * RAIN_DAYS / 1000000;
+            let bioMLY = bio * 10 * F_INF * RAIN_DAYS / 1000000;
+            let trenchMLY = trench * 2940 * F_INF * RAIN_DAYS / 1000000;
+            
+            return { total: treeMLY + wellMLY + bioMLY + trenchMLY + access };
         }
 
-        // --- 4. EKSEKUSI TAMPILAN ---
+        // --- 2. PENGOLAHAN DATA DARI DB_PLANTING ---
         Chart.register(ChartDataLabels);
         let totalT=0, totalR=0, totalReplenish=0;
         let years=[], dataTrees=[], dataRorak=[], dataSumur=[], dataBiopori=[], dataReplenished=[];
         let speciesTotal={};
 
+        // Mengambil keys dari object database_planting.js
         const sortedKeys = Object.keys(db_planting.years).sort(); 
         
         sortedKeys.forEach(key => {
             const item = db_planting.years[key];
-            const inputs = item.water_inputs;
+            // Mapping nama key stats agar konsisten (di database ada 'stats' atau 'water_inputs')
+            const stats = item.stats || item.water_inputs; 
             
-            totalT += inputs.tree;
-            totalR += inputs.trench;
-            let impact = calculateImpact(inputs);
+            // Normalisasi data (karena di DB namanya beda-beda dikit)
+            const valTree = stats.trees || stats.tree || 0;
+            const valRorak = stats.rorak || stats.trench || 0;
+            const valSumur = stats.sumur || stats.well || 0;
+            const valBiopori = stats.biopori || stats.biopore || 0;
+            
+            // Object untuk kalkulator
+            const inputCalc = { tree: valTree, well: valSumur, biopore: valBiopori, trench: valRorak, water_access: stats.water_access || 0 };
+
+            totalT += valTree;
+            totalR += valRorak;
+            let impact = calculateImpact(inputCalc);
             totalReplenish += impact.total;
 
             years.push(item.year);
-            dataTrees.push(inputs.tree);
-            dataRorak.push(inputs.trench);
-            dataSumur.push(inputs.well);
-            dataBiopori.push(inputs.biopore);
+            dataTrees.push(valTree);
+            dataRorak.push(valRorak);
+            dataSumur.push(valSumur);
+            dataBiopori.push(valBiopori);
             dataReplenished.push(impact.total.toFixed(1));
 
             if(item.species){
@@ -238,45 +199,62 @@
             }
         });
 
-        // Update Text Stats
+        // Update Text Stats Dashboard
         document.getElementById('totalTrees').innerText = totalT.toLocaleString('id-ID');
         document.getElementById('totalRorak').innerText = totalR.toLocaleString('id-ID');
         document.getElementById('totalReplenish').innerText = totalReplenish.toLocaleString('id-ID', {maximumFractionDigits:0});
 
-        // MAP Render
+        // --- 3. RENDER PETA (PERBAIKAN FOKUS DI SINI) ---
         var map = L.map('map').setView([-7.810, 112.908], 13);
         L.tileLayer('https://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}', { maxZoom: 20 }).addTo(map);
 
         const iconTree = L.divIcon({html: '<div style="background:#2e7d32;width:8px;height:8px;border-radius:50%;border:1px solid white;"></div>'});
-        const iconRorak = L.divIcon({html: '<div style="background:#ff9800;width:10px;height:10px;border-radius:50%;border:1px solid white;"></div>'});
+        const iconRorak = L.divIcon({html: '<div style="background:#ff9800;width:8px;height:8px;border-radius:50%;border:1px solid white;"></div>'});
 
-        // Gambar Master Layer (Background) - Garis Tegas
-        L.polygon(MASTER_DESA_GALIH, { color: 'gold', fillColor: 'transparent', weight: 2 }).bindPopup("Batas Desa Galih").addTo(map);
-        L.polygon(MASTER_PETUNG, { color: 'orange', fillColor: 'transparent', weight: 2 }).bindPopup("Batas Desa Petung").addTo(map);
+        // A. Gambar Background Master (Sekali saja agar tidak numpuk)
+        // Menggunakan variabel global dari database_planting.js
+        if(typeof POLY_DESA_GALIH !== 'undefined') {
+            L.polygon(POLY_DESA_GALIH, { color: 'gold', fillColor: 'transparent', weight: 2 }).bindPopup("Batas Desa Galih").addTo(map);
+        }
+        if(typeof POLY_PETUNG !== 'undefined') {
+            L.polygon(POLY_PETUNG, { color: 'orange', fillColor: 'transparent', weight: 2 }).bindPopup("Batas Desa Petung").addTo(map);
+        }
 
-        // Gambar Detail
+        // B. Loop Data Tahunan
         Object.values(db_planting.years).forEach(item => {
+            // Render Polygon Detail
             if (item.areaPolygon) {
                 item.areaPolygon.forEach(poly => {
-                    // Format Baru (Warna Warni)
+                    // Cek Tipe 1: Polygon dengan warna (Format Data 2024)
                     if (poly.coords && poly.color) {
                         L.polygon(poly.coords, { color: poly.color, fillColor: poly.color, fillOpacity: 0.6, weight: 1 }).bindPopup(poly.name).addTo(map);
                     } 
-                    // Format Lama (Array) - Cek panjang array agar tidak menimpa master
-                    else if (Array.isArray(poly) && poly.length < 50) { 
-                        L.polygon(poly, { color: '#00e676', fillColor: '#69f0ae', fillOpacity: 0.4, weight: 1 }).addTo(map);
+                    // Cek Tipe 2: Array Koordinat Biasa (Format Data Lama)
+                    else if (Array.isArray(poly)) {
+                        // FILTER PENTING: Jangan gambar ulang Master Polygon (Desa Galih/Petung)
+                        // Kita filter berdasarkan panjang array. Master polygon biasanya panjangnya > 60 titik.
+                        // Detail area tanam biasanya lebih kecil.
+                        if (poly.length < 60) { 
+                            L.polygon(poly, { color: '#00e676', fillColor: '#69f0ae', fillOpacity: 0.4, weight: 1 }).addTo(map);
+                        }
                     }
                 });
             }
+
+            // Render Titik (Marker)
             if(item.points){
                 item.points.forEach(pt => {
-                    let isRorak = pt[2].toLowerCase().includes("rorak");
-                    L.marker([pt[0], pt[1]], {icon: isRorak ? iconRorak : iconTree}).addTo(map);
+                    // Cek validitas koordinat
+                    if(pt[0] && pt[1]) {
+                        let desc = pt[2] || "";
+                        let isRorak = desc.toLowerCase().includes("rorak");
+                        L.marker([pt[0], pt[1]], {icon: isRorak ? iconRorak : iconTree}).addTo(map);
+                    }
                 });
             }
         });
 
-        // Charts
+        // --- 4. RENDER CHARTS ---
         new Chart(document.getElementById('barChart'), {
             type: 'bar',
             data: { labels: years, datasets: [{ label: 'Pohon', data: dataTrees, backgroundColor: '#2e7d32', borderRadius:4 }] },
@@ -318,13 +296,22 @@
             options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom' }, datalabels: { anchor: 'end', align: 'top', color: '#333', formatter: Math.round } }, scales: { y: { beginAtZero: true } } }
         });
 
-        // Table
+        // --- 5. RENDER TABEL ---
         const tbody = document.getElementById('tableBody');
         sortedKeys.reverse().forEach(key => {
             const item = db_planting.years[key];
-            const inp = item.water_inputs;
-            const impact = calculateImpact(inp);
-            tbody.innerHTML += `<tr><td class="ps-4 fw-bold">${item.year}</td><td>${item.location}</td><td class="text-center">${inp.tree.toLocaleString()}</td><td class="text-center">${inp.trench.toLocaleString()}</td><td class="text-center">${inp.well.toLocaleString()}</td><td class="text-center">${inp.biopore.toLocaleString()}</td><td class="text-end pe-4"><span class="badge bg-primary">${impact.total.toFixed(1)}</span></td><td><button class="btn btn-sm btn-outline-secondary px-3" onclick="window.location.href='planting_detail.html?id=${key}'">Detail</button></td></tr>`;
+            const stats = item.stats || item.water_inputs; // Kompatibilitas field name
+            
+            const valTree = stats.trees || stats.tree || 0;
+            const valRorak = stats.rorak || stats.trench || 0;
+            const valSumur = stats.sumur || stats.well || 0;
+            const valBiopori = stats.biopori || stats.biopore || 0;
+            const valAccess = stats.water_access || 0;
+
+            const inputCalc = { tree: valTree, well: valSumur, biopore: valBiopori, trench: valRorak, water_access: valAccess };
+            const impact = calculateImpact(inputCalc);
+            
+            tbody.innerHTML += `<tr><td class="ps-4 fw-bold">${item.year}</td><td>${item.location}</td><td class="text-center">${valTree.toLocaleString()}</td><td class="text-center">${valRorak.toLocaleString()}</td><td class="text-center">${valSumur.toLocaleString()}</td><td class="text-center">${valBiopori.toLocaleString()}</td><td class="text-end pe-4"><span class="badge bg-primary">${impact.total.toFixed(1)}</span></td><td><button class="btn btn-sm btn-outline-secondary px-3" onclick="window.location.href='planting_detail.html?id=${key}'">Detail</button></td></tr>`;
         });
     </script>
 </body>
