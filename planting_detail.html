@@ -14,23 +14,30 @@
     
     <style>
         body { font-family: 'Montserrat', sans-serif; background-color: #f0f2f5; }
+        
+        /* REVISI HEADER: Menambahkan Background Image */
         .hero-header { 
-            position: relative; background: #1b5e20; height: 300px; 
+            position: relative; 
+            /* Foto Hutan Gelap agar tulisan putih terbaca */
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1511497584788-876760111969?q=80&w=1932&auto=format&fit=crop') center/cover; 
+            height: 350px; 
             display: flex; align-items: center; justify-content: center; color: white; 
             margin-bottom: 30px; border-bottom: 5px solid #2e7d32;
         }
-        .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); }
         .hero-content { position: relative; z-index: 2; text-align: center; }
-        .logo-top { height: 50px; margin-bottom: 10px; }
+        .logo-top { height: 60px; margin-bottom: 15px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.5)); }
         
         .stat-box { background: white; padding: 20px; border-radius: 10px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .val-num { font-size: 2.5rem; font-weight: 800; margin: 10px 0; }
         #miniMap { height: 350px; width: 100%; border-radius: 10px; }
-        .gallery-img { width: 100%; height: 200px; object-fit: cover; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        
+        /* Gallery Style */
+        .gallery-img { width: 100%; height: 220px; object-fit: cover; border-radius: 8px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         .gallery-img:hover { transform: scale(1.02); }
+        
         .card { border: none; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-radius: 10px; margin-bottom: 20px; }
         
-        /* New Style untuk Kotak Total Water */
+        /* Style untuk Kotak Total Water */
         .total-water-box {
             background-color: #0277bd; /* Biru Laut */
             color: white;
@@ -45,61 +52,51 @@
         }
         
         /* Table Styling */
-        .table-formula thead th { background-color: #e3f2fd; font-size: 0.9rem; text-transform: uppercase; }
+        .table-formula thead th { background-color: #e3f2fd; font-size: 0.9rem; text-transform: uppercase; vertical-align: middle; }
         .table-formula td { font-size: 0.9rem; vertical-align: middle; }
-        
-        /* REVISI: Formula Merah & Dimensi Detail */
         .formula-text { 
             font-family: 'Courier New', monospace; 
-            color: #d32f2f !important; /* MERAH TEGAS */
+            color: #d32f2f !important; /* MERAH */
             font-weight: bold; 
             font-size: 0.85rem; 
         }
         .dimensi-text { 
-            font-size: 0.75rem; 
-            color: #555; 
-            font-style: italic; 
-            display: block; 
-            margin-top: 4px; 
-            background: #fff3e0; 
-            padding: 2px 5px; 
-            border-radius: 4px;
-            width: fit-content;
+            font-size: 0.75rem; color: #555; font-style: italic; display: block; margin-top: 4px; 
+            background: #fff3e0; padding: 2px 5px; border-radius: 4px; width: fit-content;
         }
+        .row-total { background-color: #bbdefb !important; font-weight: bold; font-size: 1rem; }
     </style>
 </head>
 <body>
 
     <div class="hero-header">
-        <div class="hero-overlay"></div>
         <div class="hero-content">
             <img src="logo-sk.png" class="logo-top" onerror="this.style.display='none'">
-            <h1 class="fw-bold display-5" id="pageTitle">Loading...</h1>
-            <p class="lead" id="pageDesc">...</p>
-            <a href="planting.html" class="btn btn-outline-light mt-2 rounded-pill px-4"><i class="fas fa-arrow-left me-2"></i>Kembali</a>
+            <h1 class="fw-bold display-4" id="pageTitle">Loading...</h1>
+            <p class="lead fw-light" id="pageDesc">...</p>
+            <a href="planting.html" class="btn btn-outline-light mt-3 rounded-pill px-4 fw-bold"><i class="fas fa-arrow-left me-2"></i>Kembali ke Dashboard</a>
         </div>
     </div>
 
     <div class="container" style="margin-top: -50px; position: relative; z-index: 10;">
         
-        <!-- ROW 1: STATS UTAMA (DATA TETAP DARI DATABASE) -->
+        <!-- ROW 1: STATS UTAMA -->
         <div class="row mb-4">
             <div class="col-md-4"><div class="stat-box" style="border-top:4px solid #43a047"><i class="fas fa-tree text-success fa-2x"></i><div class="val-num text-success" id="valTrees">-</div><small>Pohon Ditanam</small></div></div>
             <div class="col-md-4"><div class="stat-box" style="border-top:4px solid #795548"><i class="fas fa-inbox text-warning fa-2x" style="color:#795548!important"></i><div class="val-num" style="color:#795548" id="valRorak">-</div><small>Rorak Terbangun</small></div></div>
             <div class="col-md-4"><div class="stat-box" style="border-top:4px solid #039be5"><i class="fas fa-water text-primary fa-2x"></i><div class="val-num text-primary" id="valSumur">-</div><small>Sumur & Biopori</small></div></div>
         </div>
 
-        <!-- ROW 2: MAP & SPECIES (DATA TETAP DARI DATABASE) -->
+        <!-- ROW 2: PETA & SPECIES -->
         <div class="row">
             <div class="col-lg-7 mb-4"><div class="card p-3 h-100 fw-bold">Peta Sebaran<div id="miniMap" class="mt-2"></div></div></div>
             <div class="col-lg-5 mb-4"><div class="card p-3 h-100 fw-bold">Komposisi Tanaman<div style="height: 250px;"><canvas id="spChart"></canvas></div><ul id="spList" class="list-group list-group-flush mt-3 fw-normal small"></ul></div></div>
         </div>
         
-        <!-- ROW 3: ANALISIS HIDROLOGI (REVISI PERHITUNGAN & TAMPILAN) -->
+        <!-- ROW 3: ANALISIS HIDROLOGI -->
         <div class="card p-4 mb-4 border-start border-5 border-primary">
             <h5 class="fw-bold mb-3"><i class="fas fa-calculator text-primary me-2"></i>Analisis & Perhitungan Infiltrasi Air</h5>
             
-            <!-- A. Grafik & Total Box -->
             <div class="row mb-4">
                 <!-- Grafik Batang (Kiri) -->
                 <div class="col-lg-8 mb-3 mb-lg-0">
@@ -122,7 +119,7 @@
                 </div>
             </div>
 
-            <!-- B. Tabel Detail Rumus (Bawah) -->
+            <!-- Tabel Detail Rumus -->
             <div class="table-responsive">
                 <table class="table table-bordered table-hover table-formula mb-0">
                     <thead>
@@ -139,14 +136,17 @@
                 </table>
             </div>
             <div class="alert alert-light border mt-3 py-2 px-3 small text-muted mb-0">
-                <strong>Catatan Formula:</strong> Perhitungan menggunakan parameter hidrologi spesifik tahun terkait.
+                <i class="fas fa-info-circle me-1"></i> 
+                <strong>Catatan Formula:</strong> Perhitungan menggunakan parameter hidrologi spesifik tahun terkait (Curah hujan, VWB, dan Dimensi Fisik).
             </div>
         </div>
 
-        <!-- GALLERY ROW (EXISTING) -->
+        <!-- ROW 4: DOKUMENTASI (3 FOTO) -->
         <div class="card p-4 mb-5">
-            <h6 class="fw-bold mb-3">Dokumentasi Lapangan</h6>
-            <div class="row g-3" id="gallery"></div>
+            <h6 class="fw-bold mb-3"><i class="fas fa-camera text-success me-2"></i>Dokumentasi Lapangan</h6>
+            <div class="row g-3" id="gallery">
+                <!-- Foto akan diisi oleh JS -->
+            </div>
         </div>
     </div>
 
@@ -154,13 +154,11 @@
     <script src="database_planting.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // --- 1. KONSTANTA & FUNGSI HITUNG (MANUAL LOGIC REVISI) ---
+        // --- 1. KONSTANTA & FUNGSI HITUNG ---
         const VWB_CONST = 0.02495;
         const TIME_FACTOR = 31.536;
-        
-        // DIMENSI BARU YANG DISEPAKATI (Untuk Sinkronisasi)
-        const VOL_SUMUR_BARU = 754; // Liter (Dia 0.8m, T 1.5m)
-        const VOL_RORAK_BARU = 490; // Liter (1m x 0.7m x 0.7m)
+        const VOL_SUMUR_BARU = 754; 
+        const VOL_RORAK_BARU = 490; 
         const RAIN_DAYS = 163;
 
         const fmt = (n) => n.toLocaleString('id-ID');
@@ -175,7 +173,7 @@
             };
 
             if (year == 2024) {
-                // --- LOGIKA 2024 (KONSTANTA) ---
+                // LOGIKA 2024 (KONSTANTA)
                 res.tree.val = (stats.trees / 400) * 1.5;
                 res.tree.formula = `(${fmt(stats.trees)} / 400) * 1,5 ML`;
                 res.tree.vol = "Konstanta 1,5 ML/Ha";
@@ -184,57 +182,42 @@
                 res.sumur.val = stats.sumur * 1.1;
                 res.sumur.formula = `${stats.sumur} * 1,1 ML`;
                 res.sumur.vol = "Konstanta 1,1 ML";
-                res.sumur.dim = "-";
-
+                
                 res.rorak.val = stats.rorak * 0.17;
                 res.rorak.formula = `${fmt(stats.rorak)} * 0,17 ML`;
                 res.rorak.vol = "Konstanta 0,17 ML";
-                res.rorak.dim = "-";
-
-                res.biopori.val = 0;
-                res.biopori.formula = "-";
             } 
             else {
-                // --- LOGIKA 2021-2023 (DIMENSI BARU & VOLUMETRIK) ---
-                
-                // POHON
+                // LOGIKA 2021-2023 (MANUAL)
                 res.tree.val = (stats.trees / 400) * 0.024953938 * TIME_FACTOR * 0.75;
                 res.tree.formula = `(${fmt(stats.trees)}/400) * 0.02495 * 31.536 * 75%`;
                 res.tree.vol = "Asumsi 400 phn/ha";
                 res.tree.dim = "VWB: 0.02495 l/s/ha";
 
-                // SUMUR RESAPAN (Pakai Volume 754 Liter)
                 res.sumur.val = (stats.sumur * VOL_SUMUR_BARU * 3 * RAIN_DAYS) / 1000000;
-                // Formula Text Merah
                 res.sumur.formula = `(${stats.sumur} * 754 * 3 * 163) / 1.000.000`;
                 res.sumur.vol = "754 Liter";
                 res.sumur.dim = "Dia 0.8m x T 1.5m";
 
-                // RORAK (Pakai Volume 490 Liter)
                 res.rorak.val = (stats.rorak * VOL_RORAK_BARU * 3 * RAIN_DAYS) / 1000000;
-                // Formula Text Merah
                 res.rorak.formula = `(${fmt(stats.rorak)} * 490 * 3 * 163) / 1.000.000`;
                 res.rorak.vol = "490 Liter";
                 res.rorak.dim = "1m x 0.7m x 0.7m";
 
-                // BIOPORI (Rasio Lama)
                 if(stats.biopori > 0) {
                     res.biopori.val = (stats.biopori / 300) * 1.5;
                     res.biopori.formula = `(${stats.biopori} / 300) * 1,5 ML`;
                     res.biopori.vol = "Std Biopori";
-                    res.biopori.dim = "-";
                 }
             }
-
             return res;
         }
 
-        // --- 2. LOGIKA UTAMA ---
+        // --- 2. MAIN LOGIC ---
         const id = new URLSearchParams(window.location.search).get('id');
         const data = db_planting.years[id];
 
         if(data) {
-            // A. Update Info Header & Stats
             document.getElementById('pageTitle').innerText = "Program Tahun " + data.year;
             document.getElementById('pageDesc').innerText = data.location;
             document.getElementById('valTrees').innerText = data.stats.trees.toLocaleString();
@@ -242,7 +225,7 @@
             let sumurText = data.stats.biopori > 0 ? `${data.stats.sumur} Sumur + ${data.stats.biopori} Biopori` : `${data.stats.sumur} Unit`;
             document.getElementById('valSumur').innerText = sumurText;
 
-            // B. Render Map
+            // Map
             const map = L.map('miniMap').setView([-7.810, 112.908], 14);
             L.tileLayer('https://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}', { maxZoom: 20 }).addTo(map);
             const iconTree = L.divIcon({html:'<div style="background:#2e7d32;width:12px;height:12px;border-radius:50%;border:2px solid white;"></div>'});
@@ -266,15 +249,11 @@
                         if(!firstPoly) firstPoly = poly;
                     }
                 });
-                if (firstPoly) {
-                    const tempPoly = L.polygon(firstPoly);
-                    map.fitBounds(tempPoly.getBounds());
-                } else if (bounds.length) {
-                    map.fitBounds(bounds);
-                }
+                if (firstPoly) map.fitBounds(L.polygon(firstPoly).getBounds());
+                else if (bounds.length) map.fitBounds(bounds);
             }
 
-            // C. Render Pie Chart
+            // Pie Chart
             const labels = Object.keys(data.species);
             const vals = Object.values(data.species);
             new Chart(document.getElementById('spChart'), {
@@ -285,27 +264,36 @@
             const list = document.getElementById('spList');
             labels.forEach((l,i) => list.innerHTML += `<li class="list-group-item d-flex justify-content-between">${l} <span>${vals[i]}</span></li>`);
 
+            // --- GALLERY (Menampilkan 3 Foto) ---
             const gal = document.getElementById('gallery');
-            data.photos.forEach(src => gal.innerHTML += `<div class="col-md-3 col-6"><img src="${src}" class="gallery-img"></div>`);
-
-            // --- D. RENDER TABEL & GRAFIK WATER (SINKSORISASI DATA BARU) ---
             
+            // Logika: Jika foto di DB kurang dari 3, tambahkan placeholder agar tampilan bagus
+            let photosToShow = [...data.photos];
+            // Tambahkan foto dummy jika kurang dari 3 (sesuai request layout 3 foto)
+            while(photosToShow.length < 3) {
+                // Placeholder alam yang estetik
+                photosToShow.push("https://images.unsplash.com/photo-1448375240586-dfd8f3793300?q=80&w=2000&auto=format&fit=crop");
+            }
+            
+            photosToShow.slice(0, 3).forEach(src => {
+                gal.innerHTML += `
+                <div class="col-md-4">
+                    <img src="${src}" class="gallery-img" onclick="window.open(this.src)">
+                </div>`;
+            });
+
+            // --- PERHITUNGAN AIR ---
             const calc = getWaterAnalysis(data.year, data.stats);
             const totalWater = calc.tree.val + calc.rorak.val + calc.sumur.val + calc.biopori.val;
 
-            // 1. Update Box Total Kanan
             document.getElementById('boxTotalWater').innerText = fmtDec(totalWater);
 
-            // 2. Isi Tabel Rumus Detail (Bawah)
             const tbBody = document.getElementById('formulaTableBody');
             
             // Baris Pohon
             tbBody.innerHTML += `
                 <tr>
-                    <td>
-                        <span class="fw-bold">Pohon / Vegetasi</span>
-                        <span class="dimensi-text">${calc.tree.dim}</span>
-                    </td>
+                    <td><span class="fw-bold">Pohon / Vegetasi</span><span class="dimensi-text">${calc.tree.dim}</span></td>
                     <td>${calc.tree.vol}</td>
                     <td class="formula-text">${calc.tree.formula}</td>
                     <td class="text-end fw-bold">${fmtDec(calc.tree.val)}</td>
@@ -314,37 +302,28 @@
             // Baris Rorak
             tbBody.innerHTML += `
                 <tr>
-                    <td>
-                        <span class="fw-bold">Rorak (Trench)</span>
-                        <span class="dimensi-text">${calc.rorak.dim}</span>
-                    </td>
+                    <td><span class="fw-bold">Rorak (Trench)</span><span class="dimensi-text">${calc.rorak.dim}</span></td>
                     <td>${calc.rorak.vol}</td>
                     <td class="formula-text">${calc.rorak.formula}</td>
                     <td class="text-end fw-bold">${fmtDec(calc.rorak.val)}</td>
                 </tr>
             `;
-            // Baris Sumur (Jika Ada)
+            // Baris Sumur
             if (data.stats.sumur > 0) {
                 tbBody.innerHTML += `
                     <tr>
-                        <td>
-                            <span class="fw-bold">Sumur Resapan</span>
-                            <span class="dimensi-text">${calc.sumur.dim}</span>
-                        </td>
+                        <td><span class="fw-bold">Sumur Resapan</span><span class="dimensi-text">${calc.sumur.dim}</span></td>
                         <td>${calc.sumur.vol}</td>
                         <td class="formula-text">${calc.sumur.formula}</td>
                         <td class="text-end fw-bold">${fmtDec(calc.sumur.val)}</td>
                     </tr>
                 `;
             }
-            // Baris Biopori (Jika Ada)
+            // Baris Biopori
             if (data.stats.biopori > 0) {
                 tbBody.innerHTML += `
                     <tr>
-                        <td>
-                            <span class="fw-bold">Biopori</span>
-                            <span class="dimensi-text">${calc.biopori.dim}</span>
-                        </td>
+                        <td><span class="fw-bold">Biopori</span><span class="dimensi-text">${calc.biopori.dim}</span></td>
                         <td>${calc.biopori.vol}</td>
                         <td class="formula-text">${calc.biopori.formula}</td>
                         <td class="text-end fw-bold">${fmtDec(calc.biopori.val)}</td>
@@ -352,7 +331,15 @@
                 `;
             }
 
-            // 3. Render Bar Chart Air (Kiri)
+            // BARIS TOTAL (REVISI PERMINTAAN)
+            tbBody.innerHTML += `
+                <tr class="row-total">
+                    <td colspan="3" class="text-end text-primary">TOTAL INFILTRASI TAHUN ${data.year}</td>
+                    <td class="text-end text-primary">${fmtDec(totalWater)}</td>
+                </tr>
+            `;
+
+            // Grafik Batang Air (REVISI TULISAN PUTIH & TENGAH)
             new Chart(document.getElementById('waterBarChart'), {
                 type: 'bar',
                 data: {
@@ -370,9 +357,10 @@
                     plugins: {
                         legend: { display: false },
                         datalabels: {
-                            color: '#333',
-                            anchor: 'end',
-                            align: 'top',
+                            color: '#ffffff', // Tulisan Putih
+                            anchor: 'center', // Posisi Tengah
+                            align: 'center',  // Posisi Tengah
+                            font: { weight: 'bold', size: 12 },
                             formatter: (val) => val > 0 ? val.toFixed(1) : ''
                         }
                     },
