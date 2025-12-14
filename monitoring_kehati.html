@@ -12,187 +12,256 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
 
     <style>
-        /* TEMA DARK MODE */
+        /* BACKGROUND GELAP UTAMA */
         body { font-family: 'Montserrat', sans-serif; background-color: #050505; color: #eee; padding-bottom: 50px; }
         
-        /* WARNA HIJAU SENADA (Global Variable like style) */
-        .bg-theme-green { background-color: #1b5e20 !important; }
-        .border-theme-green { border-color: #1b5e20 !important; }
-        .text-theme-neon { color: #c6ff00 !important; }
+        /* 1. WARNA HIJAU KONANG (UNTUK HEADER & TOMBOL) */
+        .bg-konang-green {
+            background-color: #1b5e20 !important; /* Hijau Hutan */
+            color: white !important;
+        }
 
-        /* HEADER */
+        /* HEADER HALAMAN */
         .header-bar { 
             background: #121212; 
-            padding: 20px 0; 
+            padding: 15px 0; 
             border-bottom: 1px solid #333; 
             margin-bottom: 30px; 
             box-shadow: 0 4px 20px rgba(0,0,0,0.8);
         }
-        .logo-img { height: 50px; margin-right: 15px; filter: drop-shadow(0 0 5px rgba(255,255,255,0.2)); }
         
-        /* TOMBOL KEMBALI (HIJAU SENADA) */
-        .btn-unified {
-            background-color: #1b5e20; /* Hijau Utama */
+        /* JUDUL BESAR DI TENGAH */
+        .page-title-area {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .page-title-main {
+            font-weight: 800;
+            font-size: 2rem;
             color: white;
-            font-weight: 700;
-            border: none;
-            border-radius: 50px;
-            padding: 10px 30px;
             text-transform: uppercase;
-            font-size: 0.85rem;
-            transition: 0.3s;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+        .page-title-sub {
+            color: #c6ff00; /* Neon Soft */
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* TOMBOL KEMBALI KE MENU (HIJAU SS2) */
+        .btn-back-menu {
+            background-color: #c6ff00; /* Neon */
+            color: #000;
+            font-weight: 800;
+            border-radius: 50px;
+            padding: 8px 25px;
             text-decoration: none;
-            display: inline-block;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            transition: 0.3s;
+            text-transform: uppercase;
+            font-size: 0.8rem;
         }
-        .btn-unified:hover {
-            background-color: #2e7d32;
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(46, 125, 50, 0.4);
-        }
+        .btn-back-menu:hover { background-color: white; transform: scale(1.05); }
 
         /* CARD STYLE */
         .card-custom { 
-            border: 1px solid #333; 
-            border-radius: 12px; 
-            background: #121212; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3); 
-            margin-bottom: 20px; 
+            border: none; 
+            border-radius: 8px; 
             overflow: hidden; 
+            margin-bottom: 20px;
+            background-color: white; /* Default putih agar isi tabel kelihatan */
         }
-        
-        /* HEADER CARD (HIJAU SENADA) */
-        .card-header-unified { 
-            background: #1b5e20; /* Hijau Utama */
-            padding: 15px 20px; 
-            border-bottom: 1px solid #144a17; 
-            font-weight: 700; 
-            color: white; 
+
+        /* HEADER KOTAK (HIJAU SS2) */
+        .card-header-green {
+            background-color: #1b5e20; /* Hijau Hutan */
+            padding: 15px 20px;
+            color: white;
+            font-weight: 700;
+            text-transform: uppercase;
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
         }
-        
-        /* MAP STYLE */
-        #map { height: 450px; width: 100%; z-index: 1; background: #222; }
+
+        /* LAYOUT PETA & GAMBAR */
+        #map { height: 450px; width: 100%; z-index: 1; background: #ddd; }
         .map-photo { 
             height: 450px; width: 100%; 
             object-fit: cover; 
             display: block;
-            border-left: 1px solid #333;
         }
-        
-        /* TABEL STYLE */
-        .table-dark-custom {
+
+        /* FOOTER PETA (ZONA MONITORING - FULL WIDTH) */
+        .map-footer-strip {
             background-color: #121212;
-            color: #eee; 
-            margin-bottom: 0;
+            padding: 15px 0;
+            text-align: center;
+            border-top: 4px solid #c6ff00;
+            width: 100%;
         }
-        .table-dark-custom th {
-            background-color: #1a1a1a;
-            color: #c6ff00; /* Aksen Neon untuk Text Header Tabel */
-            border-bottom: 2px solid #333;
-            font-weight: 600;
-            padding-left: 20px;
+        .zona-title { color: #c6ff00; font-weight: 800; font-size: 1.2rem; margin-bottom: 5px; text-transform: uppercase; }
+        .zona-sub { color: #aaa; font-size: 0.8rem; margin-bottom: 10px; }
+        
+        .badge-info-item {
+            background: #333; border: 1px solid #555; color: #fff;
+            padding: 5px 15px; border-radius: 4px; font-size: 0.75rem; margin: 0 5px;
+            display: inline-flex; align-items: center;
         }
-        .table-dark-custom td {
-            border-bottom: 1px solid #333;
+        .badge-info-item i { margin-right: 5px; }
+        .icon-veg { color: #2e7d32; } .icon-satwa { color: #00b0ff; } .icon-jalur { color: #ffab00; }
+
+        /* TABEL LOG DATA (AGAR KELIHATAN JELAS) */
+        .table-visible { width: 100%; margin-bottom: 0; background-color: white; }
+        .table-visible th {
+            background-color: #f1f1f1;
+            color: #000;
+            font-weight: 700;
+            padding: 15px;
+            border-bottom: 2px solid #ccc;
+        }
+        .table-visible td {
+            padding: 15px;
             vertical-align: middle;
-            padding: 15px 10px 15px 20px;
-            color: #fff;
+            color: #000000 !important; /* Paksa Hitam */
+            border-bottom: 1px solid #eee;
+            font-weight: 600;
         }
-        .table-dark-custom tr:hover { background-color: #1e1e1e; cursor: pointer; }
+        .table-visible tr:hover { background-color: #f9f9f9; }
 
-        /* BADGE STATUS (NEON SOFT) */
-        .badge-status { padding: 6px 15px; border-radius: 50px; font-weight: 600; font-size: 0.75rem; display: inline-block; min-width: 100px; text-align: center; }
-        .neon-green { background: rgba(0, 230, 118, 0.15); color: #69f0ae; border: 1px solid #69f0ae; box-shadow: 0 0 5px rgba(105, 240, 174, 0.2); }
-        .neon-blue { background: rgba(68, 138, 255, 0.15); color: #448aff; border: 1px solid #448aff; box-shadow: 0 0 5px rgba(68, 138, 255, 0.2); }
-        .neon-orange { background: rgba(255, 171, 64, 0.15); color: #ffab40; border: 1px solid #ffab40; box-shadow: 0 0 5px rgba(255, 171, 64, 0.2); }
-
-        /* BUTTONS */
-        .btn-detail-neon { border: 1px solid #555; color: #ccc; padding: 4px 15px; font-size: 0.8rem; border-radius: 4px; text-decoration: none; transition: 0.2s; }
-        .btn-detail-neon:hover { border-color: #c6ff00; color: #c6ff00; }
-        
-        .btn-input-unified { 
-            background: #1b5e20; /* Hijau Utama */
-            color: white; width: 100%; border:none; padding:12px; 
-            font-weight:bold; border-radius: 8px; transition:0.3s; 
+        /* STATUS BADGES (REVISI WARNA SS5) */
+        .status-badge {
+            padding: 8px 0;
+            width: 120px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            display: inline-block;
+            text-align: center;
         }
-        .btn-input-unified:hover { background: #2e7d32; box-shadow: 0 0 10px #2e7d32; }
-        
-        .btn-update { background: transparent; color: #aaa; width: 100%; border:1px solid #555; padding:12px; font-weight:bold; border-radius: 8px; transition:0.3s; }
-        .btn-update:hover { border-color: #fff; color: #fff; }
+        /* Sangat Baik = Seperti Tombol Jelajah (Kuning Neon/Hitam) */
+        .st-sangat-baik {
+            background-color: #c6ff00; 
+            color: #000;
+            border: 1px solid #b2ff59;
+        }
+        /* Baik = Hijau Muda */
+        .st-baik {
+            background-color: #b9f6ca;
+            color: #1b5e20;
+            border: 1px solid #00c853;
+        }
+        /* Sedang = Biru Satwa Liar */
+        .st-sedang {
+            background-color: #e3f2fd;
+            color: #00b0ff; /* Biru Satwa */
+            border: 1px solid #40c4ff;
+        }
+
+        /* TOMBOL AKSI */
+        .btn-detail {
+            border: 1px solid #aaa; color: #555; background: white;
+            padding: 5px 15px; border-radius: 4px; font-size: 0.8rem; text-decoration: none;
+        }
+        .btn-detail:hover { background: #333; color: white; }
+
+        /* TOMBOL INPUT (HIJAU SS2) */
+        .btn-input-new {
+            background-color: #1b5e20; /* Hijau Hutan */
+            color: white;
+            width: 100%; border: none; padding: 12px;
+            font-weight: 800; border-radius: 5px;
+            text-transform: uppercase;
+            transition: 0.3s;
+        }
+        .btn-input-new:hover { background-color: #2e7d32; }
+
+        .btn-update-data {
+            background-color: white;
+            color: #333;
+            border: 2px solid #ddd;
+            width: 100%; padding: 12px;
+            font-weight: 700; border-radius: 5px;
+            transition: 0.3s;
+        }
+        .btn-update-data:hover { border-color: #333; }
 
     </style>
 </head>
 <body>
 
-    <!-- HEADER -->
+    <!-- HEADER BAR -->
     <div class="header-bar">
         <div class="container d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center">
-                <img src="logo-sk.png" class="logo-img" onerror="this.style.display='none'">
-                <div class="text-white" style="line-height: 1.2;">
-                    <div class="fw-bold fs-5">SEKOLA KONANG</div>
-                    <div style="font-weight:400; font-size:0.8rem; letter-spacing: 1px; color:#c6ff00;">INDONESIA</div>
+                <img src="logo-sk.png" style="height: 50px; margin-right: 15px;" onerror="this.style.display='none'">
+                <div style="line-height: 1.2;">
+                    <div class="fw-bold text-white fs-5">SEKOLA KONANG</div>
+                    <div style="font-size:0.8rem; color:#aaa; letter-spacing: 1px;">INDONESIA</div>
                 </div>
             </div>
-            <!-- TOMBOL WARNA HIJAU SENADA -->
-            <a href="menu.html" class="btn-unified"><i class="fas fa-arrow-left me-2"></i> Kembali ke Menu</a>
+            <!-- Tombol Kembali (Neon) -->
+            <a href="menu.html" class="btn-back-menu"><i class="fas fa-arrow-left me-2"></i> KEMBALI KE MENU</a>
         </div>
+    </div>
+
+    <!-- JUDUL UTAMA -->
+    <div class="page-title-area">
+        <div class="page-title-main">MONITORING KEHATI</div>
+        <div class="page-title-sub">DATA INDEKS KEANEKARAGAMAN HAYATI FLORA DAN FAUNA</div>
     </div>
 
     <div class="container-fluid px-4">
         
-        <!-- JUDUL HALAMAN (CENTER) -->
-        <div class="text-center mb-4">
-            <h2 class="fw-bold text-white mb-0" style="text-shadow: 0 0 10px rgba(27, 94, 32, 0.8);">MONITORING KEHATI</h2>
-            <small class="text-theme-neon" style="letter-spacing: 2px; font-weight: 600;">DATA INDEKS KEANEKARAGAMAN HAYATI FLORA DAN FAUNA</small>
-        </div>
-
-        <!-- BAGIAN 1: PETA & GAMBAR (GRID 8:4 AGAR LURUS DENGAN BAWAH) -->
+        <!-- BAGIAN 1: PETA & GAMBAR (GRID RAPI) -->
         <div class="card card-custom">
-            <!-- HEADER WARNA HIJAU SENADA -->
-            <div class="card-header-unified">
+            <!-- Header Hijau SS2 -->
+            <div class="card-header-green">
                 <span><i class="fas fa-map-marked-alt me-2"></i> Peta Sebaran & Delineasi Area</span>
-                <span class="badge bg-dark border border-secondary"><i class="fas fa-satellite me-1"></i> Google Hybrid</span>
+                <span class="badge bg-light text-dark"><i class="fas fa-satellite me-1"></i> Google Hybrid</span>
             </div>
-            <div class="card-body p-0">
-                <div class="row g-0">
-                    <!-- PETA (KIRI - 8 KOLOM) -->
-                    <div class="col-lg-8">
-                        <div id="map"></div>
-                        <!-- Footer Peta -->
-                        <div class="p-3 bg-dark text-center border-top border-secondary">
-                            <h6 class="fw-bold text-theme-neon mb-1">ZONA MONITORING KEHATI</h6>
-                            <small class="text-muted">Visualisasi area monitoring keanekaragaman hayati Desa Galih & Kawasan Penyangga</small>
-                        </div>
-                    </div>
+            
+            <div class="row g-0">
+                <!-- PETA (KIRI - 8 Kolom) -->
+                <div class="col-lg-8">
+                    <div id="map"></div>
+                </div>
+                <!-- GAMBAR (KANAN - 4 Kolom) -->
+                <div class="col-lg-4 d-none d-lg-block">
+                    <img src="https://images.unsplash.com/photo-1511497584788-876760111969?q=80&w=2000&auto=format&fit=crop" class="map-photo" alt="Hutan">
+                </div>
+            </div>
 
-                    <!-- GAMBAR (KANAN - 4 KOLOM) -->
-                    <!-- Ukuran kolom 4 disamakan dengan kotak input dibawahnya agar lurus -->
-                    <div class="col-lg-4 d-none d-lg-block">
-                        <img src="https://images.unsplash.com/photo-1511497584788-876760111969?q=80&w=2000&auto=format&fit=crop" class="map-photo" alt="Hutan">
-                    </div>
+            <!-- Footer Peta (Zona Monitoring) -->
+            <div class="map-footer-strip">
+                <div class="zona-title">ZONA MONITORING KEHATI</div>
+                <div class="zona-sub">Visualisasi area monitoring keanekaragaman hayati Desa Galih & Kawasan Penyangga</div>
+                <div>
+                    <span class="badge-info-item"><i class="fas fa-tree icon-veg"></i> Vegetasi</span>
+                    <span class="badge-info-item"><i class="fas fa-paw icon-satwa"></i> Satwa Liar</span>
+                    <span class="badge-info-item"><i class="fas fa-map-signs icon-jalur"></i> Jalur Pantau</span>
                 </div>
             </div>
         </div>
 
-        <!-- BAGIAN 2: TABEL & INPUT (GRID 8:4) -->
+        <!-- BAGIAN 2: TABEL & INPUT (GRID RAPI) -->
         <div class="row">
-            <!-- TABEL (KIRI - 8 KOLOM) -->
-            <div class="col-lg-8 mb-4">
+            
+            <!-- TABEL (KIRI - 8 Kolom) -->
+            <div class="col-lg-8">
                 <div class="card card-custom h-100">
-                    <!-- HEADER WARNA HIJAU SENADA -->
-                    <div class="card-header-unified">
+                    <!-- Header Hijau SS2 -->
+                    <div class="card-header-green">
                         <span><i class="fas fa-table me-2"></i> Log Data Monitoring Terkini</span>
                     </div>
                     <div class="table-responsive">
-                        <table class="table table-dark-custom align-middle">
+                        <!-- Tabel Putih, Text Hitam -->
+                        <table class="table table-visible">
                             <thead>
                                 <tr>
-                                    <th>Lokasi Pantau</th>
+                                    <th class="ps-4">Lokasi Pantau</th>
                                     <th class="text-center">Tahun</th>
                                     <th class="text-center">Indeks (H')</th>
                                     <th class="text-center">Status</th>
@@ -200,36 +269,37 @@
                                 </tr>
                             </thead>
                             <tbody id="tableBody">
-                                <!-- Data diisi oleh JS -->
+                                <!-- Data JS -->
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- PANEL INPUT (KANAN - 4 KOLOM) -->
-            <div class="col-lg-4 mb-4">
+            <!-- INPUT DATA (KANAN - 4 Kolom) -->
+            <div class="col-lg-4">
                 <div class="card card-custom h-100">
-                    <!-- HEADER WARNA HIJAU SENADA -->
-                    <div class="card-header-unified">
+                    <!-- Header Hijau SS2 -->
+                    <div class="card-header-green">
                         <span><i class="fas fa-edit me-2"></i> Input / Update Data</span>
                     </div>
-                    <div class="card-body p-4 d-flex flex-column justify-content-center">
-                        <div class="alert alert-dark border border-secondary text-secondary small mb-4">
-                            <i class="fas fa-info-circle me-1"></i> Pilih menu di bawah untuk manajemen data.
+                    <div class="p-4 d-flex flex-column justify-content-center h-100">
+                        <div class="alert alert-secondary border-0 small mb-4 text-dark">
+                            <i class="fas fa-info-circle me-1"></i> Silakan pilih menu di bawah untuk manajemen data.
                         </div>
                         
-                        <!-- TOMBOL INPUT WARNA HIJAU SENADA -->
-                        <button class="btn-input-unified mb-3" onclick="alert('Fitur Input')">
+                        <!-- Tombol Input Hijau SS2 -->
+                        <button class="btn-input-new mb-3" onclick="alert('Fitur Input')">
                             <i class="fas fa-plus-circle me-2"></i> Input Data Baru
                         </button>
                         
-                        <button class="btn-update" onclick="alert('Fitur Update')">
+                        <button class="btn-update-data" onclick="alert('Fitur Update')">
                             <i class="fas fa-sync me-2"></i> Update Data Lama
                         </button>
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 
@@ -242,7 +312,7 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
     <script>
-        // Inisialisasi Peta
+        // Peta
         var map = L.map('map', {zoomControl: false}).setView([-7.723, 112.932], 13);
         L.control.zoom({ position: 'topleft' }).addTo(map);
         L.tileLayer('https://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}', { maxZoom: 20 }).addTo(map);
@@ -250,10 +320,9 @@
         // Load Data
         if(typeof db_kehati !== 'undefined') {
             
-            // 1. Render Polygon & Auto Zoom
+            // Polygon
             var geoLayer = L.geoJSON(db_kehati.polygons, {
                 style: function(f) { 
-                    // Warna garis kuning neon, fill transparan hijau
                     return { color: '#c6ff00', fillColor: '#1b5e20', fillOpacity: 0.3, weight: 2 }; 
                 },
                 onEachFeature: function(f, l) { 
@@ -261,36 +330,35 @@
                 }
             }).addTo(map);
 
-            // LOGIKA AUTO FOCUS KE AREA TAMAN
             if (geoLayer.getLayers().length > 0) {
                 map.fitBounds(geoLayer.getBounds(), {padding: [50, 50]});
             }
 
-            // 2. Render Tabel dengan Neon Badge
+            // Tabel
             const tableBody = document.getElementById('tableBody');
             const locs = db_kehati.locations;
 
             for (const [key, loc] of Object.entries(locs)) {
                 
-                // Logika Warna Neon
+                // Warna Status Sesuai Revisi
                 let badgeClass = '';
                 let hVal = parseFloat(loc.indices?.H || 0);
 
                 if (hVal >= 3.0) {
-                    badgeClass = 'neon-green'; 
-                } else if (hVal >= 1.5) {
-                    badgeClass = 'neon-blue'; 
+                    badgeClass = 'st-sangat-baik'; // Kuning Neon
+                } else if (hVal >= 2.0) {
+                    badgeClass = 'st-baik'; // Hijau Muda
                 } else {
-                    badgeClass = 'neon-orange'; 
+                    badgeClass = 'st-sedang'; // Biru Langit
                 }
 
                 let row = `
                 <tr onclick="window.location.href='detail.html?id=${key}'">
-                    <td class="fw-bold text-white">${loc.name}</td>
-                    <td class="text-center text-secondary">${loc.year}</td>
-                    <td class="text-center"><strong style="color:#c6ff00;">${loc.indices?.H || '-'}</strong></td>
-                    <td class="text-center"><span class="badge-status ${badgeClass}">${loc.status}</span></td>
-                    <td class="text-center"><a href="detail.html?id=${key}" class="btn-detail-neon">Detail</a></td>
+                    <td class="fw-bold">${loc.name}</td>
+                    <td class="text-center text-muted">${loc.year}</td>
+                    <td class="text-center" style="font-size:1.1rem; color:#c6ff00; -webkit-text-stroke: 0.5px #000;">${loc.indices?.H || '-'}</td>
+                    <td class="text-center"><span class="status-badge ${badgeClass}">${loc.status}</span></td>
+                    <td class="text-center"><button class="btn-detail">Detail</button></td>
                 </tr>`;
                 
                 tableBody.innerHTML += row;
