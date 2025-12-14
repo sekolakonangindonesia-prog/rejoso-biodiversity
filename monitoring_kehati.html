@@ -144,26 +144,26 @@
         .table-visible th {
             background-color: #f1f1f1;
             color: #000;
-            font-weight: 700;
+            font-weight: 600;
             padding: 12px; /* Padding table dirapatkan dikit */
             border-bottom: 2px solid #ccc;
-            font-size: 0.9rem;
+            font-size: 0.75rem;
         }
         .table-visible td {
             padding: 10px 12px; /* Padding dirapatkan */
             vertical-align: middle;
             color: #000000 !important; 
             border-bottom: 1px solid #eee;
-            font-weight: 600;
-            font-size: 0.9rem;
+            font-weight: 500;
+            font-size: 0.8rem;
         }
         .table-visible tr:hover { background-color: #f9f9f9; }
 
         /* BADGE STATUS */
-        .badge-status { padding: 5px 12px; border-radius: 50px; font-weight: 700; font-size: 0.7rem; display: inline-block; min-width: 90px; text-align: center; }
-        .st-sangat-baik { background-color: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
-        .st-baik { background-color: #f1f8e9; color: #558b2f; border: 1px solid #dcedc8; }
-        .st-sedang { background-color: #e3f2fd; color: #1565c0; border: 1px solid #bbdefb; }
+        .badge-status { padding: 5px 12px; border-radius: 50px; font-weight: 600; font-size: 0.7rem; display: inline-block; min-width: 90px; text-align: center; }
+        .st-sangat-baik { background-color: #f5ffd4; color: #000; border: 1px solid #c6ff00; }
+        .st-baik { background-color: #e1f6ff; color: #000; border: 1px solid #00b0ff; }
+        .st-sedang { background-color: #fdf0d5; color:#000; border: 1px solid #ffab00; }
 
         /* BUTTONS */
         .btn-detail { border: 1px solid #aaa; color: #555; background: white; padding: 4px 12px; font-size: 0.75rem; border-radius: 4px; text-decoration: none; }
@@ -350,7 +350,7 @@
                 <tr onclick="window.location.href='detail.html?id=${key}'">
                     <td class="fw-bold">${loc.name}</td>
                     <td class="text-center text-muted">${loc.year}</td>
-                    <td class="text-center" style="font-size:1.1rem; color:#c6ff00; -webkit-text-stroke: 0.5px #000; font-weight:800;">${loc.indices?.H || '-'}</td>
+                    <td class="text-center" style="font-size:1.1rem; color:#c6ff00; -webkit-text-stroke: 0.5px #000; font-weight:700;">${loc.indices?.H || '-'}</td>
                     <td class="text-center"><span class="badge-status ${badgeClass}">${loc.status}</span></td>
                     <td class="text-center"><button class="btn-detail">Detail</button></td>
                 </tr>`;
