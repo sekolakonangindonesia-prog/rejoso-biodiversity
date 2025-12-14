@@ -14,9 +14,9 @@
         /* HEADER LEBAR DENGAN FOTO */
         .hero-mini { 
             position: relative;
-            /* Ganti 'hutan-bg.jpg' dengan foto hutan andalan bapak */
+            /* Pastikan file 'hutan-bg.jpg' ada di folder */
             background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.9)), url('hutan-bg.jpg') no-repeat center center/cover;
-            height: 50vh; /* Setengah layar (Lebar) */
+            height: 50vh; /* Setengah layar */
             min-height: 400px;
             display: flex;
             flex-direction: column;
@@ -25,6 +25,18 @@
             text-align: center;
             color: white;
         }
+
+        /* STYLE LOGO DI POJOK KIRI ATAS */
+        .logo-area { 
+            position: absolute; 
+            top: 25px; 
+            left: 5%; 
+            z-index: 20; 
+            display: flex; 
+            align-items: center; 
+            text-align: left;
+        }
+        .logo-img { height: 55px; margin-right: 15px; filter: drop-shadow(0 0 5px rgba(0,0,0,0.5)); }
 
         .title-main { font-size: 3rem; font-weight: 800; text-shadow: 0 4px 10px rgba(0,0,0,0.8); margin-bottom: 10px; }
         
@@ -37,12 +49,13 @@
             text-decoration: none;
             transition: 0.3s;
             backdrop-filter: blur(5px);
+            margin-top: 15px;
         }
         .btn-back-home:hover { background: white; color: black; }
 
         /* CONTAINER MENU YANG NINDIH KE ATAS */
         .menu-container {
-            margin-top: -100px; /* Ini yang bikin menu naik ke atas header */
+            margin-top: -100px; /* Menu naik ke atas header */
             position: relative;
             z-index: 10;
             padding-bottom: 50px;
@@ -51,9 +64,9 @@
         /* STYLE KOTAK MENU (NEON SOFT) */
         .menu-card {
             background: #121212; /* Hitam pekat */
-            border: 1px solid #1b5e20; /* Hijau gelap default */
+            border: 1px solid #1b5e20; 
             border-radius: 15px; 
-            padding: 30px 20px; /* Diperkecil paddingnya biar ga bongsor */
+            padding: 30px 20px; 
             text-align: center;
             transition: 0.3s; 
             cursor: pointer; 
@@ -61,15 +74,14 @@
             position: relative;
             overflow: hidden;
             
-            /* EFEK NEON SOFT (Hijau Muda) */
+            /* EFEK NEON SOFT */
             box-shadow: 0 0 15px rgba(0, 255, 127, 0.05); 
-            border-bottom: 3px solid #00e676; /* Garis bawah neon */
+            border-bottom: 3px solid #00e676;
         }
 
         .menu-card:hover { 
             transform: translateY(-10px); 
             background: #1a1a1a;
-            /* Neon lebih nyala dikit pas hover */
             box-shadow: 0 0 25px rgba(0, 255, 127, 0.2);
             border-color: #00e676;
         }
@@ -97,14 +109,33 @@
         .menu-card:hover .btn-tanam { background: #ff9100; color: black; }
         .menu-card:hover .btn-karbon { background: #00b0ff; color: black; }
 
+        /* Responsif untuk HP: Logo agak kecil */
+        @media (max-width: 768px) {
+            .logo-area { top: 15px; left: 15px; }
+            .logo-img { height: 40px; margin-right: 10px; }
+            .logo-text { font-size: 0.8rem; }
+            .title-main { font-size: 2rem; margin-top: 40px; }
+        }
+
     </style>
 </head>
 <body>
 
     <!-- HERO HEADER (LEBAR & GAMBAR) -->
     <div class="hero-mini">
+        
+        <!-- LOGO AREA (BARU DITAMBAHKAN) -->
+        <div class="logo-area">
+            <img src="logo-sk.png" class="logo-img" alt="Logo" onerror="this.style.display='none'">
+            <div class="text-white fw-bold" style="line-height: 1.2;">
+                SEKOLA KONANG<br>
+                <span style="font-weight:400; font-size:0.85rem; letter-spacing: 1px;">INDONESIA</span>
+            </div>
+        </div>
+
+        <!-- JUDUL TENGAH -->
         <h2 class="title-main">Pusat Data Konservasi</h2>
-        <p class="mb-4 text-white-50">Monitoring Kehati, Sebaran Penanaman & Analisis Karbon</p>
+        <p class="mb-3 text-white-50">Monitoring Kehati, Sebaran Penanaman & Analisis Karbon</p>
         <a href="index.html" class="btn-back-home"><i class="fas fa-home me-2"></i>Kembali ke Home</a>
     </div>
 
@@ -113,7 +144,7 @@
         <div class="row g-4 justify-content-center">
             
             <!-- MENU 1: KEHATI -->
-            <div class="col-md-4 col-lg-3"> <!-- Pakai col-lg-3 biar di layar besar kotaknya agak kecil ramping -->
+            <div class="col-md-4 col-lg-3">
                 <div class="menu-card" onclick="window.location.href='monitoring_kehati.html'">
                     <i class="fas fa-leaf menu-icon" style="color: #00e676;"></i>
                     <h3 class="menu-title">Monitoring Kehati</h3>
