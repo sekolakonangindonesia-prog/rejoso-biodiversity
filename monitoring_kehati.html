@@ -1,173 +1,369 @@
-<!-- HEADER BAR -->
-<div class="header-bar">
-    <div class="container d-flex justify-content-between align-items-center">
-        <div class="d-flex align-items-center">
-            <img src="logo-sk.png" style="height: 50px; margin-right: 15px;" onerror="this.style.display='none'">
-            <div style="line-height: 1.2;">
-                <div class="fw-bold text-white fs-5">SEKOLA KONANG</div>
-                <div style="font-size:0.8rem; color:#aaa; letter-spacing: 1px;">INDONESIA</div>
-            </div>
-        </div>
-        <!-- Tombol Kembali (Neon) -->
-        <a href="menu.html" class="btn-back-menu"><i class="fas fa-arrow-left me-2"></i> KEMBALI KE MENU</a>
-    </div>
-</div>
-
-<!-- JUDUL UTAMA -->
-<div class="page-title-area">
-    <div class="page-title-main">MONITORING KEHATI</div>
-    <div class="page-title-sub">DATA INDEKS KEANEKARAGAMAN HAYATI FLORA DAN FAUNA</div>
-</div>
-
-<div class="container-fluid px-4">
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitoring Kehati - SIS KEHATI</title>
     
-    <!-- BAGIAN 1: PETA & GAMBAR (GRID RAPI) -->
-    <div class="card card-custom">
-        <!-- Header Hijau SS2 -->
-        <div class="card-header-green">
-            <span><i class="fas fa-map-marked-alt me-2"></i> Peta Sebaran & Delineasi Area</span>
-            <span class="badge bg-light text-dark"><i class="fas fa-satellite me-1"></i> Google Hybrid</span>
-        </div>
+    <!-- Library -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* BACKGROUND GELAP UTAMA */
+        body { font-family: 'Montserrat', sans-serif; background-color: #050505; color: #eee; padding-bottom: 50px; }
         
-        <div class="row g-0">
-            <!-- PETA (KIRI - 8 Kolom) -->
+        /* 1. WARNA HIJAU KONANG (UNTUK HEADER & TOMBOL) */
+        .bg-konang-green {
+            background-color: #1b5e20 !important; /* Hijau Hutan */
+            color: white !important;
+        }
+
+        /* HEADER HALAMAN */
+        .header-bar { 
+            background: #121212; 
+            padding: 15px 0; 
+            border-bottom: 1px solid #333; 
+            margin-bottom: 30px; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.8);
+        }
+        
+        /* JUDUL BESAR DI TENGAH */
+        .page-title-area {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .page-title-main {
+            font-weight: 800;
+            font-size: 2rem;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+        .page-title-sub {
+            color: #c6ff00; /* Neon Soft */
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* TOMBOL KEMBALI KE MENU (HIJAU SS2) */
+        .btn-back-menu {
+            background-color: #c6ff00; /* Neon */
+            color: #000;
+            font-weight: 800;
+            border-radius: 50px;
+            padding: 8px 25px;
+            text-decoration: none;
+            transition: 0.3s;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+        }
+        .btn-back-menu:hover { background-color: white; transform: scale(1.05); }
+
+        /* CARD STYLE */
+        .card-custom { 
+            border: none; 
+            border-radius: 8px; 
+            overflow: hidden; 
+            margin-bottom: 20px;
+            background-color: white; /* Default putih agar isi tabel kelihatan */
+        }
+
+        /* HEADER KOTAK (HIJAU SS2) */
+        .card-header-green {
+            background-color: #1b5e20; /* Hijau Hutan */
+            padding: 15px 20px;
+            color: white;
+            font-weight: 700;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* LAYOUT PETA & GAMBAR */
+        #map { height: 450px; width: 100%; z-index: 1; background: #ddd; }
+        .map-photo { 
+            height: 450px; width: 100%; 
+            object-fit: cover; 
+            display: block;
+        }
+
+        /* FOOTER PETA (ZONA MONITORING - FULL WIDTH) */
+        .map-footer-strip {
+            background-color: #121212;
+            padding: 15px 0;
+            text-align: center;
+            border-top: 4px solid #c6ff00;
+            width: 100%;
+        }
+        .zona-title { color: #c6ff00; font-weight: 800; font-size: 1.2rem; margin-bottom: 5px; text-transform: uppercase; }
+        .zona-sub { color: #aaa; font-size: 0.8rem; margin-bottom: 10px; }
+        
+        .badge-info-item {
+            background: #333; border: 1px solid #555; color: #fff;
+            padding: 5px 15px; border-radius: 4px; font-size: 0.75rem; margin: 0 5px;
+            display: inline-flex; align-items: center;
+        }
+        .badge-info-item i { margin-right: 5px; }
+        .icon-veg { color: #2e7d32; } .icon-satwa { color: #00b0ff; } .icon-jalur { color: #ffab00; }
+
+        /* TABEL LOG DATA (AGAR KELIHATAN JELAS) */
+        .table-visible { width: 100%; margin-bottom: 0; background-color: white; }
+        .table-visible th {
+            background-color: #f1f1f1;
+            color: #000;
+            font-weight: 700;
+            padding: 15px;
+            border-bottom: 2px solid #ccc;
+        }
+        .table-visible td {
+            padding: 15px;
+            vertical-align: middle;
+            color: #000000 !important; /* Paksa Hitam */
+            border-bottom: 1px solid #eee;
+            font-weight: 600;
+        }
+        .table-visible tr:hover { background-color: #f9f9f9; }
+
+        /* STATUS BADGES (REVISI WARNA SS5) */
+        .status-badge {
+            padding: 8px 0;
+            width: 120px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            display: inline-block;
+            text-align: center;
+        }
+        /* Sangat Baik = Seperti Tombol Jelajah (Kuning Neon/Hitam) */
+        .st-sangat-baik {
+            background-color: #c6ff00; 
+            color: #000;
+            border: 1px solid #b2ff59;
+        }
+        /* Baik = Hijau Muda */
+        .st-baik {
+            background-color: #b9f6ca;
+            color: #1b5e20;
+            border: 1px solid #00c853;
+        }
+        /* Sedang = Biru Satwa Liar */
+        .st-sedang {
+            background-color: #e3f2fd;
+            color: #00b0ff; /* Biru Satwa */
+            border: 1px solid #40c4ff;
+        }
+
+        /* TOMBOL AKSI */
+        .btn-detail {
+            border: 1px solid #aaa; color: #555; background: white;
+            padding: 5px 15px; border-radius: 4px; font-size: 0.8rem; text-decoration: none;
+        }
+        .btn-detail:hover { background: #333; color: white; }
+
+        /* TOMBOL INPUT (HIJAU SS2) */
+        .btn-input-new {
+            background-color: #1b5e20; /* Hijau Hutan */
+            color: white;
+            width: 100%; border: none; padding: 12px;
+            font-weight: 800; border-radius: 5px;
+            text-transform: uppercase;
+            transition: 0.3s;
+        }
+        .btn-input-new:hover { background-color: #2e7d32; }
+
+        .btn-update-data {
+            background-color: white;
+            color: #333;
+            border: 2px solid #ddd;
+            width: 100%; padding: 12px;
+            font-weight: 700; border-radius: 5px;
+            transition: 0.3s;
+        }
+        .btn-update-data:hover { border-color: #333; }
+
+    </style>
+</head>
+<body>
+
+    <!-- HEADER BAR -->
+    <div class="header-bar">
+        <div class="container d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <img src="logo-sk.png" style="height: 50px; margin-right: 15px;" onerror="this.style.display='none'">
+                <div style="line-height: 1.2;">
+                    <div class="fw-bold text-white fs-5">SEKOLA KONANG</div>
+                    <div style="font-size:0.8rem; color:#aaa; letter-spacing: 1px;">INDONESIA</div>
+                </div>
+            </div>
+            <!-- Tombol Kembali (Neon) -->
+            <a href="menu.html" class="btn-back-menu"><i class="fas fa-arrow-left me-2"></i> KEMBALI KE MENU</a>
+        </div>
+    </div>
+
+    <!-- JUDUL UTAMA -->
+    <div class="page-title-area">
+        <div class="page-title-main">MONITORING KEHATI</div>
+        <div class="page-title-sub">DATA INDEKS KEANEKARAGAMAN HAYATI FLORA DAN FAUNA</div>
+    </div>
+
+    <div class="container-fluid px-4">
+        
+        <!-- BAGIAN 1: PETA & GAMBAR (GRID RAPI) -->
+        <div class="card card-custom">
+            <!-- Header Hijau SS2 -->
+            <div class="card-header-green">
+                <span><i class="fas fa-map-marked-alt me-2"></i> Peta Sebaran & Delineasi Area</span>
+                <span class="badge bg-light text-dark"><i class="fas fa-satellite me-1"></i> Google Hybrid</span>
+            </div>
+            
+            <div class="row g-0">
+                <!-- PETA (KIRI - 8 Kolom) -->
+                <div class="col-lg-8">
+                    <div id="map"></div>
+                </div>
+                <!-- GAMBAR (KANAN - 4 Kolom) -->
+                <div class="col-lg-4 d-none d-lg-block">
+                    <img src="https://images.unsplash.com/photo-1511497584788-876760111969?q=80&w=2000&auto=format&fit=crop" class="map-photo" alt="Hutan">
+                </div>
+            </div>
+
+            <!-- Footer Peta (Zona Monitoring) -->
+            <div class="map-footer-strip">
+                <div class="zona-title">ZONA MONITORING KEHATI</div>
+                <div class="zona-sub">Visualisasi area monitoring keanekaragaman hayati Desa Galih & Kawasan Penyangga</div>
+                <div>
+                    <span class="badge-info-item"><i class="fas fa-tree icon-veg"></i> Vegetasi</span>
+                    <span class="badge-info-item"><i class="fas fa-paw icon-satwa"></i> Satwa Liar</span>
+                    <span class="badge-info-item"><i class="fas fa-map-signs icon-jalur"></i> Jalur Pantau</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- BAGIAN 2: TABEL & INPUT (GRID RAPI) -->
+        <div class="row">
+            
+            <!-- TABEL (KIRI - 8 Kolom) -->
             <div class="col-lg-8">
-                <div id="map"></div>
-            </div>
-            <!-- GAMBAR (KANAN - 4 Kolom) -->
-            <div class="col-lg-4 d-none d-lg-block">
-                <img src="https://images.unsplash.com/photo-1511497584788-876760111969?q=80&w=2000&auto=format&fit=crop" class="map-photo" alt="Hutan">
-            </div>
-        </div>
-
-        <!-- Footer Peta (Zona Monitoring) -->
-        <div class="map-footer-strip">
-            <div class="zona-title">ZONA MONITORING KEHATI</div>
-            <div class="zona-sub">Visualisasi area monitoring keanekaragaman hayati Desa Galih & Kawasan Penyangga</div>
-            <div>
-                <span class="badge-info-item"><i class="fas fa-tree icon-veg"></i> Vegetasi</span>
-                <span class="badge-info-item"><i class="fas fa-paw icon-satwa"></i> Satwa Liar</span>
-                <span class="badge-info-item"><i class="fas fa-map-signs icon-jalur"></i> Jalur Pantau</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- BAGIAN 2: TABEL & INPUT (GRID RAPI) -->
-    <div class="row">
-        
-        <!-- TABEL (KIRI - 8 Kolom) -->
-        <div class="col-lg-8">
-            <div class="card card-custom h-100">
-                <!-- Header Hijau SS2 -->
-                <div class="card-header-green">
-                    <span><i class="fas fa-table me-2"></i> Log Data Monitoring Terkini</span>
-                </div>
-                <div class="table-responsive">
-                    <!-- Tabel Putih, Text Hitam -->
-                    <table class="table table-visible">
-                        <thead>
-                            <tr>
-                                <th class="ps-4">Lokasi Pantau</th>
-                                <th class="text-center">Tahun</th>
-                                <th class="text-center">Indeks (H')</th>
-                                <th class="text-center">Status</th>
-                                <th class="text-center">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tableBody">
-                            <!-- Data JS -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- INPUT DATA (KANAN - 4 Kolom) -->
-        <div class="col-lg-4">
-            <div class="card card-custom h-100">
-                <!-- Header Hijau SS2 -->
-                <div class="card-header-green">
-                    <span><i class="fas fa-edit me-2"></i> Input / Update Data</span>
-                </div>
-                <div class="p-4 d-flex flex-column justify-content-center h-100">
-                    <div class="alert alert-secondary border-0 small mb-4 text-dark">
-                        <i class="fas fa-info-circle me-1"></i> Silakan pilih menu di bawah untuk manajemen data.
+                <div class="card card-custom h-100">
+                    <!-- Header Hijau SS2 -->
+                    <div class="card-header-green">
+                        <span><i class="fas fa-table me-2"></i> Log Data Monitoring Terkini</span>
                     </div>
-                    
-                    <!-- Tombol Input Hijau SS2 -->
-                    <button class="btn-input-new mb-3" onclick="alert('Fitur Input')">
-                        <i class="fas fa-plus-circle me-2"></i> Input Data Baru
-                    </button>
-                    
-                    <button class="btn-update-data" onclick="alert('Fitur Update')">
-                        <i class="fas fa-sync me-2"></i> Update Data Lama
-                    </button>
+                    <div class="table-responsive">
+                        <!-- Tabel Putih, Text Hitam -->
+                        <table class="table table-visible">
+                            <thead>
+                                <tr>
+                                    <th class="ps-4">Lokasi Pantau</th>
+                                    <th class="text-center">Tahun</th>
+                                    <th class="text-center">Indeks (H')</th>
+                                    <th class="text-center">Status</th>
+                                    <th class="text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableBody">
+                                <!-- Data JS -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
+
+            <!-- INPUT DATA (KANAN - 4 Kolom) -->
+            <div class="col-lg-4">
+                <div class="card card-custom h-100">
+                    <!-- Header Hijau SS2 -->
+                    <div class="card-header-green">
+                        <span><i class="fas fa-edit me-2"></i> Input / Update Data</span>
+                    </div>
+                    <div class="p-4 d-flex flex-column justify-content-center h-100">
+                        <div class="alert alert-secondary border-0 small mb-4 text-dark">
+                            <i class="fas fa-info-circle me-1"></i> Silakan pilih menu di bawah untuk manajemen data.
+                        </div>
+                        
+                        <!-- Tombol Input Hijau SS2 -->
+                        <button class="btn-input-new mb-3" onclick="alert('Fitur Input')">
+                            <i class="fas fa-plus-circle me-2"></i> Input Data Baru
+                        </button>
+                        
+                        <button class="btn-update-data" onclick="alert('Fitur Update')">
+                            <i class="fas fa-sync me-2"></i> Update Data Lama
+                        </button>
+                    </div>
+                </div>
+            </div>
+
         </div>
-
     </div>
-</div>
 
-<footer class="text-center py-4 text-secondary mt-5 small">
-    &copy; 2025 Yayasan Sekola Konang Indonesia.
-</footer>
+    <footer class="text-center py-4 text-secondary mt-5 small">
+        &copy; 2025 Yayasan Sekola Konang Indonesia.
+    </footer>
 
-<!-- SCRIPT UTAMA -->
-<script src="database.js"></script>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- SCRIPT UTAMA -->
+    <script src="database.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <script>
+        // Peta
+        var map = L.map('map', {zoomControl: false}).setView([-7.723, 112.932], 13);
+        L.control.zoom({ position: 'topleft' }).addTo(map);
+        L.tileLayer('https://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}', { maxZoom: 20 }).addTo(map);
 
-<script>
-    // Peta
-    var map = L.map('map', {zoomControl: false}).setView([-7.723, 112.932], 13);
-    L.control.zoom({ position: 'topleft' }).addTo(map);
-    L.tileLayer('https://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}', { maxZoom: 20 }).addTo(map);
-
-    // Load Data
-    if(typeof db_kehati !== 'undefined') {
-        
-        // Polygon
-        var geoLayer = L.geoJSON(db_kehati.polygons, {
-            style: function(f) { 
-                return { color: '#c6ff00', fillColor: '#1b5e20', fillOpacity: 0.3, weight: 2 }; 
-            },
-            onEachFeature: function(f, l) { 
-                l.bindPopup(`<div style='color:black'><b>${f.properties.name}</b><br><a href="detail.html?id=${f.properties.id_lokasi}">Lihat Detail</a></div>`); 
-            }
-        }).addTo(map);
-
-        if (geoLayer.getLayers().length > 0) {
-            map.fitBounds(geoLayer.getBounds(), {padding: [50, 50]});
-        }
-
-        // Tabel
-        const tableBody = document.getElementById('tableBody');
-        const locs = db_kehati.locations;
-
-        for (const [key, loc] of Object.entries(locs)) {
+        // Load Data
+        if(typeof db_kehati !== 'undefined') {
             
-            // Warna Status Sesuai Revisi
-            let badgeClass = '';
-            let hVal = parseFloat(loc.indices?.H || 0);
+            // Polygon
+            var geoLayer = L.geoJSON(db_kehati.polygons, {
+                style: function(f) { 
+                    return { color: '#c6ff00', fillColor: '#1b5e20', fillOpacity: 0.3, weight: 2 }; 
+                },
+                onEachFeature: function(f, l) { 
+                    l.bindPopup(`<div style='color:black'><b>${f.properties.name}</b><br><a href="detail.html?id=${f.properties.id_lokasi}">Lihat Detail</a></div>`); 
+                }
+            }).addTo(map);
 
-            if (hVal >= 3.0) {
-                badgeClass = 'st-sangat-baik'; // Kuning Neon
-            } else if (hVal >= 2.0) {
-                badgeClass = 'st-baik'; // Hijau Muda
-            } else {
-                badgeClass = 'st-sedang'; // Biru Langit
+            if (geoLayer.getLayers().length > 0) {
+                map.fitBounds(geoLayer.getBounds(), {padding: [50, 50]});
             }
 
-            let row = `
-            <tr onclick="window.location.href='detail.html?id=${key}'">
-                <td class="fw-bold">${loc.name}</td>
-                <td class="text-center text-muted">${loc.year}</td>
-                <td class="text-center" style="font-size:1.1rem; color:#c6ff00; -webkit-text-stroke: 0.5px #000;">${loc.indices?.H || '-'}</td>
-                <td class="text-center"><span class="status-badge ${badgeClass}">${loc.status}</span></td>
-                <td class="text-center"><button class="btn-detail">Detail</button></td>
-            </tr>`;
-            
-            tableBody.innerHTML += row;
+            // Tabel
+            const tableBody = document.getElementById('tableBody');
+            const locs = db_kehati.locations;
+
+            for (const [key, loc] of Object.entries(locs)) {
+                
+                // Warna Status Sesuai Revisi
+                let badgeClass = '';
+                let hVal = parseFloat(loc.indices?.H || 0);
+
+                if (hVal >= 3.0) {
+                    badgeClass = 'st-sangat-baik'; // Kuning Neon
+                } else if (hVal >= 2.0) {
+                    badgeClass = 'st-baik'; // Hijau Muda
+                } else {
+                    badgeClass = 'st-sedang'; // Biru Langit
+                }
+
+                let row = `
+                <tr onclick="window.location.href='detail.html?id=${key}'">
+                    <td class="fw-bold">${loc.name}</td>
+                    <td class="text-center text-muted">${loc.year}</td>
+                    <td class="text-center" style="font-size:1.1rem; color:#c6ff00; -webkit-text-stroke: 0.5px #000;">${loc.indices?.H || '-'}</td>
+                    <td class="text-center"><span class="status-badge ${badgeClass}">${loc.status}</span></td>
+                    <td class="text-center"><button class="btn-detail">Detail</button></td>
+                </tr>`;
+                
+                tableBody.innerHTML += row;
+            }
         }
-    }
-</script>
+    </script>
+</body>
+</html>
