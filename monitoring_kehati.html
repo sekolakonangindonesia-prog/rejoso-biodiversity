@@ -12,117 +12,163 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
 
     <style>
-        /* TEMA DARK MODE */
+        /* TEMA DARK MODE (BACKGROUND HALAMAN) */
         body { font-family: 'Montserrat', sans-serif; background-color: #050505; color: #eee; padding-bottom: 50px; }
         
-        /* HEADER (SAMA DENGAN MENU) */
+        /* HEADER ATAS */
         .header-bar { 
             background: #121212; 
             padding: 20px 0; 
-            border-bottom: 3px solid #1b5e20; /* Hijau Dashboard */
+            border-bottom: 3px solid #1b5e20; 
             margin-bottom: 30px; 
             box-shadow: 0 4px 20px rgba(0,0,0,0.8);
         }
-
-        /* Logo Area */
-        .logo-img { height: 50px; margin-right: 15px; filter: drop-shadow(0 0 5px rgba(255,255,255,0.2)); }
+        .logo-img { height: 50px; margin-right: 15px; }
         
-        /* Tombol Kembali (Block Neon - Sesuai Request) */
+        /* TOMBOL KEMBALI (NEON BLOCK) */
         .btn-accent {
-            background-color: #c6ff00; /* Warna Neon Jelajah Data */
+            background-color: #c6ff00; 
             color: #0d1b0e;
             font-weight: 800;
             border: none;
             border-radius: 50px;
             padding: 10px 30px;
             text-transform: uppercase;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             transition: 0.3s;
             text-decoration: none;
             display: inline-block;
         }
-        .btn-accent:hover {
-            background-color: #ffffff;
-            box-shadow: 0 0 15px rgba(198, 255, 0, 0.5);
-            transform: translateY(-2px);
+        .btn-accent:hover { background-color: #fff; transform: translateY(-2px); }
+
+        /* JUDUL DI ATAS PETA */
+        .section-title-area {
+            background: #1b5e20; /* Hijau Header Peta */
+            padding: 15px 20px;
+            border-radius: 10px 10px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
+        .main-map-title { font-weight: 800; font-size: 1.2rem; color: #fff; margin: 0; text-transform: uppercase; }
+        .sub-map-title { font-size: 0.8rem; color: #c6ff00; margin: 0; font-weight: 400; }
 
         /* CARD STYLE */
         .card-custom { 
-            border: 1px solid #333; 
-            border-radius: 12px; 
+            border: none;
+            border-radius: 10px; 
             background: #121212; 
             box-shadow: 0 4px 15px rgba(0,0,0,0.3); 
             margin-bottom: 20px; 
             overflow: hidden; 
         }
-        .card-header-custom { 
+        
+        /* CARD PUTIH UNTUK TABEL (AGAR TULISAN HITAM JELAS) */
+        .card-white {
+            background: #ffffff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            color: #333; /* Text Default Hitam */
+        }
+
+        .card-header-green { 
             background: #1b5e20; /* Hijau Dashboard */
             padding: 15px 20px; 
-            border-bottom: 1px solid #333; 
             font-weight: 700; 
             color: white; 
             display: flex;
-            justify-content: space-between;
             align-items: center;
         }
         
-        /* MAP STYLE */
-        #map { height: 500px; width: 100%; z-index: 1; background: #222; }
+        /* LAYOUT PETA (KIRI) & GAMBAR (KANAN) */
+        #map { height: 450px; width: 100%; z-index: 1; background: #ddd; }
+        .map-photo { 
+            height: 450px; width: 100%; 
+            object-fit: cover; 
+            display: block;
+        }
         
-        /* ZONA KONSERVASI (INFO BAWAH PETA) */
+        /* FOOTER PETA (ZONA MONITORING) */
         .map-footer {
-            background: #1a1a1a;
-            padding: 20px;
-            border-top: 4px solid #c6ff00; /* Garis Aksen */
+            background: #121212;
+            padding: 15px;
+            border-top: 4px solid #c6ff00;
             text-align: center;
+            color: white;
         }
 
-        /* TABEL STYLE (PERBAIKAN WARNA TEXT) */
-        .table-dark-custom {
-            background-color: #121212;
-            color: #eee; /* Pastikan text putih/abu terang */
-            margin-bottom: 0;
+        /* TABEL STYLE (BACKGROUND PUTIH - TEXT HITAM) */
+        .table-light-custom { margin-bottom: 0; width: 100%; }
+        .table-light-custom th {
+            background-color: #f8f9fa;
+            color: #333;
+            border-bottom: 2px solid #1b5e20;
+            font-weight: 700;
+            padding: 15px;
         }
-        .table-dark-custom th {
-            background-color: #1a1a1a;
-            color: #c6ff00; /* Header tabel neon */
-            border-bottom: 2px solid #333;
-            font-weight: 600;
-            padding-left: 20px;
-        }
-        .table-dark-custom td {
-            border-bottom: 1px solid #333;
+        .table-light-custom td {
+            padding: 15px;
             vertical-align: middle;
-            padding: 15px 10px 15px 20px;
-            color: #fff; /* Paksa warna putih */
+            border-bottom: 1px solid #eee;
+            color: #000; /* Pastikan HITAM */
+            font-weight: 500;
         }
-        .table-dark-custom tr:hover {
-            background-color: #1e1e1e;
-            cursor: pointer;
-        }
+        .table-light-custom tr:hover { background-color: #f1f8e9; cursor: pointer; }
 
-        /* BADGE STATUS */
-        .badge-status { padding: 6px 15px; border-radius: 50px; font-weight: 600; font-size: 0.75rem; display: inline-block; min-width: 100px; text-align: center; }
-        .neon-green { background: rgba(0, 230, 118, 0.15); color: #69f0ae; border: 1px solid #69f0ae; box-shadow: 0 0 5px rgba(105, 240, 174, 0.2); }
-        .neon-blue { background: rgba(68, 138, 255, 0.15); color: #448aff; border: 1px solid #448aff; box-shadow: 0 0 5px rgba(68, 138, 255, 0.2); }
-        .neon-orange { background: rgba(255, 171, 64, 0.15); color: #ffab40; border: 1px solid #ffab40; box-shadow: 0 0 5px rgba(255, 171, 64, 0.2); }
+        /* BADGE STATUS (NEON SOFT REVISI) */
+        .badge-status { 
+            padding: 8px 20px; 
+            border-radius: 50px; 
+            font-weight: 700; 
+            font-size: 0.8rem; 
+            display: inline-block; 
+            min-width: 120px; 
+            text-align: center; 
+        }
+        /* SS4: Hijau Muda Terang & Biru Muda Terang */
+        .status-sangat-baik { 
+            background-color: #ccffce; /* Hijau Muda Pucat */
+            color: #00c853; /* Hijau Tua */
+            border: 1px solid #b9f6ca;
+        }
+        .status-baik {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+        .status-sedang { 
+            background-color: #e3f2fd; /* Biru Muda Pucat */
+            color: #2979ff; /* Biru Terang */
+            border: 1px solid #bbdefb;
+        }
 
         /* BUTTONS */
-        .btn-detail-neon { border: 1px solid #555; color: #ccc; padding: 4px 15px; font-size: 0.8rem; border-radius: 4px; text-decoration: none; transition: 0.2s; }
-        .btn-detail-neon:hover { border-color: #c6ff00; color: #c6ff00; }
+        .btn-detail { 
+            border: 1px solid #ccc; color: #666; padding: 5px 15px; 
+            font-size: 0.8rem; border-radius: 5px; text-decoration: none; transition: 0.2s; 
+        }
+        .btn-detail:hover { border-color: #1b5e20; color: #1b5e20; background: #fff; }
         
-        .btn-input { background: #1b5e20; color: white; width: 100%; border:none; padding:10px; font-weight:bold; border-radius: 5px; transition:0.3s; }
-        .btn-input:hover { background: #2e7d32; box-shadow: 0 0 10px #2e7d32; }
+        .btn-input { 
+            background: #1b5e20; /* Hijau Senada Dashboard */
+            color: white; width: 100%; border:none; padding:12px; 
+            font-weight:bold; border-radius: 8px; transition:0.3s; 
+        }
+        .btn-input:hover { background: #2e7d32; box-shadow: 0 4px 10px rgba(27, 94, 32, 0.4); }
         
-        .btn-update { background: transparent; color: #aaa; width: 100%; border:1px solid #555; padding:10px; font-weight:bold; border-radius: 5px; transition:0.3s; }
-        .btn-update:hover { border-color: #fff; color: #fff; }
+        .btn-update { 
+            background: white; color: #333; width: 100%; 
+            border:1px solid #ccc; padding:12px; 
+            font-weight:bold; border-radius: 8px; transition:0.3s; 
+        }
+        .btn-update:hover { background: #f5f5f5; border-color: #999; }
 
     </style>
 </head>
 <body>
 
-    <!-- HEADER (REVISI: LOGO & TOMBOL BLOCK) -->
+    <!-- HEADER BAR -->
     <div class="header-bar">
         <div class="container d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center">
@@ -138,47 +184,57 @@
 
     <div class="container-fluid px-4">
         
-        <!-- BAGIAN PETA (REVISI: FULL WIDTH & INFO DI BAWAH) -->
-        <div class="row">
+        <!-- BAGIAN 1: PETA & GAMBAR -->
+        <div class="row mb-4">
             <div class="col-12">
-                <div class="card card-custom">
-                    <div class="card-header-custom">
-                        <span><i class="fas fa-map-marked-alt me-2"></i> Peta Sebaran & Delineasi Area</span>
-                        <span class="badge bg-dark border border-secondary"><i class="fas fa-satellite me-1"></i> Google Hybrid</span>
+                <!-- Judul Di Atas Peta (Custom) -->
+                <div class="section-title-area">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-map-marked-alt text-white me-2 fs-4"></i>
+                        <h5 class="main-map-title">Peta Sebaran & Delineasi Area</h5>
                     </div>
-                    
-                    <!-- Peta Full Lebar -->
-                    <div class="card-body p-0">
+                    <span class="badge bg-light text-dark"><i class="fas fa-satellite me-1"></i> Google Hybrid</span>
+                </div>
+
+                <!-- Kontainer Peta -->
+                <div class="row g-0">
+                    <!-- PETA (KIRI - 70%) -->
+                    <div class="col-lg-9">
                         <div id="map"></div>
                     </div>
+                    <!-- GAMBAR (KANAN - 30%) -->
+                    <div class="col-lg-3 d-none d-lg-block">
+                        <img src="https://images.unsplash.com/photo-1511497584788-876760111969?q=80&w=2000&auto=format&fit=crop" class="map-photo" alt="Hutan">
+                    </div>
+                </div>
 
-                    <!-- Info Zona Konservasi (Memanjang Penuh) -->
-                    <div class="map-footer">
-                        <h5 class="fw-bold" style="color: #c6ff00;">ZONA KONSERVASI HUTAN</h5>
-                        <p class="text-secondary small mb-2">Visualisasi area monitoring keanekaragaman hayati Desa Galih & Kawasan Penyangga</p>
-                        <div class="d-flex justify-content-center gap-3">
-                            <span class="badge bg-dark border border-success text-success"><i class="fas fa-tree me-1"></i> Vegetasi</span>
-                            <span class="badge bg-dark border border-info text-info"><i class="fas fa-paw me-1"></i> Satwa Liar</span>
-                            <span class="badge bg-dark border border-warning text-warning"><i class="fas fa-map-signs me-1"></i> Jalur Pantau</span>
-                        </div>
+                <!-- Footer Peta (Full Width) -->
+                <div class="map-footer">
+                    <h4 class="fw-bold text-uppercase mb-1" style="color: #c6ff00;">ZONA MONITORING KEHATI</h4>
+                    <p class="text-secondary small mb-3">Visualisasi area monitoring keanekaragaman hayati Desa Galih & Kawasan Penyangga</p>
+                    <div class="d-flex justify-content-center gap-3">
+                        <span class="badge bg-dark border border-success text-success"><i class="fas fa-tree me-1"></i> Vegetasi</span>
+                        <span class="badge bg-dark border border-info text-info"><i class="fas fa-paw me-1"></i> Satwa Liar</span>
+                        <span class="badge bg-dark border border-warning text-warning"><i class="fas fa-map-signs me-1"></i> Jalur Pantau</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- BAGIAN TABEL & INPUT -->
+        <!-- BAGIAN 2: TABEL LOG DATA & INPUT -->
         <div class="row">
-            <!-- TABEL LOG DATA (KIRI) -->
-            <div class="col-lg-8">
-                <div class="card card-custom h-100">
-                    <div class="card-header-custom">
-                        <span><i class="fas fa-table me-2"></i> Log Data Monitoring Terkini</span>
+            
+            <!-- TABEL (KIRI) -->
+            <div class="col-lg-8 mb-4">
+                <div class="card-white h-100">
+                    <div class="card-header-green">
+                        <i class="fas fa-table me-2"></i> Log Data Monitoring Terkini
                     </div>
                     <div class="table-responsive">
-                        <table class="table table-dark-custom align-middle">
+                        <table class="table table-light-custom align-middle">
                             <thead>
                                 <tr>
-                                    <th>Lokasi Pantau</th>
+                                    <th class="ps-4">Lokasi Pantau</th>
                                     <th class="text-center">Tahun</th>
                                     <th class="text-center">Indeks (H')</th>
                                     <th class="text-center">Status</th>
@@ -186,7 +242,7 @@
                                 </tr>
                             </thead>
                             <tbody id="tableBody">
-                                <!-- Data diisi oleh JS -->
+                                <!-- Data JS -->
                             </tbody>
                         </table>
                     </div>
@@ -194,24 +250,29 @@
             </div>
 
             <!-- PANEL INPUT (KANAN) -->
-            <div class="col-lg-4">
-                <div class="card card-custom h-100">
-                    <div class="card-header-custom" style="background: #1a1a1a; color: #fff; border-bottom: 3px solid #1b5e20;">
-                        <span><i class="fas fa-edit me-2"></i> Input / Update Data</span>
+            <div class="col-lg-4 mb-4">
+                <div class="card-white h-100">
+                    <div class="card-header-green" style="background: #1b5e20;"> <!-- Sama dengan header tabel -->
+                        <i class="fas fa-edit me-2"></i> Input / Update Data
                     </div>
-                    <div class="card-body p-4 d-flex flex-column justify-content-center">
-                        <div class="alert alert-dark border border-secondary text-secondary small mb-4">
-                            <i class="fas fa-info-circle me-1"></i> Pilih menu di bawah untuk manajemen data monitoring harian.
+                    <div class="p-4 d-flex flex-column justify-content-center h-100">
+                        <div class="alert alert-secondary border-0 small mb-4">
+                            <i class="fas fa-info-circle me-1"></i> Silakan pilih menu di bawah untuk manajemen data monitoring harian.
                         </div>
+                        
+                        <!-- Tombol Input (Hijau Senada) -->
                         <button class="btn-input mb-3" onclick="alert('Fitur Input')">
                             <i class="fas fa-plus-circle me-2"></i> Input Data Baru
                         </button>
+                        
+                        <!-- Tombol Update -->
                         <button class="btn-update" onclick="alert('Fitur Update')">
                             <i class="fas fa-sync me-2"></i> Update Data Lama
                         </button>
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 
@@ -229,7 +290,7 @@
         L.control.zoom({ position: 'topleft' }).addTo(map);
         L.tileLayer('https://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}', { maxZoom: 20 }).addTo(map);
 
-        // Load Data dari database.js
+        // Load Data
         if(typeof db_kehati !== 'undefined') {
             
             // 1. Render Polygon & Auto Zoom
@@ -243,36 +304,35 @@
                 }
             }).addTo(map);
 
-            // LOGIKA AUTO FOCUS (Penting agar peta tidak berantakan posisinya)
             if (geoLayer.getLayers().length > 0) {
                 map.fitBounds(geoLayer.getBounds(), {padding: [50, 50]});
             }
 
-            // 2. Render Tabel dengan Neon Badge
+            // 2. Render Tabel
             const tableBody = document.getElementById('tableBody');
             const locs = db_kehati.locations;
 
             for (const [key, loc] of Object.entries(locs)) {
                 
-                // Logika Warna Neon
+                // Logika Status (SS4)
                 let badgeClass = '';
                 let hVal = parseFloat(loc.indices?.H || 0);
 
                 if (hVal >= 3.0) {
-                    badgeClass = 'neon-green'; 
-                } else if (hVal >= 1.5) {
-                    badgeClass = 'neon-blue'; 
+                    badgeClass = 'status-sangat-baik'; // Hijau Muda Terang
+                } else if (hVal >= 2.0) {
+                    badgeClass = 'status-baik'; // Hijau Biasa
                 } else {
-                    badgeClass = 'neon-orange'; 
+                    badgeClass = 'status-sedang'; // Biru Muda Terang
                 }
 
                 let row = `
                 <tr onclick="window.location.href='detail.html?id=${key}'">
-                    <td class="fw-bold" style="color:white;">${loc.name}</td>
-                    <td class="text-center text-secondary">${loc.year}</td>
-                    <td class="text-center"><strong style="color:#c6ff00;">${loc.indices?.H || '-'}</strong></td>
+                    <td class="fw-bold text-dark">${loc.name}</td>
+                    <td class="text-center">${loc.year}</td>
+                    <td class="text-center fw-bold">${loc.indices?.H || '-'}</td>
                     <td class="text-center"><span class="badge-status ${badgeClass}">${loc.status}</span></td>
-                    <td class="text-center"><a href="detail.html?id=${key}" class="btn-detail-neon">Detail</a></td>
+                    <td class="text-center"><button class="btn-detail">Detail</button></td>
                 </tr>`;
                 
                 tableBody.innerHTML += row;
